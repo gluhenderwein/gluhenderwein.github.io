@@ -1,0 +1,14 @@
+.case-section {
+  width: 100vw; 
+  height: auto; 
+  position: relative; 
+   
+}
+
+.card-case {
+  grid-column: span 4;
+}
+
+.card-shot {
+  grid-column: span 12;
+}

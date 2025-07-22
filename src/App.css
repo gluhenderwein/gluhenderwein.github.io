@@ -1,38 +1,368 @@
-.App {
-  text-align: center;
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Unbounded:wght@200..900&display=swap');
+
+:root {
+  --dark--bg-primary: #0B0C0E;
+  --dark--bg-secondary: rgba(199, 202, 209, 0.08);
+  --dark--bg-card: #101114;
+  --dark--text-primary: #EBEDEE;
+  --dark--text-secondary: #B5BABF;
+  --dark--text-tertiary: #8A8093;
+  --dark--navlink: #9AA1A7;
+  --dark--icon-primary: #EBEDEE;
+  --dark--icon-secondary: #625B69;
+  --dark--stroke: rgba(198, 201, 207, 0.1);
+  --dark--navbar: rgba(11, 12, 14, 0.40);
+  --dark--navbtn: rgba(50, 51, 54, 0.4);
+
+  --light--bg-primary: #FAF7F3;
+  --light--bg-secondary: rgba(169, 161, 137, 0.08);
+  --light--bg-card: #ffffff;
+  --light--text-primary: #222831;
+  --light--text-secondary: #393E46;
+  --light--text-tertiary: #9E9485;
+  --light--navlink: #A1A1A6;
+  --light--icon-primary: #222831;
+  --light--icon-secondary: #B8AC9B;
+  --light--stroke: rgba(154, 145, 117, 0.1);
+  --light--navbar: rgba(250, 247, 243, 0.6);
+  --light--navbtn: #ffffff;
+
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+html {
+  background-color: var(--bg-primary);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  position: relative;
+  font-family: 'Exo 2', sans-serif;
+  font-optical-sizing: auto;
+  font-size: 22px;
+  line-height: 160%;
+  font-weight: 350;
+  font-style: normal;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+section {
+  position: relative;
+  width: 100vw;
+  overflow: hidden;
+  height: auto;
+  padding: 3vw 6vw;
+  box-sizing: border-box;
+  max-width: 1700px;
+  margin-left: auto;
+  margin-right: auto;
+  scroll-margin-top: 100px;
+}
+
+
+.card-blur {
+  grid-column: span 4;
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
+  gap: 24px;
+  padding: 32px;
+  border: 1px solid var(--stroke);
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+  backdrop-filter: blur(4px);
+  border-radius: 40px;
+  box-sizing: border-box;
+}
+
+.avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 28px;
+}
+
+.list-item {
+  display: flex;
+}
+
+.list-item-i {
+  margin-top: -2px;
+}
+
+.callout {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  gap: 4px;
+  padding: 16px;
+  background-color: var(--bg-secondary);
+  border: 0.5px solid var(--stroke);
+  border-radius: 16px;
+  font-weight: 500;
 }
 
-.App-link {
-  color: #61dafb;
+.divider {
+  height: 1px;
+  width: 100%;
+  background-color: var(--stroke);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.fade-in {
+  opacity: 0;
+  
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  
+}
+
+
+.par-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  column-gap: 2vw;
+  row-gap: 2vw;
+
+}
+
+.s-8 {
+  margin-bottom: 8px;
+}
+
+.s-12 {
+  margin-bottom: 12px;
+}
+
+.s-16 {
+  margin-bottom: 16px;
+}
+
+.s-24 {
+  margin-bottom: 24px;
+}
+
+.s-32 {
+  margin-bottom: 32px;
+}
+
+.s-40 {
+  margin-bottom: 40px;
+}
+
+.s-48 {
+  margin-bottom: 48px;
+}
+
+.col-3 {
+  grid-column: span 3;
+}
+
+.col-4 {
+  grid-column: span 4;
+}
+
+.col-5 {
+  grid-column: span 5;
+}
+
+.col-6 {
+  grid-column: span 6;
+}
+
+.col-7 {
+  grid-column: span 7;
+}
+
+.col-8 {
+  grid-column: span 8;
+}
+
+.col-9 {
+  grid-column: span 9;
+}
+
+.col-10 {
+  grid-column: span 10;
+}
+
+.col-11 {
+  grid-column: span 11;
+}
+
+.col-12 {
+  grid-column: span 12;
+}
+
+h1 {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 80px;
+  line-height: 100%;
+  letter-spacing: -1px;
+  font-weight: 500;
+  margin-block-start: 0px;
+  margin-block-end: 0px;
+}
+
+h2 {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 52px;
+  line-height: 130%;
+  font-weight: 500;
+  margin-block-start: 0px;
+  margin-block-end: 0px;
+}
+
+h3 {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 24px;
+  line-height: 140%;
+  font-weight: 400;
+  margin-block-start: 0px;
+  margin-block-end: 0px;
+}
+
+h4 {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 20px;
+  line-height: 140%;
+  font-weight: 400;
+  margin-block-start: 0px;
+  margin-block-end: 0px;
+}
+
+.label-text {
+  font-family: 'Exo 2', sans-serif;
+  font-optical-sizing: auto;
+  font-size: 24px;
+  line-height: 120%;
+  letter-spacing: 1px;
+  font-weight: 500;
+  font-style: normal;
+  margin-block-start: 0px;
+  margin-block-end: 0px;
+
+}
+
+.p-1 {
+  font-size: 24px;
+  line-height: 160%;
+  margin-block-start: 0px;
+  margin-block-end: 0px;
+}
+
+.p-2 {
+  font-size: 20px;
+  line-height: 160%;
+  margin-block-start: 0px;
+  margin-block-end: 0px;
+}
+
+.p-3 {
+  font-size: 18px;
+  line-height: 160%;
+  margin-block-start: 0px;
+  margin-block-end: 0px;
+}
+
+.icon {
+  margin-top: 3px;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  color: var(--text-tertiary);
+}
+
+.tltle {
+  display: flex;
+  flex-flow: column;
+  gap: 2vw;
+}
+
+
+@media (min-width: 1600px) {
+  section {
+    padding: 4vw 8vw;
   }
-  to {
-    transform: rotate(360deg);
+}
+
+@media (max-width: 1079px) {
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    column-gap: 3vw;
+    row-gap: 3vw;
   }
+
+  h1 {
+    font-size: 9.9vw;
+  }
+
+}
+
+@media (max-width: 599px) {
+
+  section {
+    height: auto;
+    padding: 6vw 6vw;
+    box-sizing: border-box;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    column-gap: 4vw;
+    row-gap: 4vw;
+  }
+
+  .card-blur {
+    gap: 5vw;
+    padding: 6vw;
+    border-radius: 7vw;
+    box-sizing: border-box;
+  }
+
+  h1 {
+    font-size: 10vw;
+  }
+
+  h2 {
+    font-size: 8vw;
+  }
+
+  h3 {
+    font-size: min(5vw, 24px);
+  }
+
+  h4 {
+    font-size: min(4vw, 20px);
+  }
+
+  .label-text {
+    font-size: min(5vw, 24px);
+  }
+
+  .p-1 {
+    font-size: min(5vw, 24px);
+  }
+
+  .p-2 {
+    font-size: min(4.5vw, 20px);
+  }
+
+  .p-3 {
+    font-size: min(4vw, 18px);
+    line-height: 140%;
+
+  }
+
 }
