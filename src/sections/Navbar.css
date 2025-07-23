@@ -9,15 +9,10 @@
 }
 
 .navbar {
-  display: flex;
-  width: calc(100% + 0px);
+  width: calc(100% + 48px);
   /* расширяем на 24px слева и справа */
   margin-left: -24px;
   margin-right: -24px;
-  align-items: center;
-  gap: 40px;
-  overflow: auto;
-  padding: 24px 24px 28px 24px;
   border-radius: 24px;
   transition: backdrop-filter 0.5s ease, background-color 0.5s ease;
   backdrop-filter: none;
@@ -26,6 +21,32 @@
 .navbar.blurred {
   backdrop-filter: blur(64px);
   background-color: var(--navbar);
+}
+
+.menu-mask-wrapper {
+  position: relative;
+  overflow: hidden;
+  /* Важно: прячем маску за пределами */
+  mask-image: linear-gradient(to right, transparent 0px, black 20px, black calc(100% - 20px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0px, black 20px, black calc(100% - 20px), transparent 100%);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+.menu-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  overflow-x: auto;
+  padding: 24px 24px 28px 24px;
+  scrollbar-width: none;  
+  -ms-overflow-style: none;
+}
+
+.menu-wrapper::-webkit-scrollbar {
+  display: none;              
 }
 
 .nav-link {
@@ -53,9 +74,9 @@
 }
 
 @media (max-width: 1079px) {
-  .navbar {
-    gap: 4vw;
-  }
+  .menu-wrapper {
+  gap: 4vw;
+}
 
 }
 
@@ -65,11 +86,16 @@
   }
 
   .navbar {
-    width: calc(100% - 24px);
-    gap: 6vw;
+    width: calc(100% + 16px);
+    
     margin-left: -8px;
     margin-right: -8px;
-    padding: 20px 20px 24px 20px;
+    
   }
+
+  .menu-wrapper {
+  gap: 6vw;
+  padding: 20px 20px 24px 20px;
+}
 
 }

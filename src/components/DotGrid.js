@@ -31,8 +31,8 @@ function hexToRgb(hex) {
 const DotGrid = ({
   dotSize = 16,
   gap = 32,
-  baseColor = "#5227FF",
-  activeColor = "#5227FF",
+  baseColor = "rgba(127, 127, 116, 0.2)",
+  activeColor = "#A4A499",
   proximity = 150,
   speedTrigger = 100,
   shockRadius = 250,
@@ -265,11 +265,11 @@ const DotGrid = ({
   ]);
 
   return (
-    <section className={`dot-grid ${className}`} style={style}>
+    <div className={`dot-grid ${className}`} style={style}>
       <div ref={wrapperRef} className="dot-grid__wrap">
         <canvas ref={canvasRef} className="dot-grid__canvas" />
       </div>
-    </section>
+    </div>
   );
 };
 

@@ -67,21 +67,16 @@ margin-top: 12px;
   background-color: rgba(64, 65, 68, 0.4);
   backdrop-filter: blur(20px);
   touch-action: manipulation;
-  display: inline-flex;
-  text-decoration: none;
   cursor: pointer;
   border: 0;
-  padding: 0;
-  margin: 0;
-  box-shadow: inset 0 0 0 0.2rem var(--detail-medium-contrast);
   width: 56px;
   height: 56px;
   border-radius: 50%;
   color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 12px;
   transition: all 0.3s ease-out;
+  position: absolute;
+  top: calc(50% - 50px);
 }
 .embla__button:disabled {
   opacity: 0%;
@@ -98,7 +93,7 @@ margin-top: 12px;
   --slide-spacing: 2vw;
   --slide-size: 85%;
 }
-.embla__controls {
+.embla__button {
   display: none;
 }
 }

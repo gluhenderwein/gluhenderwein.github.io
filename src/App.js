@@ -12,6 +12,7 @@ import Experience from './sections/Experience';
 import Feedback from './sections/Feedback';
 import Contacts from './sections/Contacts';
 import Case from './sections/Case';
+import Shots from './sections/Shots';
 import { useEffect } from 'react';
 
 function App() {
@@ -59,6 +60,17 @@ function App() {
           element={
           
           <div>
+            <DotGrid style={{ position: 'fixed', width: '100vw', height: '100dvh', zIndex:'0' }}
+                        dotSize={2}
+                        gap={32}
+                        baseColor="rgba(127, 127, 116, 0.2)"
+                        activeColor="#ffffff"
+                        proximity={120}
+                        shockRadius={350}
+                        shockStrength={15}
+                        resistance={1650}
+                        returnDuration={3.5}
+                    />
             <Lanyard position={[0, 0, 30]} gravity={[0, -40, 0]} />
             <Navbar />
             <Hero />
@@ -76,7 +88,7 @@ function App() {
       <Route path="/case-3" element={<Case />} />
       <Route path="/case-4" element={<Case />} />
       <Route path="/case-5" element={<Case />} />
-      <Route path="/case-6" element={<Case />} />
+      <Route path="/shots" element={<Shots />} />
     </Routes >
     </>
   );

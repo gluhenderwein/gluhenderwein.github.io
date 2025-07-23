@@ -25,7 +25,8 @@
 
 .h-3-par {
     line-height: 180%;
-    font-weight: 400;
+    font-weight: 350;
+    letter-spacing: 0.5px;
 }
 
 @media (min-width: 1600px) {

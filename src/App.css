@@ -24,7 +24,7 @@
   --light--icon-primary: #222831;
   --light--icon-secondary: #B8AC9B;
   --light--stroke: rgba(154, 145, 117, 0.1);
-  --light--navbar: rgba(250, 247, 243, 0.6);
+  --light--navbar: rgba(250, 247, 243, 0.7);
   --light--navbtn: #ffffff;
 
 }
@@ -43,11 +43,12 @@ body {
   line-height: 160%;
   font-weight: 350;
   font-style: normal;
+  letter-spacing: 0.2px;
 }
 
 section {
   position: relative;
-  width: 100vw;
+  width: 100%;
   overflow: hidden;
   height: auto;
   padding: 3vw 6vw;
@@ -223,6 +224,7 @@ h3 {
   font-size: 24px;
   line-height: 140%;
   font-weight: 400;
+  letter-spacing: 0.7px;
   margin-block-start: 0px;
   margin-block-end: 0px;
 }
@@ -232,6 +234,7 @@ h4 {
   font-size: 20px;
   line-height: 140%;
   font-weight: 400;
+  letter-spacing: 0.5px;
   margin-block-start: 0px;
   margin-block-end: 0px;
 }
@@ -241,8 +244,8 @@ h4 {
   font-optical-sizing: auto;
   font-size: 24px;
   line-height: 120%;
-  letter-spacing: 1px;
-  font-weight: 500;
+  letter-spacing: 0.5px;
+  font-weight: 400;
   font-style: normal;
   margin-block-start: 0px;
   margin-block-end: 0px;
@@ -321,7 +324,7 @@ h4 {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     column-gap: 4vw;
-    row-gap: 4vw;
+    row-gap: 3vw;
   }
 
   .card-blur {
@@ -329,6 +332,12 @@ h4 {
     padding: 6vw;
     border-radius: 7vw;
     box-sizing: border-box;
+  }
+
+  .card {
+    width: calc(100% + 24px);
+    margin-left: -12px;
+    margin-right: -12px;
   }
 
   h1 {
@@ -364,5 +373,9 @@ h4 {
     line-height: 140%;
 
   }
+
+  .s-40 {
+  margin-bottom: 24px;
+}
 
 }

@@ -4,6 +4,7 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import { CircleArrowUpDoubleIcon } from '@hugeicons/core-free-icons';
 
 import { useInViewClass } from '../components/useInView';
+import SpotlightCard from '../components/SpotlightCard';
 
 const About = () => {
     const cardRef1 = useInViewClass({ className: 'visible' });
@@ -14,11 +15,7 @@ const About = () => {
     return (
         <section>
             <div className='grid'>
-
-                <div
-                    className='card-blur fade-in'
-                    ref={cardRef1}
-                >
+                <SpotlightCard className="fade-in card" ref={cardRef1}>
                     <HugeiconsIcon className='icon'
                         icon={CircleArrowUpDoubleIcon}
                         size={64}
@@ -28,12 +25,8 @@ const About = () => {
                     <p className='p-2'>
                         Умею выстраивать работу с фронтенд-разработчиками, так как хорошо понимаю HTML и CSS и проектирую реалистичные и простые для внедрения интерфейсы
                     </p>
-                </div>
-
-                <div
-                    className='card-blur fade-in'
-                    ref={cardRef2}
-                >
+                </SpotlightCard>
+                <SpotlightCard className="fade-in card" ref={cardRef2}>
                     <HugeiconsIcon className='icon'
                         icon={CircleArrowUpDoubleIcon}
                         size={64}
@@ -43,12 +36,8 @@ const About = () => {
                     <p className='p-2'>
                         Умею выстраивать работу с фронтенд-разработчиками, так как хорошо понимаю HTML и CSS и проектирую реалистичные и простые для внедрения интерфейсы
                     </p>
-                </div>
-
-                <div
-                    className='card-blur fade-in'
-                    ref={cardRef3}
-                >
+                </SpotlightCard>
+                <SpotlightCard className="fade-in card" ref={cardRef3}>
                     <HugeiconsIcon className='icon'
                         icon={CircleArrowUpDoubleIcon}
                         size={64}
@@ -58,7 +47,8 @@ const About = () => {
                     <p className='p-2'>
                         Умею выстраивать работу с фронтенд-разработчиками, так как хорошо понимаю HTML и CSS и проектирую реалистичные и простые для внедрения интерфейсы
                     </p>
-                </div>
+                </SpotlightCard>
+                
 
                 <div
                     className='h3-par-wrap fade-in'

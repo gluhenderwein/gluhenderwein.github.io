@@ -1,0 +1,25 @@
+.shot {
+    width: 100%;
+    padding: 12px;
+    box-sizing: border-box;
+  break-inside: avoid;
+}
+
+.shot-image {
+    display: block;
+    width: 100%;
+    border-radius: 24px;
+    transition: all ease-out 0.3s;
+}
+
+.shot-image:hover {
+    transform: scale(0.98);
+}
+
+.shot-caption {
+    font-size: 16px;
+    line-height: 130%;
+    color: var(--text-tertiary);
+    margin: 8px 12px 0px;
+
+}

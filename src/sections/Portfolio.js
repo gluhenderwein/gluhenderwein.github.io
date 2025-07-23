@@ -11,32 +11,32 @@ const cardsData = [
   {
     linkTo: '/case-1',
     imageSrc: "https://i.pinimg.com/originals/3c/34/18/3c34187630af4ba9d2273d70933c1f89.png",
-    overlayContent: <p className="tilted-card-demo-text"> Редизайн </p>
+    overlayContent: <p className="tilted-card-demo-text"> редизайн </p>
   },
   {
     linkTo: '/case-2',
     imageSrc: "https://i.pinimg.com/originals/3c/34/18/3c34187630af4ba9d2273d70933c1f89.png",
-    overlayContent: <p className="tilted-card-demo-text"> Редизайн </p>
+    overlayContent: <p className="tilted-card-demo-text"> редизайн </p>
   },
   {
     linkTo: '/case-3',
     imageSrc: "https://i.pinimg.com/originals/3c/34/18/3c34187630af4ba9d2273d70933c1f89.png",
-    overlayContent: <p className="tilted-card-demo-text"> Редизайн </p>
+    overlayContent: <p className="tilted-card-demo-text"> редизайн </p>
   },
   {
     linkTo: '/case-4',
     imageSrc: "https://i.pinimg.com/originals/3c/34/18/3c34187630af4ba9d2273d70933c1f89.png",
-    overlayContent: <p className="tilted-card-demo-text"> Редизайн </p>
+    overlayContent: <p className="tilted-card-demo-text"> редизайн </p>
   },
   {
     linkTo: '/case-5',
     imageSrc: "https://i.pinimg.com/originals/3c/34/18/3c34187630af4ba9d2273d70933c1f89.png",
-    overlayContent: <p className="tilted-card-demo-text"> Редизайн </p>
+    overlayContent: <p className="tilted-card-demo-text"> редизайн </p>
   },
   {
-    linkTo: '/case-6',
+    linkTo: '/shots',
     imageSrc: "https://i.pinimg.com/originals/3c/34/18/3c34187630af4ba9d2273d70933c1f89.png",
-    overlayContent: <p className="tilted-card-demo-text"> Редизайн </p>
+    overlayContent: <p className="tilted-card-demo-text"> редизайн </p>
   }
 ];
 
@@ -53,7 +53,7 @@ export default function Portfolio() {
         {cardsData.map(({ linkTo, imageSrc, overlayContent }, index) => (
           <TiltedCard
             key={index}
-            className='card-case'
+            className='card-case card'
             linkTo={linkTo}
             imageSrc={imageSrc}
             overlayContent={overlayContent}

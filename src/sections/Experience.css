@@ -53,7 +53,8 @@
     .card-exp {
         padding: 6vw;
         gap: 5vw;
-        margin-bottom: 4vw;
+        margin-bottom: 3vw;
+        border-radius: 9vw;
     }
 
     .exp-col-r {

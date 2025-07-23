@@ -11,17 +11,19 @@
     z-index: 200;
 }
 
+
 .btn-back {
     display: flex;
+    gap: 12px;
     color: var(--text-primary);
     font-weight: 500;
     background-color: var(--navbtn);
     backdrop-filter: blur(20px);
-    line-height: 110%;
+    line-height: 80%;
     text-decoration: none;
     padding: 8px 16px 8px 12px;
     border-radius: 24px;
-    margin-top: -8px;
+    margin-top: -5px;
     margin-left: -12px;
     transition: ease-out 100ms;
 }

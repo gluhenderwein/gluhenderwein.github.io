@@ -6,12 +6,13 @@ import './EmblaCarousel.css'
 const EmblaCarousel = forwardRef((props, ref) => {
   const {
     slides = [
-      { src: 'https://via.placeholder.com/600x400?text=Slide+1', caption: 'First Slide' },
-      { src: 'https://via.placeholder.com/600x400?text=Slide+2' },
-      { src: 'https://via.placeholder.com/600x400?text=Slide+3', caption: 'Last Slide' }
+      { src: 'https://via.placeholder.com/600x400?text=Slide+1', title: '', description: 'First Slide' },
+      { src: 'https://via.placeholder.com/600x400?text=Slide+2', title: '', description: '' },
+      { src: 'https://via.placeholder.com/600x400?text=Slide+3', title: '', description: 'Last Slide' }
     ],
     options,
-    className = ''
+    className = '',
+    onSlideClick
   } = props
   const [emblaRef, emblaApi] = useEmblaCarousel(options)
 
@@ -28,16 +29,22 @@ const EmblaCarousel = forwardRef((props, ref) => {
         <div className="embla__container">
           {slides.map((slide, index) => (
             <div className="embla__slide" key={index}>
-              <img className="embla__slide__img" src={slide.src} alt={`Slide ${index}`} />
-              {slide.caption && <div className="embla__slide__caption">{slide.caption}</div>}
+              <img
+                className="embla__slide__img"
+                src={slide.src}
+                alt={`Slide ${index}`}
+                onClick={() => onSlideClick?.(index, slides)}
+                style={{ cursor: 'pointer' }}
+              />
+              {slide.description && <div className="embla__slide__caption">{slide.description}</div>}
             </div>
           ))}
         </div>
       </div>
-      <div className="embla__controls">
-        <PrevButton onClick={onPrevButtonClick} disabled={prevBtnDisabled} style={{ marginLeft: '-24px' }} />
-        <NextButton onClick={onNextButtonClick} disabled={nextBtnDisabled} style={{ marginRight: '-24px' }} />
-      </div>
+      
+        <PrevButton onClick={onPrevButtonClick} disabled={prevBtnDisabled} style={{ left: '-24px' }} />
+        <NextButton onClick={onNextButtonClick} disabled={nextBtnDisabled} style={{ right: '-24px'}} />
+      
     </div>
   )
 })

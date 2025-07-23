@@ -125,20 +125,23 @@ function Navbar() {
   return (
     <section className='navigation'>
       <nav ref={navbarRef} className="navbar">
+        <div className="menu-mask-wrapper">
+          <div className="menu-wrapper">
+          {Object.entries(refs).map(([key, ref]) => (
+            <a
+              key={key}
+              href={`#${key}`}
+              onClick={handleAnchorClick}
+              className={`nav-link ${activeSection === key ? "active" : ""}`}
+            >
+              <HugeiconsIcon className='icon' icon={icons[key]} size={24} strokeWidth={2} />
+              <p className='label-text'>{labels[key]}</p>
+            </a>
+          ))}
 
-        {Object.entries(refs).map(([key, ref]) => (
-          <a
-            key={key}
-            href={`#${key}`}
-            onClick={handleAnchorClick}
-            className={`nav-link ${activeSection === key ? "active" : ""}`}
-          >
-            <HugeiconsIcon className='icon' icon={icons[key]} size={24} strokeWidth={2} />
-            <p className='label-text'>{labels[key]}</p>
-          </a>
-        ))}
-
-        <ThemeToggle />
+          <ThemeToggle />
+          </div>
+        </div>
       </nav>
     </section>
   );

@@ -12,7 +12,6 @@
   cursor: pointer;
   overflow: hidden;
   transition: color 0.3s;
-  font-size: 22px;
   border-radius: 16px;
   z-index: 1;
 }
@@ -25,6 +24,9 @@
     font-family: Unbounded;
   font-size: 18px;
     text-decoration: none;
+    letter-spacing: 0.5px;
+    font-weight: 400;
+
 }
 
 .button-creative::before {
