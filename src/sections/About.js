@@ -1,7 +1,7 @@
 import React from 'react'
 import '../App.css'
 import { HugeiconsIcon } from '@hugeicons/react';
-import { CircleArrowUpDoubleIcon } from '@hugeicons/core-free-icons';
+import { ChartBreakoutSquareIcon, SourceCodeSquareIcon, UserIdVerificationIcon } from '@hugeicons/core-free-icons';
 
 import { useInViewClass } from '../components/useInView';
 import SpotlightCard from '../components/SpotlightCard';
@@ -17,35 +17,35 @@ const About = () => {
             <div className='grid'>
                 <SpotlightCard className="fade-in card" ref={cardRef1}>
                     <HugeiconsIcon className='icon'
-                        icon={CircleArrowUpDoubleIcon}
+                        icon={ChartBreakoutSquareIcon}
                         size={64}
                         color="var(--icon-secondary)"
                         strokeWidth={1.5}
                     />
                     <p className='p-2'>
-                        Умею выстраивать работу с фронтенд-разработчиками, так как хорошо понимаю HTML и CSS и проектирую реалистичные и простые для внедрения интерфейсы
+                        Продакты любят мои интерфейсы за то, что я быстро приношу продуманные и масштабируемые решения и снимаю с них головную боль в процессе проектирования
                     </p>
                 </SpotlightCard>
                 <SpotlightCard className="fade-in card" ref={cardRef2}>
                     <HugeiconsIcon className='icon'
-                        icon={CircleArrowUpDoubleIcon}
+                        icon={SourceCodeSquareIcon}
                         size={64}
                         color="var(--icon-secondary)"
                         strokeWidth={1.5}
                     />
                     <p className='p-2'>
-                        Умею выстраивать работу с фронтенд-разработчиками, так как хорошо понимаю HTML и CSS и проектирую реалистичные и простые для внедрения интерфейсы
+                        Фрондендеры любят мои дизайны, потому что я сам умею верстать и делаю реалистичные, проработанные и простые для внедрения интерфейсы
                     </p>
                 </SpotlightCard>
                 <SpotlightCard className="fade-in card" ref={cardRef3}>
                     <HugeiconsIcon className='icon'
-                        icon={CircleArrowUpDoubleIcon}
+                        icon={UserIdVerificationIcon}
                         size={64}
                         color="var(--icon-secondary)"
                         strokeWidth={1.5}
                     />
                     <p className='p-2'>
-                        Умею выстраивать работу с фронтенд-разработчиками, так как хорошо понимаю HTML и CSS и проектирую реалистичные и простые для внедрения интерфейсы
+                        Пользователи не знают, но могли бы тоже любить мои интерфейсы, потому что я всегда стараюсь найти компромисс между их удобством и интересами бизнеса
                     </p>
                 </SpotlightCard>
                 

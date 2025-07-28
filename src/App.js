@@ -11,7 +11,11 @@ import Portfolio from './sections/Portfolio';
 import Experience from './sections/Experience';
 import Feedback from './sections/Feedback';
 import Contacts from './sections/Contacts';
-import Case from './sections/Case';
+import Case1 from './sections/Case1';
+import Case2 from './sections/Case2';
+import Case3 from './sections/Case3';
+import Case4 from './sections/Case4';
+import Case5 from './sections/Case5';
 import Shots from './sections/Shots';
 import { useEffect } from 'react';
 
@@ -83,11 +87,11 @@ function App() {
           
         }
       />
-      <Route path="/case-1" element={<Case />} />
-      <Route path="/case-2" element={<Case />} />
-      <Route path="/case-3" element={<Case />} />
-      <Route path="/case-4" element={<Case />} />
-      <Route path="/case-5" element={<Case />} />
+      <Route path="/case-1" element={<Case1 />} />
+      <Route path="/case-2" element={<Case2 />} />
+      <Route path="/case-3" element={<Case3 />} />
+      <Route path="/case-4" element={<Case4 />} />
+      <Route path="/case-5" element={<Case5 />} />
       <Route path="/shots" element={<Shots />} />
     </Routes >
     </>

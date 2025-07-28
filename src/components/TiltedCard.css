@@ -45,7 +45,7 @@
     display: block;
     position: relative;
     object-fit: cover;
-    border-radius: 40px;
+    border-radius: 32px;
     will-change: transform;
     transform: translateZ(0);
     transition: all ease-out 0.5s;
@@ -59,6 +59,12 @@
     position: absolute;
     top: 0;
     left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 2% 2%;
+    box-sizing: border-box;
     z-index: 2;
     will-change: transform;
     transform: translateZ(30px);
@@ -66,17 +72,26 @@
 
 
 .tilted-card-demo-text {
+    display: none;
     font-family: 'Unbounded';
-    font-size: 18px;
+    font-size: min(1.8vw, 24px);
     line-height: 120%;
     letter-spacing: 0.5px;
-    font-weight: 400;
+    font-weight: 450;
     color: #fff;
-    background: #0006;
-    border-radius: 16px;
-    margin: 2vw;
-    padding: 6px 16px 8px;
-    box-shadow: 0 5px 30px #06001059;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    text-shadow: 0 6px 32px #06001059;
+}
+
+.tilted-card-avatar {
+    width: 100%;
+}
+
+@media (min-width: 1600px) {
+    .tilted-card-demo-text {
+    margin: 32px;
+}
 }
 
 @media (max-width: 1079px) {

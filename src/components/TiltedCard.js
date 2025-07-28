@@ -24,6 +24,7 @@ export default function TiltedCard({
   overlayContent = null,
   displayOverlayContent = true,
   linkTo = null,
+  avatarSrc = null, // new line
 }) {
   const ref = useRef(null);
 
@@ -119,9 +120,16 @@ export default function TiltedCard({
           }}
         />
 
-        {displayOverlayContent && overlayContent && (
+        {displayOverlayContent && (
           <motion.div className="tilted-card-overlay">
             {overlayContent}
+            {avatarSrc && (
+              <img
+                src={avatarSrc}
+                alt="Avatar"
+                className="tilted-card-avatar"
+              />
+            )}
           </motion.div>
         )}
       </motion.div>

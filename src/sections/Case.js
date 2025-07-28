@@ -54,99 +54,105 @@ export default function Case() {
         </a>
         <ThemeToggle />
       </section>
-      <section className='grid case'>
-        <div ref={headerRef} className='case-header fade-in'>
-          <img className='case-img' src='/assets/hh.jpg' alt='' />
-          <h1>редизайн настроек уведомлений</h1>
-        </div>
-        <div ref={content1Ref} className='case-content fade-in'>
-          <div className='case-par'>
-            <p className='p-2'>
-              Целью задачи было просто перевести на новые компоненты раздел настройки уведомлений у работодателей и соискателей и добавить несколько каналов для каждой категории.
-            </p>
-            <p className='p-2'>
-              Редизайн был довольно кардинальным, однако нам удалось не только не уронить никакие метрики, но и значительно подрастить некоторые из них
-            </p>
+
+      <div className='case-overflow'>
+        <section className='grid case'>
+
+          <div ref={headerRef} className='case-header fade-in'>
+            <img className='case-head-img' src='/assets/hh.jpg' alt='' />
+            <h1>редизайн настроек уведомлений</h1>
           </div>
-          <h2 className='s-24'>cтарый дизайн</h2>
-          <div className='case-par'>
-            <p className='p-2'>
-              Изначальный дизайн предполагал группировку по каналам, но при желании добавить к одному типу уведомлений несколько каналов происходило бы ненужное дублирование.
-            </p>
-            <p className='p-2'>
-              Для сервиса уведомления важны, чтобы поддерживать посещаемость и возвращаемость пользователей на сервис, осведомлённость о новых функциях, а через некоторые рассылки происходят продажи сервисов hh.
-            </p>
+          <div ref={content1Ref} className='case-content fade-in'>
+            <div className='case-par'>
+              <p className='p-2'>
+                Целью задачи было просто перевести на новые компоненты раздел настройки уведомлений у работодателей и соискателей и добавить несколько каналов для каждой категории.
+              </p>
+              <p className='p-2'>
+                Редизайн был довольно кардинальным, однако нам удалось не только не уронить никакие метрики, но и значительно подрастить некоторые из них
+              </p>
+            </div>
+            <h2 className='s-24'>cтарый дизайн</h2>
+            <div className='case-par'>
+              <p className='p-2'>
+                Изначальный дизайн предполагал группировку по каналам, но при желании добавить к одному типу уведомлений несколько каналов происходило бы ненужное дублирование.
+              </p>
+              <p className='p-2'>
+                Для сервиса уведомления важны, чтобы поддерживать посещаемость и возвращаемость пользователей на сервис, осведомлённость о новых функциях, а через некоторые рассылки происходят продажи сервисов hh.
+              </p>
+            </div>
           </div>
-        </div>
 
 
-        <EmblaCarousel
-          ref={carouselRef1}
-          className='fade-in'
-          slides={slides}
-          onSlideClick={(index) => {
-            setLightboxSlides(slides);
-            setLightboxIndex(index);
-            setOpen(true);
-          }}
-        />
+          <EmblaCarousel
+            ref={carouselRef1}
+            className='fade-in'
+            slides={slides}
+            onSlideClick={(index) => {
+              setLightboxSlides(slides);
+              setLightboxIndex(index);
+              setOpen(true);
+            }}
+          />
 
-        <EmblaCarousel
-          ref={carouselRef2}
-          className='fade-in'
-          slides={slides2}
-          onSlideClick={(index) => {
-            setLightboxSlides(slides2);
-            setLightboxIndex(index);
-            setOpen(true);
-          }}
-        />
+          <EmblaCarousel
+            ref={carouselRef2}
+            className='fade-in'
+            slides={slides2}
+            onSlideClick={(index) => {
+              setLightboxSlides(slides2);
+              setLightboxIndex(index);
+              setOpen(true);
+            }}
+          />
 
-        <div ref={content2Ref} className='case-content fade-in'>
-          <div className='case-par'>
-            <p className='p-2'>
-              Я заметил, что название некоторых уведомлений мало говорит об их ценности для пользователя и предложил с помощью редактора добавить к ним описание.
-            </p>
+          <div ref={content2Ref} className='case-content fade-in'>
+            <div className='case-par'>
+              <p className='p-2'>
+                Я заметил, что название некоторых уведомлений мало говорит об их ценности для пользователя и предложил с помощью редактора добавить к ним описание.
+              </p>
+            </div>
           </div>
-        </div>
 
-        <div ref={footerRef} className='case-footer fade-in'>
-          <h3>больше макетов по задаче можно посмотреть в фигме</h3>
-          <Button href='/' icon={FigmaIcon} />
-        </div>
-      </section>
-      
+          <div ref={footerRef} className='case-footer fade-in'>
+            <h3>больше макетов по задаче можно посмотреть в фигме</h3>
+            <Button href='/' icon={FigmaIcon} />
+          </div>
+
+          
+        </section>
+      </div>
+
       <Lightbox
-          render={{
-            iconPrev: () => <HugeiconsIcon icon={ArrowLeft02Icon} size={40} color="#fff" strokeWidth={1.5} />,
-            iconNext: () => <HugeiconsIcon icon={ArrowRight02Icon} size={40} color="#fff" strokeWidth={1.5} />,
-            iconClose: () => <HugeiconsIcon icon={Cancel01Icon} size={32} color="#fff" strokeWidth={1.5} />,
-            iconZoomIn: () => React.ReactNode,
-            iconZoomOut: () => React.ReactNode,
-          }}
-          open={open}
-          close={() => setOpen(false)}
-          slides={lightboxSlides}
-          index={lightboxIndex}
-          plugins={[Captions, Zoom]}
-          captions={{
-            ref: captionsRef,
-            hidden: false,
-            descriptionTextAlign: "center",
-            descriptionMaxLines: 3,
-          }}
-          styles={{
-            slide: { padding: 0 },
-          }}
-          on={{
-            click: () => {
-              (captionsRef.current?.visible
-                ? captionsRef.current.hide
-                : captionsRef.current.show)?.();
-            },
-            view: ({ index }) => setLightboxIndex(index),
-          }}
-        />
+        render={{
+          iconPrev: () => <HugeiconsIcon icon={ArrowLeft02Icon} size={40} color="#fff" strokeWidth={1.5} />,
+          iconNext: () => <HugeiconsIcon icon={ArrowRight02Icon} size={40} color="#fff" strokeWidth={1.5} />,
+          iconClose: () => <HugeiconsIcon icon={Cancel01Icon} size={32} color="#fff" strokeWidth={1.5} />,
+          iconZoomIn: () => React.ReactNode,
+          iconZoomOut: () => React.ReactNode,
+        }}
+        open={open}
+        close={() => setOpen(false)}
+        slides={lightboxSlides}
+        index={lightboxIndex}
+        plugins={[Captions, Zoom]}
+        captions={{
+          ref: captionsRef,
+          hidden: false,
+          descriptionTextAlign: "center",
+          descriptionMaxLines: 3,
+        }}
+        styles={{
+          slide: { padding: 0 },
+        }}
+        on={{
+          click: () => {
+            (captionsRef.current?.visible
+              ? captionsRef.current.hide
+              : captionsRef.current.show)?.();
+          },
+          view: ({ index }) => setLightboxIndex(index),
+        }}
+      />
 
       <Contacts />
     </>

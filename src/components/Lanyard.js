@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unknown-property */
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import { Canvas, extend, useFrame, useThree } from '@react-three/fiber';
 import { useGLTF, useTexture, Environment, Lightformer } from '@react-three/drei';
 import { BallCollider, CuboidCollider, Physics, RigidBody, useRopeJoint, useSphericalJoint } from '@react-three/rapier';
@@ -8,7 +8,9 @@ import { MeshLineGeometry, MeshLineMaterial } from 'meshline';
 
 // replace with your own imports, see the usage snippet for details
 import cardGLB from "../assets/card.glb";
-import lanyard from "../assets/lanyard.png";
+
+import lanyardLight from '../assets/lanyard-light.png';
+import lanyardDark from '../assets/lanyard-dark.png';
 
 import * as THREE from 'three';
 import '../components/Lanyard.css';
@@ -52,23 +54,41 @@ function Band({ maxSpeed = 50, minSpeed = 0 }) {
     const { viewport } = useThree();
     const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 0);
 
+    const [textureSrc, setTextureSrc] = useState(() =>
+        localStorage.getItem('theme') === 'dark' ? lanyardDark : lanyardLight
+    );
+    const texture = useTexture(textureSrc);
+
     useEffect(() => {
         const handleResize = () => setWindowWidth(window.innerWidth);
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    useEffect(() => {
+        const observer = new MutationObserver(() => {
+            const updatedTheme = localStorage.getItem('theme');
+            setTextureSrc(updatedTheme === 'dark' ? lanyardDark : lanyardLight);
+        });
+
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['style'],
+        });
+
+        return () => observer.disconnect();
+    }, []);
+
     let offsetX = 0;
     if (windowWidth >= 1080 && windowWidth < 1600) {
-        offsetX = viewport.width * 0.31;
+        offsetX = viewport.width * 0.30;
     } else if (windowWidth >= 1600) {
-        offsetX = viewport.width * 0.31 * (1600 / windowWidth);
+        offsetX = viewport.width * 0.29 * (1600 / windowWidth);
     }
     const band = useRef(), fixed = useRef(), j1 = useRef(), j2 = useRef(), j3 = useRef(), card = useRef();
     const vec = new THREE.Vector3(), ang = new THREE.Vector3(), rot = new THREE.Vector3(), dir = new THREE.Vector3();
     const segmentProps = { type: 'dynamic', canSleep: true, colliders: false, angularDamping: 4, linearDamping: 4 };
     const { nodes, materials } = useGLTF(cardGLB);
-    const texture = useTexture(lanyard);
     const [curve] = useState(() => new THREE.CatmullRomCurve3([new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()]));
     const [dragged, drag] = useState(false);
     const [hovered, hover] = useState(false);
@@ -162,10 +182,12 @@ function Band({ maxSpeed = 50, minSpeed = 0 }) {
                     color="white"
                     depthTest={false}
                     resolution={isSmall ? [1000, 2000] : [1000, 1000]}
-                    useMap
+                    useMap={true}
                     map={texture}
                     repeat={[-4, 1]}
                     lineWidth={1}
+                    transparent={true}
+                    toneMapped={false}
                 />
             </mesh>
         </>

@@ -4,7 +4,7 @@
   margin-bottom: 24px;
   --slide-height: 500px;
   --slide-spacing: 2vw;
-  --slide-size: 85%;
+  --slide-size: calc(100% - 32px);
 }
 .embla__viewport {
   
@@ -25,7 +25,6 @@
   display: block;
   width: 100%;
   height: auto;
-  border-radius: 24px;
   object-fit: cover;
 }
 
@@ -84,6 +83,13 @@ margin-top: 12px;
 .embla__button__svg {
   width: 35%;
   height: 35%;
+}
+
+@media (min-width: 1600px) {
+  .embla {
+  --slide-spacing: 32px;
+  
+}
 }
 
 @media (max-width: 1079px) {

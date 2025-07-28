@@ -20,6 +20,7 @@
 
 .navbar.blurred {
   backdrop-filter: blur(64px);
+  -webkit-backdrop-filter: blur(64px);
   background-color: var(--navbar);
 }
 
@@ -68,7 +69,7 @@
 
 @media (min-width: 1600px) {
   .navigation {
-    padding: 8px 8vw;
+    padding: 8px 120px;
   }
 
 }

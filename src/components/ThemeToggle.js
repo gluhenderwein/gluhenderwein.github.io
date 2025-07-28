@@ -22,6 +22,7 @@ const ThemeToggle = () => {
       'bg-primary',
       'bg-secondary',
       'bg-card',
+      'bg-accent',
       'text-primary',
       'text-secondary',
       'text-tertiary',

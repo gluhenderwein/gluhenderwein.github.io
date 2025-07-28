@@ -1,14 +1,17 @@
 .shot {
     width: 100%;
-    padding: 12px;
+    padding: 16px;
+    margin: 16px;
     box-sizing: border-box;
-  break-inside: avoid;
+    border-radius: 16px;
+    background-color: rgb(229, 225, 218);
+    break-inside: avoid;
+    cursor: pointer;
 }
 
 .shot-image {
     display: block;
     width: 100%;
-    border-radius: 24px;
     transition: all ease-out 0.3s;
 }
 
@@ -20,6 +23,6 @@
     font-size: 16px;
     line-height: 130%;
     color: var(--text-tertiary);
-    margin: 8px 12px 0px;
+    margin: 12px 0px 0px;
 
 }

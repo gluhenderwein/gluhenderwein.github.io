@@ -42,7 +42,7 @@ export default class Button extends Component {
     return (
       <div className="container">
         {this.props.href ? (
-          <a href={this.props.href}>
+          <a href={this.props.href} target="_blank" rel="noopener noreferrer">
             <button ref={this.buttonRef} className="button-creative">
               {buttonContent}
             </button>

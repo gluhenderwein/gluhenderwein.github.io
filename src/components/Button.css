@@ -36,7 +36,7 @@
   top: var(--y, 50%);
   width: 200px;
   height: 200px;
-  background: radial-gradient(circle, var(--text-tertiary) 10%, transparent 60%);
+  background: radial-gradient(circle, var(--bg-accent) 10%, transparent 70%);
   transform: translate(-50%, -50%) scale(0);
   transition: transform 0.4s ease;
   border-radius: 50%;

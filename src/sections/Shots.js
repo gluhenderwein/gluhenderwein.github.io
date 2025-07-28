@@ -15,43 +15,165 @@ import Shot from '../components/Shot';
 
 const useAnimatedRef = () => useInViewClass({ className: 'visible' });
 
+const shot = [
+    { src: '/assets/shot-1.png', title: '', description: 'HeadHunter: лендинг партнёрской программы' },
+    { src: '/assets/shot-2.png', title: '', description: 'Resume.co: концепция дашборда для удержания и возвращения пользователя' },
+    { src: '/assets/shot-3.png', title: '', description: 'Resume.co: концепция дашборда для удержания и возвращения пользователя' },
+    { src: '/assets/shot-6.png', title: '', description: 'VK: приложение для онлайн-записи на услуги' },
+    { src: '/assets/shot-7.png', title: '', description: 'VK: приложение для онлайн-записи на услуги' },
+    { src: '/assets/shot-8.png', title: '', description: 'VK: приложение для онлайн-записи на услуги' },
+    { src: '/assets/shot-9.png', title: '', description: 'Авито: переосмысление UI просмотра объявления для автора' },
+    { src: '/assets/shot-10.png', title: '', description: 'VK Реклама: интерактивный html-видео формат для рекламы товаров внутри видео' },
+    { src: '/assets/shot-4.png', title: '', description: 'HeadHunter и VK Реклама: примеры рекламных форматов' },
+    { src: '/assets/shot-15.png', title: '', description: 'VK People Hub: главная страница' },
+    { src: '/assets/shot-16.png', title: '', description: 'VK People Hub: профиль сотрудника' },
+    { src: '/assets/shot-17.png', title: '', description: 'VK People Hub: календарь' },
+    { src: '/assets/shot-11.png', title: '', description: 'МТС Smart Home: интерактивная презентация для сенсорных экранов' },
+    { src: '/assets/shot-12.png', title: '', description: 'МТС Smart Home: интерактивная презентация для сенсорных экранов' },
+    { src: '/assets/shot-13.png', title: '', description: 'МТС Smart Home: интерактивная презентация для сенсорных экранов' },
+];
 
-export default class Shots extends Component {
-    render() {
-        return (
-            <div>
-                <section className='case-navigation'>
-                    <a className='btn-back' href='/#portfolio'>
-                        <HugeiconsIcon
-                            icon={ArrowLeft02Icon}
-                            size={24}
-                            color=""
-                            strokeWidth={2}
-                        />
-                        назад
-                    </a>
-                    <ThemeToggle />
-                </section>
-                <section style={{paddingBottom:'0px'}}>
-                    <div className='shot-header'>
-                        <h1 style={{maxWidth:'800px'}}>шоты с разных проектов</h1>
-                    </div> 
-                </section>
+export default function Shots() {
+    const contentRef = useAnimatedRef();
+    const [open, setOpen] = React.useState(false);
+    const [lightboxIndex, setLightboxIndex] = React.useState(0);
+    const [lightboxSlides, setLightboxSlides] = React.useState([]);
+    const captionsRef = React.useRef(null);
 
-                <section>
-                    <div className='masonry'>
-                    <Shot src="https://images.unsplash.com/photo-1682687219356-e820ca126c92?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDF8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxfHx8ZW58MHx8fHx8" caption="Описание изображения" style={{ width: 'calc(100% / 3 - 18px)' }} />
-                    <Shot src="https://images.unsplash.com/photo-1752654976506-d74220924976?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwyM3x8fGVufDB8fHx8fA%3D%3D" caption="Описание изображения" />
-                    <Shot src="https://images.unsplash.com/photo-1750493189284-7ca9d3583f48?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwzNXx8fGVufDB8fHx8fA%3D%3D" caption="" />
-                    <Shot src="https://images.unsplash.com/photo-1752606402425-fa8ed3166a91?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw1Mnx8fGVufDB8fHx8fA%3D%3D" caption="" />
-                    <Shot src="https://images.unsplash.com/photo-1752772228600-3197cd9c343d?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxMTJ8fHxlbnwwfHx8fHw%3D" caption="Описание изображения" />
-                    <Shot src="https://images.unsplash.com/photo-1753012102486-e6fa2dd0558a?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw2OXx8fGVufDB8fHx8fA%3D%3D" caption="Описание изображения" />
-                    <Shot src="https://images.unsplash.com/photo-1751402059577-463e1c0b4490?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw5Nnx8fGVufDB8fHx8fA%3D%3D" caption="" />
-                    <Shot src="https://images.unsplash.com/photo-1682687218982-6c508299e107?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDF8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxMDF8fHxlbnwwfHx8fHw%3D" caption="" />
+    const handleClick = (index) => {
+        setLightboxSlides(shot);
+        setLightboxIndex(index);
+        setOpen(true);
+    };
+
+    return (
+        <div>
+            <section className='case-navigation'>
+                <a className='btn-back' href='/#portfolio'>
+                    <HugeiconsIcon icon={ArrowLeft02Icon} size={24} color="" strokeWidth={2} />
+                    назад
+                </a>
+                <ThemeToggle />
+            </section>
+
+            <section style={{ paddingBottom: '0px' }}>
+                <div className='shot-header'>
+                    <h1 style={{ maxWidth: '800px' }}>шоты с разных проектов</h1>
+                </div>
+            </section>
+
+            <section className='shot-list'>
+                <div className='shot-item'>
+                    <div className='shot-title'>
+                        <h3> HeadHunter: лендинг партнёрской программы </h3>
+                        <h3 style={{opacity:'60%'}} > 2025 </h3>
                     </div>
-                </section>
+                    <img className='shot-img' src='/assets/shot-1.png' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-1.png'))} />
+                </div>
 
-            </div>
-        )
-    }
+                <div className='shot-item'>
+                    <div className='shot-title'>
+                        <h3> Resume.co: концепция дашборда для удержания и возвращения пользователя </h3>
+                        <h3 style={{opacity:'60%'}} > 2025 </h3>
+                    </div>
+                    <img className='shot-img' src='/assets/shot-2.png' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-2.png'))} />
+                    <img className='shot-img' src='/assets/shot-3.png' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-3.png'))} />
+                </div>
+
+                <div className='shot-item'>
+                    <div className='shot-title'>
+                        <h3> VK: приложение для онлайн-записи на услуги </h3>
+                        <h3 style={{opacity:'60%'}} > 2024 </h3>
+                    </div>
+                    <img className='shot-img' src='/assets/shot-6.png' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-6.png'))} />
+                    <img className='shot-img' src='/assets/shot-7.png' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-7.png'))} />
+                    <img className='shot-img' src='/assets/shot-8.png' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-8.png'))} />
+                </div>
+
+                <div className='shot-item'>
+                    <div className='shot-title'>
+                        <h3> Авито: переосмысление UI просмотра объявления для автора </h3>
+                        <h3 style={{opacity:'60%'}} > 2024 </h3>
+                    </div>
+                    <img className='shot-img' src='/assets/shot-9.png' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-9.png'))} />
+                </div>
+
+                <div className='shot-item'>
+                    <div className='shot-title'>
+                        <h3> VK Реклама и HeadHunter: примеры рекламных форматов </h3>
+                        <h3 style={{opacity:'60%'}} > 2024 </h3>
+                    </div>
+                    <img className='shot-img' src='/assets/shot-4.png' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-4.png'))} />
+                </div>
+
+                <div className='shot-item'>
+                    <div className='shot-title'>
+                        <h3> VK Реклама: интерактивный html-видео формат для рекламы товаров внутри видео </h3>
+                        <h3 style={{opacity:'60%'}} > 2023 </h3>
+                    </div>
+                    <img className='shot-img' src='/assets/shot-10.png' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-10.png'))} />
+                </div>
+
+                <div className='shot-item'>
+                    <div className='shot-title'>
+                        <h3> VK People Hub: главная, профиль сотрудника и календарь </h3>
+                        <h3 style={{opacity:'60%'}} > 2021 </h3>
+                    </div>
+                    <img className='shot-img' src='/assets/shot-15.png' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-15.png'))} />
+                    <img className='shot-img' src='/assets/shot-16.png' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-16.png'))} />
+                    <img className='shot-img' src='/assets/shot-17.png' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-17.png'))} />
+                </div>
+
+                <div className='shot-item'>
+                    <div className='shot-title'>
+                        <h3> МТС Smart Home: интерактивная презентация для сенсорных экранов </h3>
+                        <h3 style={{opacity:'60%'}} > 2020 </h3>
+                    </div>
+                    <img className='shot-img' src='/assets/shot-11.png' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-11.png'))} />
+                    <img className='shot-img' src='/assets/shot-12.png' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-12.png'))} />
+                    <img className='shot-img' src='/assets/shot-13.png' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-13.png'))} />
+                </div>
+            </section>
+
+            <Lightbox
+                render={{
+                    iconPrev: () =>
+                        shot.length > 1
+                            ? <HugeiconsIcon icon={ArrowLeft02Icon} size={40} color="#fff" strokeWidth={1.5} />
+                            : null,
+                    iconNext: () =>
+                        shot.length > 1
+                            ? <HugeiconsIcon icon={ArrowRight02Icon} size={40} color="#fff" strokeWidth={1.5} />
+                            : null,
+                    iconClose: () => <HugeiconsIcon icon={Cancel01Icon} size={32} color="#fff" strokeWidth={1.5} />,
+                    iconZoomIn: () => null,
+                    iconZoomOut: () => null,
+                }}
+                open={open}
+                close={() => setOpen(false)}
+                slides={lightboxSlides}
+                index={lightboxIndex}
+                plugins={[Captions, Zoom]}
+                captions={{
+                    ref: captionsRef,
+                    hidden: false,
+                    descriptionTextAlign: "center",
+                    descriptionMaxLines: 3,
+                }}
+                styles={{
+                    slide: { padding: 0 },
+                }}
+                on={{
+                    click: () => {
+                        (captionsRef.current?.visible
+                            ? captionsRef.current.hide
+                            : captionsRef.current.show)?.();
+                    },
+                    view: ({ index }) => setLightboxIndex(index),
+                }}
+            />
+
+            <Contacts />
+        </div>
+    );
 }

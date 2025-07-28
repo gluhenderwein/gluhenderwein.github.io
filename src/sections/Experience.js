@@ -30,24 +30,24 @@ export default function Experience() {
           <h3 className='s-24'>cтарший продуктовый дизайнер</h3>
           <div className='list-item s-12'>
             <div className='list-item-i'>
-              <HugeiconsIcon className='icon' icon={ArrowRight04Icon} size={32} color="var(--icon-secondary)" strokeWidth={1.5} />
+              <HugeiconsIcon  icon={ArrowRight04Icon} size={32} color="var(--icon-secondary)" strokeWidth={1.5} />
             </div>
             <p className='p-2' style={{ color: 'var(--text-secondary)' }}>Сделал редизайн и подрастил метрики в некоторых разделах сервиса: выбор гео, настройки уведомлений, профиль работодателя</p>
           </div>
           <div className='list-item s-12'>
             <div className='list-item-i'>
-              <HugeiconsIcon className='icon' icon={ArrowRight04Icon} size={32} color="var(--icon-secondary)" strokeWidth={1.5} />
+              <HugeiconsIcon  icon={ArrowRight04Icon} size={32} color="var(--icon-secondary)" strokeWidth={1.5} />
             </div>
             <p className='p-2' style={{ color: 'var(--text-secondary)' }}>Проектировал новые сценарии и фичи для рекламного кабинета Clickme и работодательской вертикали</p>
           </div>
-          <div className='list-item s-24'>
+          <div className='list-item s-32'>
             <div className='list-item-i'>
-              <HugeiconsIcon className='icon' icon={ArrowRight04Icon} size={32} color="var(--icon-secondary)" strokeWidth={1.5} />
+              <HugeiconsIcon  icon={ArrowRight04Icon} size={32} color="var(--icon-secondary)" strokeWidth={1.5} />
             </div>
             <p className='p-2' style={{ color: 'var(--text-secondary)' }}>Сделал редизайн всех рекламных мест на hh</p>
           </div>
           <div className='callout'>
-            <HugeiconsIcon className='icon' icon={Award04Icon} size={28} color="var(--text-tertiary)" strokeWidth={1.8} />
+            <HugeiconsIcon  className='list-item-i' icon={Award04Icon} size={32} color="var(--text-tertiary)" strokeWidth={1.5} />
             <p className='p-2'>Увеличил CTR рекламных баннеров в поиске вакансий на 500%</p>
           </div>
         </div>
@@ -64,42 +64,42 @@ export default function Experience() {
           <h3 className='s-24'>cтарший продуктовый дизайнер</h3>
           <div className='list-item s-12'>
             <div className='list-item-i'>
-              <HugeiconsIcon className='icon' icon={ArrowRight04Icon} size={32} color="var(--icon-secondary)" strokeWidth={1.5} />
+              <HugeiconsIcon  icon={ArrowRight04Icon} size={32} color="var(--icon-secondary)" strokeWidth={1.5} />
             </div>
             <p className='p-2' style={{ color: 'var(--text-secondary)' }}>Совместно с командой дизайнеров проектировал с нуля новый кабинет VK Рекламы и самостоятельно работал над отдельными направлениями внутри него — центр коммерции, лид-формы, опросы, аудитории</p>
           </div>
           <div className='list-item s-12'>
             <div className='list-item-i'>
-              <HugeiconsIcon className='icon' icon={ArrowRight04Icon} size={32} color="var(--icon-secondary)" strokeWidth={1.5} />
+              <HugeiconsIcon  icon={ArrowRight04Icon} size={32} color="var(--icon-secondary)" strokeWidth={1.5} />
             </div>
             <p className='p-2' style={{ color: 'var(--text-secondary)' }}>Активно участвовал в развитии дизайн-системы VKUI</p>
           </div>
           <div className='list-item s-12'>
             <div className='list-item-i'>
-              <HugeiconsIcon className='icon' icon={ArrowRight04Icon} size={32} color="var(--icon-secondary)" strokeWidth={1.5} />
+              <HugeiconsIcon  icon={ArrowRight04Icon} size={32} color="var(--icon-secondary)" strokeWidth={1.5} />
             </div>
             <p className='p-2' style={{ color: 'var(--text-secondary)' }}>Взял на себя стандартизацию и систематизацию паттернов и подходов к дизайну внутри продукта, писал гайды и вёл библиотеку продуктовых компонентов</p>
           </div>
           <div className='list-item s-12'>
             <div className='list-item-i'>
-              <HugeiconsIcon className='icon' icon={ArrowRight04Icon} size={32} color="var(--icon-secondary)" strokeWidth={1.5} />
+              <HugeiconsIcon  icon={ArrowRight04Icon} size={32} color="var(--icon-secondary)" strokeWidth={1.5} />
             </div>
             <p className='p-2' style={{ color: 'var(--text-secondary)' }}>Внедрил несколько новых интерактивных рекламных форматов для e-comm и спроектировал полностью адаптивный рекламный формат</p>
           </div>
           <div className='list-item s-12'>
             <div className='list-item-i'>
-              <HugeiconsIcon className='icon' icon={ArrowRight04Icon} size={32} color="var(--icon-secondary)" strokeWidth={1.5} />
+              <HugeiconsIcon  icon={ArrowRight04Icon} size={32} color="var(--icon-secondary)" strokeWidth={1.5} />
             </div>
             <p className='p-2' style={{ color: 'var(--text-secondary)' }}>Участвовал в найме и менторил новых дизайнеров</p>
           </div>
-          <div className='list-item s-24'>
+          <div className='list-item s-32'>
             <div className='list-item-i'>
-              <HugeiconsIcon className='icon' icon={ArrowRight04Icon} size={32} color="var(--icon-secondary)" strokeWidth={1.5} />
+              <HugeiconsIcon  icon={ArrowRight04Icon} size={32} color="var(--icon-secondary)" strokeWidth={1.5} />
             </div>
             <p className='p-2' style={{ color: 'var(--text-secondary)' }}>Проводил ревью дизайн-решений в команде</p>
           </div>
           <div className='callout'>
-            <HugeiconsIcon className='icon' icon={Award04Icon} size={28} color="var(--text-tertiary)" strokeWidth={1.8} />
+            <HugeiconsIcon  className='list-item-i' icon={Award04Icon} size={32} color="var(--text-tertiary)" strokeWidth={1.5} />
             <p className='p-2'>Спроектировал дизайн-систему и сделал редизайн всех рекламных форматов рекламной сети VK</p>
           </div>
         </div>
@@ -119,28 +119,28 @@ export default function Experience() {
 
           <div className='list-item s-12'>
             <div className='list-item-i'>
-              <HugeiconsIcon className='icon' icon={ArrowRight04Icon} size={32} color="var(--icon-secondary)" strokeWidth={1.5} />
+              <HugeiconsIcon  icon={ArrowRight04Icon} size={32} color="var(--icon-secondary)" strokeWidth={1.5} />
             </div>
             <p className='p-2' style={{ color: 'var(--text-secondary)' }}>Заложил первую кнопку и больше года был единственным дизайнером в VK People Hub (платформа для повышения вовлеченности и эффективности персонала)</p>
           </div>
 
           <div className='list-item s-12'>
             <div className='list-item-i'>
-              <HugeiconsIcon className='icon' icon={ArrowRight04Icon} size={32} color="var(--icon-secondary)" strokeWidth={1.5} />
+              <HugeiconsIcon  icon={ArrowRight04Icon} size={32} color="var(--icon-secondary)" strokeWidth={1.5} />
             </div>
             <p className='p-2' style={{ color: 'var(--text-secondary)' }}>Совместно с ещё одним дизайнером проектировал корпоративный портал для Лукойла</p>
           </div>
 
           <div className='list-item s-12'>
             <div className='list-item-i'>
-              <HugeiconsIcon className='icon' icon={ArrowRight04Icon} size={32} color="var(--icon-secondary)" strokeWidth={1.5} />
+              <HugeiconsIcon  icon={ArrowRight04Icon} size={32} color="var(--icon-secondary)" strokeWidth={1.5} />
             </div>
             <p className='p-2' style={{ color: 'var(--text-secondary)' }}>Спроектировал интерактивную презентацию для МТС Smart Home</p>
           </div>
 
           <div className='list-item'>
             <div className='list-item-i'>
-              <HugeiconsIcon className='icon' icon={ArrowRight04Icon} size={32} color="var(--icon-secondary)" strokeWidth={1.5} />
+              <HugeiconsIcon  icon={ArrowRight04Icon} size={32} color="var(--icon-secondary)" strokeWidth={1.5} />
             </div>
             <p className='p-2' style={{ color: 'var(--text-secondary)' }}>Создал пресейловую концепцию и презентацию корпоративного портала для Минкомсвязи (цифровое рабочее место сотрудника)</p>
           </div>
