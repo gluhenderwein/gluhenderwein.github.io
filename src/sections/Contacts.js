@@ -36,7 +36,7 @@ export default function Contacts() {
                             />
                         </a>
 
-                        <a className='link-circle' href='' target='_blanc'>
+                        <a className='link-circle' href='' target='_blanc' style={{display:'none'}}>
                             <svg
                                 className="link-c-image"
                                 viewBox="0 0 64 64"
