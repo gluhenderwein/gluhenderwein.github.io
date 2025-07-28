@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom';
 import '../App.css'
 import './Case.css'
 import '../components/EmblaCarousel.css'
@@ -81,7 +82,7 @@ export default function Case3() {
     return (
         <>
             <section className='case-navigation'>
-                <a className='btn-back' href='/#portfolio'>
+                <Link to='/' className='btn-back'>
                     <HugeiconsIcon
                         icon={ArrowLeft02Icon}
                         size={24}
@@ -89,7 +90,7 @@ export default function Case3() {
                         strokeWidth={2}
                     />
                     назад
-                </a>
+                </Link>
                 <ThemeToggle />
             </section>
 
@@ -215,7 +216,7 @@ export default function Case3() {
                     <div ref={content7Ref} className='case-content fade-in'>
                         <CaseH2>запуск рекламы</CaseH2>
                         <div className='case-par'>
-                            
+
                             <CaseP>
                                 Пользователь может запустить рекламную кампанию прямо из каталога или из раздела кампаний. Можно выбрать тип кампании (привлечение новых клиентов или ретаргетинг), а также установить целевое действие, чтобы алгоритмы рекламы отдавали предпочтение людям, которые с большей вероятностью добавят товар в корзину или купят.
                             </CaseP>

@@ -40,7 +40,9 @@ function Navbar() {
 
   const handleAnchorClick = useCallback((e) => {
     e.preventDefault();
-    const href = e.currentTarget.getAttribute("href")?.slice(1);
+    const href = Object.keys(refs).find((key) =>
+      e.currentTarget.textContent?.toLowerCase().includes(labels[key])
+    );
     const targetRef = refs[href];
 
     if (targetRef?.current) {
@@ -52,7 +54,6 @@ function Navbar() {
         behavior: "smooth"
       });
 
-      window.history.pushState(null, '', `#${href}`);
       setActiveSection(href);
     }
   }, []);
@@ -130,7 +131,7 @@ function Navbar() {
           {Object.entries(refs).map(([key, ref]) => (
             <a
               key={key}
-              href={`#${key}`}
+              href="#"
               onClick={handleAnchorClick}
               className={`nav-link ${activeSection === key ? "active" : ""}`}
             >

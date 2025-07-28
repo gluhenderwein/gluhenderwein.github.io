@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom';
 import '../App.css'
 import './Case.css'
 import '../components/EmblaCarousel.css'
@@ -75,7 +76,7 @@ export default function Case2() {
     return (
         <>
             <section className='case-navigation'>
-                <a className='btn-back' href='/#portfolio'>
+                <Link to='/' className='btn-back'>
                     <HugeiconsIcon
                         icon={ArrowLeft02Icon}
                         size={24}
@@ -83,7 +84,7 @@ export default function Case2() {
                         strokeWidth={2}
                     />
                     назад
-                </a>
+                </Link>
                 <ThemeToggle />
             </section>
 

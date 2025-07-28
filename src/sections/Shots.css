@@ -12,6 +12,7 @@
 .shot-item {
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
     gap: 32px;
     padding: 32px;
     color: #fff;
@@ -28,8 +29,11 @@
 
 .shot-img {
     width: 100%;
+    height: auto;
+    object-fit: cover;
     display: block;
     cursor: pointer;
+    box-sizing: content-box;
 }
 
 .masonry {

@@ -21,9 +21,17 @@ export default function Lanyard({ position = [0, 0, 30], gravity = [0, -40, 0], 
     const [key, setKey] = useState(0);
 
     useEffect(() => {
-        const handleResize = () => setKey(prev => prev + 1);
+        const handleResize = () => {
+            if (window.innerWidth >= 1079) {
+                setKey(prev => prev + 1);
+            }
+        };
+
         window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
     }, []);
 
     return (
