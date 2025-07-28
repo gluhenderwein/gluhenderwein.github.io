@@ -19,7 +19,7 @@ export default function Contacts() {
                     <h3 className='s-40' style={{ color: 'var(--text-tertiary' }}> свяжитесь со мной: </h3>
 
                     <div className='con-footer'>
-                        <a className='link-circle'>
+                        <a className='link-circle' href='https://t.me/gluhenwein' target='_blanc'>
                             <svg
                                 className="link-c-image"
                                 viewBox="0 0 64 64"
@@ -36,7 +36,7 @@ export default function Contacts() {
                             />
                         </a>
 
-                        <a className='link-circle'>
+                        <a className='link-circle' href='' target='_blanc'>
                             <svg
                                 className="link-c-image"
                                 viewBox="0 0 64 64"
