@@ -33,15 +33,15 @@ const easeInOutCubic = (x) =>
   x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
 
 const ProfileCardComponent = ({
-  avatarUrl = "../assets/me.png",
-  iconUrl = "<Placeholder for icon URL>",
+  avatarUrl = "./assets/me.png",
+  iconUrl='./assets/emo.png',
   grainUrl = "<Placeholder for grain URL>",
   behindGradient,
   innerGradient,
   showBehindGradient = true,
   className = "",
   enableTilt = true,
-  miniAvatarUrl = "../assets/telegram.png",
+  miniAvatarUrl = "./assets/telegram.png",
   name = "иван воробьёв",
   title = "senior product designer",
   handle = "gluhenwein",

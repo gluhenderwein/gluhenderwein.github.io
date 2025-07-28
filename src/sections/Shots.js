@@ -15,21 +15,21 @@ import "yet-another-react-lightbox/plugins/captions.css";
 const useAnimatedRef = () => useInViewClass({ className: 'visible' });
 
 const shot = [
-    { src: '/assets/shot-1.png', title: '', description: 'HeadHunter: лендинг партнёрской программы' },
-    { src: '/assets/shot-2.png', title: '', description: 'Resume.co: концепция дашборда для удержания и возвращения пользователя' },
-    { src: '/assets/shot-3.png', title: '', description: 'Resume.co: концепция дашборда для удержания и возвращения пользователя' },
-    { src: '/assets/shot-6.png', title: '', description: 'VK: приложение для онлайн-записи на услуги' },
-    { src: '/assets/shot-7.png', title: '', description: 'VK: приложение для онлайн-записи на услуги' },
-    { src: '/assets/shot-8.png', title: '', description: 'VK: приложение для онлайн-записи на услуги' },
-    { src: '/assets/shot-9.png', title: '', description: 'Авито: переосмысление UI просмотра объявления для автора' },
-    { src: '/assets/shot-10.png', title: '', description: 'VK Реклама: интерактивный html-видео формат для рекламы товаров внутри видео' },
-    { src: '/assets/shot-4.png', title: '', description: 'HeadHunter и VK Реклама: примеры рекламных форматов' },
-    { src: '/assets/shot-15.png', title: '', description: 'VK People Hub: главная страница' },
-    { src: '/assets/shot-16.png', title: '', description: 'VK People Hub: профиль сотрудника' },
-    { src: '/assets/shot-17.png', title: '', description: 'VK People Hub: календарь' },
-    { src: '/assets/shot-11.png', title: '', description: 'МТС Smart Home: интерактивная презентация для сенсорных экранов' },
-    { src: '/assets/shot-12.png', title: '', description: 'МТС Smart Home: интерактивная презентация для сенсорных экранов' },
-    { src: '/assets/shot-13.png', title: '', description: 'МТС Smart Home: интерактивная презентация для сенсорных экранов' },
+    { src: './assets/shot-1.png', title: '', description: 'HeadHunter: лендинг партнёрской программы' },
+    { src: './assets/shot-2.png', title: '', description: 'Resume.co: концепция дашборда для удержания и возвращения пользователя' },
+    { src: './assets/shot-3.png', title: '', description: 'Resume.co: концепция дашборда для удержания и возвращения пользователя' },
+    { src: './assets/shot-6.png', title: '', description: 'VK: приложение для онлайн-записи на услуги' },
+    { src: './assets/shot-7.png', title: '', description: 'VK: приложение для онлайн-записи на услуги' },
+    { src: './assets/shot-8.png', title: '', description: 'VK: приложение для онлайн-записи на услуги' },
+    { src: './assets/shot-9.png', title: '', description: 'Авито: переосмысление UI просмотра объявления для автора' },
+    { src: './assets/shot-10.png', title: '', description: 'VK Реклама: интерактивный html-видео формат для рекламы товаров внутри видео' },
+    { src: './assets/shot-4.png', title: '', description: 'HeadHunter и VK Реклама: примеры рекламных форматов' },
+    { src: './assets/shot-15.png', title: '', description: 'VK People Hub: главная страница' },
+    { src: './assets/shot-16.png', title: '', description: 'VK People Hub: профиль сотрудника' },
+    { src: './assets/shot-17.png', title: '', description: 'VK People Hub: календарь' },
+    { src: './assets/shot-11.png', title: '', description: 'МТС Smart Home: интерактивная презентация для сенсорных экранов' },
+    { src: './assets/shot-12.png', title: '', description: 'МТС Smart Home: интерактивная презентация для сенсорных экранов' },
+    { src: './assets/shot-13.png', title: '', description: 'МТС Smart Home: интерактивная презентация для сенсорных экранов' },
 ];
 
 export default function Shots() {
@@ -67,7 +67,7 @@ export default function Shots() {
                         <h3> HeadHunter: лендинг партнёрской программы </h3>
                         <h3 style={{opacity:'60%'}} > 2025 </h3>
                     </div>
-                    <img className='shot-img' src='/assets/shot-1.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-1.png'))} />
+                    <img className='shot-img' src='./assets/shot-1.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === './assets/shot-1.png'))} />
                 </div>
 
                 <div className='shot-item'>
@@ -75,8 +75,8 @@ export default function Shots() {
                         <h3> Resume.co: концепция дашборда для удержания и возвращения пользователя </h3>
                         <h3 style={{opacity:'60%'}} > 2025 </h3>
                     </div>
-                    <img className='shot-img' src='/assets/shot-2.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-2.png'))} />
-                    <img className='shot-img' src='/assets/shot-3.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-3.png'))} />
+                    <img className='shot-img' src='./assets/shot-2.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === './assets/shot-2.png'))} />
+                    <img className='shot-img' src='./assets/shot-3.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === './assets/shot-3.png'))} />
                 </div>
 
                 <div className='shot-item'>
@@ -84,9 +84,9 @@ export default function Shots() {
                         <h3> VK: приложение для онлайн-записи на услуги </h3>
                         <h3 style={{opacity:'60%'}} > 2024 </h3>
                     </div>
-                    <img className='shot-img' src='/assets/shot-6.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-6.png'))} />
-                    <img className='shot-img' src='/assets/shot-7.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-7.png'))} />
-                    <img className='shot-img' src='/assets/shot-8.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-8.png'))} />
+                    <img className='shot-img' src='./assets/shot-6.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === './assets/shot-6.png'))} />
+                    <img className='shot-img' src='./assets/shot-7.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === './assets/shot-7.png'))} />
+                    <img className='shot-img' src='./assets/shot-8.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === './assets/shot-8.png'))} />
                 </div>
 
                 <div className='shot-item'>
@@ -94,7 +94,7 @@ export default function Shots() {
                         <h3> Авито: переосмысление UI просмотра объявления для автора </h3>
                         <h3 style={{opacity:'60%'}} > 2024 </h3>
                     </div>
-                    <img className='shot-img' src='/assets/shot-9.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-9.png'))} />
+                    <img className='shot-img' src='./assets/shot-9.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === './assets/shot-9.png'))} />
                 </div>
 
                 <div className='shot-item'>
@@ -102,7 +102,7 @@ export default function Shots() {
                         <h3> VK Реклама и HeadHunter: примеры рекламных форматов </h3>
                         <h3 style={{opacity:'60%'}} > 2024 </h3>
                     </div>
-                    <img className='shot-img' src='/assets/shot-4.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-4.png'))} />
+                    <img className='shot-img' src='./assets/shot-4.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === './assets/shot-4.png'))} />
                 </div>
 
                 <div className='shot-item'>
@@ -110,7 +110,7 @@ export default function Shots() {
                         <h3> VK Реклама: интерактивный html-видео формат для рекламы товаров внутри видео </h3>
                         <h3 style={{opacity:'60%'}} > 2023 </h3>
                     </div>
-                    <img className='shot-img' src='/assets/shot-10.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-10.png'))} />
+                    <img className='shot-img' src='./assets/shot-10.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === './assets/shot-10.png'))} />
                 </div>
 
                 <div className='shot-item'>
@@ -118,9 +118,9 @@ export default function Shots() {
                         <h3> VK People Hub: главная, профиль сотрудника и календарь </h3>
                         <h3 style={{opacity:'60%'}} > 2021 </h3>
                     </div>
-                    <img className='shot-img' src='/assets/shot-15.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-15.png'))} />
-                    <img className='shot-img' src='/assets/shot-16.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-16.png'))} />
-                    <img className='shot-img' src='/assets/shot-17.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-17.png'))} />
+                    <img className='shot-img' src='./assets/shot-15.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === './assets/shot-15.png'))} />
+                    <img className='shot-img' src='./assets/shot-16.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === './assets/shot-16.png'))} />
+                    <img className='shot-img' src='./assets/shot-17.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === './assets/shot-17.png'))} />
                 </div>
 
                 <div className='shot-item'>
@@ -128,9 +128,9 @@ export default function Shots() {
                         <h3> МТС Smart Home: интерактивная презентация для сенсорных экранов </h3>
                         <h3 style={{opacity:'60%'}} > 2020 </h3>
                     </div>
-                    <img className='shot-img' src='/assets/shot-11.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-11.png'))} />
-                    <img className='shot-img' src='/assets/shot-12.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-12.png'))} />
-                    <img className='shot-img' src='/assets/shot-13.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === '/assets/shot-13.png'))} />
+                    <img className='shot-img' src='./assets/shot-11.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === './assets/shot-11.png'))} />
+                    <img className='shot-img' src='./assets/shot-12.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === './assets/shot-12.png'))} />
+                    <img className='shot-img' src='./assets/shot-13.png' alt='' onClick={() => handleClick(shot.findIndex(s => s.src === './assets/shot-13.png'))} />
                 </div>
             </section>
 

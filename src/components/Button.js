@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import './Button.css'
 import { HugeiconsIcon } from '@hugeicons/react';
-import {  Link02Icon } from '@hugeicons/core-free-icons';
 
 export default class Button extends Component {
   constructor(props) {

@@ -33,15 +33,15 @@ const CaseListItem = ({ children, style }) => (
 );
 
 const slides = [
-    { src: '/assets/case-3-1.png', title: '', description: 'Форма создания каталога' },
-    { src: '/assets/case-3-2.png', title: '', description: 'Вкладка товаров' },
-    { src: '/assets/case-3-3.png', title: '', description: 'Превью товара' },
-    { src: '/assets/case-3-4.png', title: '', description: 'Создание группы товаров по динамическим фильтрам' },
-    { src: '/assets/case-3-5.png', title: '', description: 'Статистика по событиям' },
-    { src: '/assets/case-3-6.png', title: '', description: 'Настройки рекламной кампании' },
-    { src: '/assets/case-3-7.png', title: '', description: 'Настройка группы объявлений' },
-    { src: '/assets/case-3-9.png', title: '', description: 'Расширенный режим объявления' },
-    { src: '/assets/case-3-8.png', title: '', description: 'Упрощённый режим' },
+    { src: './assets/case-3-1.png', title: '', description: 'Форма создания каталога' },
+    { src: './assets/case-3-2.png', title: '', description: 'Вкладка товаров' },
+    { src: './assets/case-3-3.png', title: '', description: 'Превью товара' },
+    { src: './assets/case-3-4.png', title: '', description: 'Создание группы товаров по динамическим фильтрам' },
+    { src: './assets/case-3-5.png', title: '', description: 'Статистика по событиям' },
+    { src: './assets/case-3-6.png', title: '', description: 'Настройки рекламной кампании' },
+    { src: './assets/case-3-7.png', title: '', description: 'Настройка группы объявлений' },
+    { src: './assets/case-3-9.png', title: '', description: 'Расширенный режим объявления' },
+    { src: './assets/case-3-8.png', title: '', description: 'Упрощённый режим' },
 
 
 
@@ -97,7 +97,7 @@ export default function Case3() {
 
                 <SpotlightCard className="case-head fade-in" ref={headerRef}>
                     <div className='head-content'>
-                        <img className='case-head-img' src='/assets/vk.jpg' alt='' />
+                        <img className='case-head-img' src='./assets/vk.jpg' alt='' />
                         <h1>центр<br></br>коммерции</h1>
                     </div>
                 </SpotlightCard>

@@ -22,7 +22,7 @@ export default function Experience() {
       <div className='card-exp fade-in card' ref={cardRefs[0]}>
         {/* Первый блок */}
         <div className='exp-col-l'>
-          <img className='avatar s-24' src='/assets/hh.jpg' alt='' />
+          <img className='avatar s-24' src='./assets/hh.jpg' alt='' />
           <h3 className='s-8'>HeadHunter</h3>
           <p className='p-2' style={{ color: 'var(--text-tertiary)' }}>9 месяцев<br />июль 2024 — март 2025</p>
         </div>
@@ -56,7 +56,7 @@ export default function Experience() {
       <div className='card-exp fade-in card' ref={cardRefs[1]}>
         {/* Второй блок */}
         <div className='exp-col-l'>
-          <img className='avatar s-24' src='/assets/vk.jpg' alt='' />
+          <img className='avatar s-24' src='./assets/vk.jpg' alt='' />
           <h3 className='s-8'>VK Реклама</h3>
           <p className='p-2' style={{ color: 'var(--text-tertiary)' }}>3 года 2 месяца<br />май 2021 — июнь 2024</p>
         </div>
@@ -108,7 +108,7 @@ export default function Experience() {
       <div className='card-exp fade-in card' ref={cardRefs[2]}>
         {/* Третий блок */}
         <div className='exp-col-l'>
-          <img className='avatar s-24' src='/assets/mg.jpg' alt='' />
+          <img className='avatar s-24' src='./assets/mg.jpg' alt='' />
           <h3 className='s-8'>IT MegaStar</h3>
           <p className='p-2' style={{ color: 'var(--text-tertiary)' }}>1 год 7 месяцев<br />ноябрь 2019 — май 2021</p>
         </div>

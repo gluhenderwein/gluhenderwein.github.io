@@ -2,8 +2,6 @@ import React from 'react'
 import './Contacts.css'
 import ProfileCard from '../components/ProfileCard'
 import CircularText from '../components/CircularText';
-import { ReactComponent as TgIcon } from '../assets/tg.svg';
-import { ReactComponent as InIcon } from '../assets/in.svg';
 import { contactsRef } from './Navbar';
 import { useInViewClass } from '../components/useInView';
 
@@ -62,9 +60,9 @@ export default function Contacts() {
                     handle="gluhenwein"
                     status="online"
                     contactText="написать"
-                    avatarUrl="/assets/me.png"
-                    iconUrl='/assets/emo.png'
-                    miniAvatarUrl='/assets/telegram.png'
+                    avatarUrl="./assets/me.png"
+                    iconUrl={`${process.env.PUBLIC_URL}/assets/emo.png`} 
+                    miniAvatarUrl='./assets/telegram.png'
                     grainUrl='https://i.pinimg.com/736x/12/af/2b/12af2b8954eb67257975dbddcd793fdd.jpg'
                     innerGradient=''
                     showUserInfo={true}

@@ -36,13 +36,13 @@ const CaseListItem = ({ children, style }) => (
 );
 
 const slides = [
-    { src: '/assets/case-2-1.png', title: '', description: '' },
-    { src: '/assets/case-2-2.png', title: '', description: 'Шаг 1: выбор вакансий' },
-    { src: '/assets/case-2-3.png', title: '', description: 'Шаг 2: настройка кампаний' },
-    { src: '/assets/case-2-4.png', title: '', description: 'Массовые изменения' },
-    { src: '/assets/case-2-5.png', title: '', description: 'Дополнительные состояния' },
-    { src: '/assets/case-2-6.png', title: '', description: 'Мобильная версия' },
-    { src: '/assets/case-2-7.png', title: '', description: 'Предложение пополнить баланс на недостающую сумму' },
+    { src: './assets/case-2-1.png', title: '', description: '' },
+    { src: './assets/case-2-2.png', title: '', description: 'Шаг 1: выбор вакансий' },
+    { src: './assets/case-2-3.png', title: '', description: 'Шаг 2: настройка кампаний' },
+    { src: './assets/case-2-4.png', title: '', description: 'Массовые изменения' },
+    { src: './assets/case-2-5.png', title: '', description: 'Дополнительные состояния' },
+    { src: './assets/case-2-6.png', title: '', description: 'Мобильная версия' },
+    { src: './assets/case-2-7.png', title: '', description: 'Предложение пополнить баланс на недостающую сумму' },
 
 ];
 
@@ -90,7 +90,7 @@ export default function Case2() {
             <div className='case-overflow'>
                 <SpotlightCard className="case-head fade-in" ref={headerRef}>
                     <div className='head-content'>
-                        <img className='case-head-img' src='/assets/hh.jpg' alt='' />
+                        <img className='case-head-img' src='./assets/hh.jpg' alt='' />
                         <h1>массовое продвижение вакансий</h1>
                     </div>
                 </SpotlightCard>

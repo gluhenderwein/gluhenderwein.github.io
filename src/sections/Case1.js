@@ -33,14 +33,14 @@ const CaseListItem = ({ children, style }) => (
 );
 
 const slides = [
-  { src: '/assets/case-1-old-1.png', title: '', description: 'Старые уведомления соискателя' },
-  { src: '/assets/case-1-old-2.png', title: '', description: 'Старые уведомления работодателя' }
+  { src: './assets/case-1-old-1.png', title: '', description: 'Старые уведомления соискателя' },
+  { src: './assets/case-1-old-2.png', title: '', description: 'Старые уведомления работодателя' }
 ];
 
 const slides2 = [
-  { src: '/assets/case-1-1.png', title: '', description: 'Соискатель' },
-  { src: '/assets/case-1-2.png', title: '', description: 'Работодатель' },
-  { src: '/assets/case-1-3.png', title: '', description: 'Настройки уведомлений по отдельным вакансиям' }
+  { src: './assets/case-1-1.png', title: '', description: 'Соискатель' },
+  { src: './assets/case-1-2.png', title: '', description: 'Работодатель' },
+  { src: './assets/case-1-3.png', title: '', description: 'Настройки уведомлений по отдельным вакансиям' }
 ];
 
 
@@ -76,7 +76,7 @@ export default function Case1() {
 
       <SpotlightCard className="case-head fade-in" ref={headerRef}>
                           <div className='head-content'>
-                              <img className='case-head-img' src='/assets/hh.jpg' alt='' />
+                              <img className='case-head-img' src='./assets/hh.jpg' alt='' />
                               <h1>редизайн настроек уведомлений</h1>
                           </div>
                       </SpotlightCard>

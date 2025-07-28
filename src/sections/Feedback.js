@@ -24,7 +24,7 @@ export default function Feedback() {
 
           <SpotlightCard className="card-feedback fade-in card" ref={cardRefs[0]}>
             <div className='user-cell'>
-              <img className='avatar' src='/assets/r-1.jpg' alt='' />
+              <img className='avatar' src='./assets/r-1.jpg' alt='' />
               <div>
                 <h4 >анна краснова</h4>
                 <p className='p-3' style={{ color: 'var(--text-tertiary)' }}>менеджер продукта, HeadHunter</p>
@@ -39,7 +39,7 @@ export default function Feedback() {
 
           <SpotlightCard className="card-feedback fade-in card" ref={cardRefs[1]}>
             <div className='user-cell'>
-              <img className='avatar' src='/assets/r-3.jpg' alt='' />
+              <img className='avatar' src='./assets/r-3.jpg' alt='' />
               <div>
                 <h4 >анна назарова</h4>
                 <p className='p-3' style={{ color: 'var(--text-tertiary)' }}>менеджер продукта, HeadHunter</p>
@@ -59,7 +59,7 @@ export default function Feedback() {
         <div className='col-feedback'>
           <SpotlightCard className="card-feedback fade-in card" ref={cardRefs[2]}>
             <div className='user-cell'>
-              <img className='avatar' src='/assets/r-2.jpg' alt='' />
+              <img className='avatar' src='./assets/r-2.jpg' alt='' />
               <div>
                 <h4 >халид джавадов</h4>
                 <p className='p-3' style={{ color: 'var(--text-tertiary)' }}>менеджер продукта, HeadHunter</p>
@@ -81,7 +81,7 @@ export default function Feedback() {
 
           <SpotlightCard className="card-feedback fade-in card" ref={cardRefs[3]}>
             <div className='user-cell'>
-              <img className='avatar' src='/assets/r-4.jpg' alt='' />
+              <img className='avatar' src='./assets/r-4.jpg' alt='' />
               <div>
                 <h4 >леонид дугенец</h4>
                 <p className='p-3' style={{ color: 'var(--text-tertiary)' }}>фронтенд-разработчик, HeadHunter</p>

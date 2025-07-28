@@ -10,38 +10,38 @@ const handleNavigateToCase = () => {
 const cardsData = [
   {
     linkTo: '/case-1',
-    imageSrc: "/assets/cover-1.jpg",
-    avatarSrc: "/assets/h-cover-1.svg",
+    imageSrc: "./assets/cover-1.jpg",
+    avatarSrc: "./assets/h-cover-1.svg",
     overlayContent: <p className="tilted-card-demo-text"> настройка <br></br>уведомлений </p>
   },
   {
     linkTo: '/case-2',
-    imageSrc: "/assets/cover-2.jpg",
-    avatarSrc: "/assets/h-cover-2.svg",
+    imageSrc: "./assets/cover-2.jpg",
+    avatarSrc: "./assets/h-cover-2.svg",
     overlayContent: <p className="tilted-card-demo-text"> массовое <br></br>продвижение </p>
   },
   {
     linkTo: '/case-3',
-    imageSrc: "/assets/cover-3.jpg",
-    avatarSrc: "/assets/h-cover-3.svg",
+    imageSrc: "./assets/cover-3.jpg",
+    avatarSrc: "./assets/h-cover-3.svg",
     overlayContent: <p className="tilted-card-demo-text"> центр <br></br>коммерции </p>
   },
   {
     linkTo: '/case-4',
-    imageSrc: "/assets/cover-4.jpg",
-    avatarSrc: "/assets/h-cover-4.svg",
+    imageSrc: "./assets/cover-4.jpg",
+    avatarSrc: "./assets/h-cover-4.svg",
     overlayContent: <p className="tilted-card-demo-text"> лендинги <br></br>в лид-формах </p>
   },
   {
     linkTo: '/case-5',
-    imageSrc: "/assets/cover-5.jpg",
-    avatarSrc: "/assets/h-cover-5.svg",
+    imageSrc: "./assets/cover-5.jpg",
+    avatarSrc: "./assets/h-cover-5.svg",
     overlayContent: <p className="tilted-card-demo-text"> конструктор <br></br>опросов </p>
   },
   {
     linkTo: '/shots',
-    imageSrc: "/assets/cover-6.jpg",
-    avatarSrc: "/assets/h-cover-6.svg",
+    imageSrc: "./assets/cover-6.jpg",
+    avatarSrc: "./assets/h-cover-6.svg",
     overlayContent: <p className="tilted-card-demo-text"> шоты из разных проектов </p>
   }
 ];
