@@ -13,6 +13,15 @@ const contactsRef = React.createRef();
 function Navbar() {
   const navbarRef = useRef(null);
   const [activeSection, setActiveSection] = useState("about");
+  const [menuScrollLocked, setMenuScrollLocked] = useState(false);
+
+  const navItemRefs = {
+    about: useRef(null),
+    portfolio: useRef(null),
+    experience: useRef(null),
+    feedback: useRef(null),
+    contacts: useRef(null),
+  };
 
   const refs = {
     about: aboutRef,
@@ -54,9 +63,28 @@ function Navbar() {
         behavior: "smooth"
       });
 
+      setMenuScrollLocked(true);
+      setTimeout(() => setMenuScrollLocked(false), 700);
       setActiveSection(href);
     }
   }, []);
+
+  useEffect(() => {
+    if (menuScrollLocked) return;
+
+    const activeRef = navItemRefs[activeSection];
+    const container = document.querySelector('.menu-wrapper');
+
+    if (activeRef?.current && container) {
+      const el = activeRef.current;
+      const elCenter = el.offsetLeft - container.offsetWidth / 2 + el.offsetWidth / 2;
+
+      container.scrollTo({
+        left: elCenter,
+        behavior: 'smooth'
+      });
+    }
+  }, [activeSection, menuScrollLocked]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -131,6 +159,7 @@ function Navbar() {
           {Object.entries(refs).map(([key, ref]) => (
             <a
               key={key}
+              ref={navItemRefs[key]}
               href="#"
               onClick={handleAnchorClick}
               className={`nav-link ${activeSection === key ? "active" : ""}`}
