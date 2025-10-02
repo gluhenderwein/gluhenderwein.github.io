@@ -1,19 +1,19 @@
 {
   "files": {
-    "main.css": "/static/css/main.a0ccc04c.css",
-    "main.js": "/static/js/main.aec0af0b.js",
+    "main.css": "/static/css/main.c62a4319.css",
+    "main.js": "/static/js/main.2098ae3b.js",
     "static/js/511.1b95af2a.chunk.js": "/static/js/511.1b95af2a.chunk.js",
     "static/media/card.glb": "/static/media/card.a5957935f4ea085751a7.glb",
     "static/media/lanyard-light.png": "/static/media/lanyard-light.dc6fb20a7c9fb69f5bb6.png",
     "static/media/lanyard-dark.png": "/static/media/lanyard-dark.ecf6c7105ff128409023.png",
     "index.html": "/index.html",
     "static/media/logo.svg": "/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
-    "main.a0ccc04c.css.map": "/static/css/main.a0ccc04c.css.map",
-    "main.aec0af0b.js.map": "/static/js/main.aec0af0b.js.map",
+    "main.c62a4319.css.map": "/static/css/main.c62a4319.css.map",
+    "main.2098ae3b.js.map": "/static/js/main.2098ae3b.js.map",
     "511.1b95af2a.chunk.js.map": "/static/js/511.1b95af2a.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.a0ccc04c.css",
-    "static/js/main.aec0af0b.js"
+    "static/css/main.c62a4319.css",
+    "static/js/main.2098ae3b.js"
   ]
 }
