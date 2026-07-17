@@ -1716,8 +1716,7 @@ function App() {
         files: [file]
       })) {
         await navigator.share({
-          files: [file],
-          title: "Котёл — бэкап"
+          files: [file]
         });
         setIoMsg("Бэкап отдан в шторку шэринга — сохрани в Файлы");
         return;
