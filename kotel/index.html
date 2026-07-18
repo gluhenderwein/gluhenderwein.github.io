@@ -807,74 +807,37 @@ function SwipeRow({
 const W_MIN = 10,
   W_STEP = 10,
   W_MAX = 1000;
-function Wheel({
-  value,
-  onChange
-}) {
-  const ref = useRef(null);
-  const t = useRef(null);
-  const H = 44;
-  const opts = [];
-  for (let g = W_MIN; g <= W_MAX; g += W_STEP) opts.push(g);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const i = Math.round((num(value) - W_MIN) / W_STEP);
-    el.scrollTop = Math.max(0, Math.min(opts.length - 1, i)) * H;
-  }, []);
-  const onScroll = () => {
-    clearTimeout(t.current);
-    t.current = setTimeout(() => {
-      const el = ref.current;
-      if (!el) return;
-      const i = Math.round(el.scrollTop / H);
-      const g = W_MIN + Math.max(0, Math.min(opts.length - 1, i)) * W_STEP;
-      onChange(g);
-    }, 90);
-  };
-  return /*#__PURE__*/React.createElement("div", {
-    className: "wheel-wrap"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "wheel-scroll",
-    ref: ref,
-    onScroll: onScroll
-  }, opts.map(g => /*#__PURE__*/React.createElement("div", {
-    className: "wopt",
-    key: g
-  }, g, " г"))), /*#__PURE__*/React.createElement("div", {
-    className: "wheel-line"
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "wheel-fade-t"
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "wheel-fade-b"
-  }));
-}
-
-/* ---------- слайдер порции (тёмная карточка) ---------- */
-function PortionCard({
-  name,
-  T,
+function KbjuCard({
+  per100,
   grams,
-  onGrams
+  eyebrow,
+  hidePer100
 }) {
-  const r = T.w > 0 ? grams / T.w : 0;
-  const p = T.w > W_MIN ? (grams - W_MIN) / (T.w - W_MIN) * 100 : 100;
-  const kb = T.b * 4,
-    kz = T.z * 9,
-    ku = T.u * 4;
+  const r = grams / 100;
+  const k = per100.k * r,
+    b = per100.b * r,
+    z = per100.z * r,
+    u = per100.u * r;
+  const kb = b * 4,
+    kz = z * 9,
+    ku = u * 4;
   const sum = kb + kz + ku || 1;
-  return /*#__PURE__*/React.createElement("div", {
-    className: "dishcard"
+  return /*#__PURE__*/React.createElement("section", {
+    className: "board board-sum"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "board-top"
   }, /*#__PURE__*/React.createElement("span", {
     className: "eyebrow"
-  }, "выбери порцию"), /*#__PURE__*/React.createElement("div", {
-    className: "sl-val"
+  }, eyebrow || "порция"), /*#__PURE__*/React.createElement("span", {
+    className: "weight mono"
+  }, fmt(grams, 0), " ", /*#__PURE__*/React.createElement("i", null, "г"))), /*#__PURE__*/React.createElement("div", {
+    className: "kcal"
   }, /*#__PURE__*/React.createElement("span", {
-    className: "n"
-  }, fmt(T.k * r, 0)), /*#__PURE__*/React.createElement("span", {
-    className: "u"
+    className: "kcal-n"
+  }, fmt(k, 0)), /*#__PURE__*/React.createElement("span", {
+    className: "kcal-u"
   }, "ккал")), /*#__PURE__*/React.createElement("div", {
-    className: "bar dc-bar",
+    className: "bar",
     "aria-hidden": true
   }, /*#__PURE__*/React.createElement("i", {
     style: {
@@ -892,18 +855,89 @@ function PortionCard({
       background: C.u
     }
   })), /*#__PURE__*/React.createElement("div", {
-    className: "dc-row mono"
-  }, /*#__PURE__*/React.createElement("span", null, fmt(grams, 0), " г"), /*#__PURE__*/React.createElement("span", null, "Б ", fmt(T.b * r), " · Ж ", fmt(T.z * r), " · У ", fmt(T.u * r))), /*#__PURE__*/React.createElement("input", {
-    type: "range",
-    className: "dc-slider",
-    min: W_MIN,
-    max: Math.max(W_MIN, Math.round(T.w / 10) * 10),
-    step: 10,
-    value: grams,
+    className: "chips tri"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "chip"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "ct",
     style: {
-      "--p": p + "%"
-    },
-    onChange: e => onGrams(+e.target.value)
+      color: C.b
+    }
+  }, "Белки"), /*#__PURE__*/React.createElement("b", {
+    className: "mono"
+  }, fmt(b), " г"), /*#__PURE__*/React.createElement("em", {
+    className: "mono kc"
+  }, fmt(kb, 0))), /*#__PURE__*/React.createElement("span", {
+    className: "chip"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "ct",
+    style: {
+      color: C.z
+    }
+  }, "Жиры"), /*#__PURE__*/React.createElement("b", {
+    className: "mono"
+  }, fmt(z), " г"), /*#__PURE__*/React.createElement("em", {
+    className: "mono kc"
+  }, fmt(kz, 0))), /*#__PURE__*/React.createElement("span", {
+    className: "chip"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "ct",
+    style: {
+      color: C.u
+    }
+  }, "Углеводы"), /*#__PURE__*/React.createElement("b", {
+    className: "mono"
+  }, fmt(u), " г"), /*#__PURE__*/React.createElement("em", {
+    className: "mono kc"
+  }, fmt(ku, 0)))), !hidePer100 && /*#__PURE__*/React.createElement("div", {
+    className: "per100 mono"
+  }, "на 100 г: ", fmt(per100.k, 0), " ккал · Б ", fmt(per100.b), " · Ж ", fmt(per100.z), " · У ", fmt(per100.u)));
+}
+function Wheel({
+  value,
+  onChange,
+  bare,
+  max
+}) {
+  const ref = useRef(null);
+  const wrapRef = useRef(null);
+  const t = useRef(null);
+  const H = 44;
+  const top = Math.max(W_MIN, max || W_MAX);
+  const opts = [];
+  for (let g = W_MIN; g <= top; g += W_STEP) opts.push(g);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const i = Math.round((num(value) - W_MIN) / W_STEP);
+    el.scrollTop = Math.max(0, Math.min(opts.length - 1, i)) * H;
+  }, []);
+  const onScroll = () => {
+    clearTimeout(t.current);
+    t.current = setTimeout(() => {
+      const el = ref.current;
+      if (!el) return;
+      const i = Math.round(el.scrollTop / H);
+      const g = W_MIN + Math.max(0, Math.min(opts.length - 1, i)) * W_STEP;
+      onChange(g);
+    }, 90);
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    ref: wrapRef,
+    className: "wheel-wrap" + (bare ? " bare" : "")
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "wheel-scroll",
+    ref: ref,
+    onScroll: onScroll
+  }, opts.map(g => /*#__PURE__*/React.createElement("div", {
+    className: "wopt",
+    key: g
+  }, g, " г"))), /*#__PURE__*/React.createElement("div", {
+    className: "wheel-line"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "wheel-fade-t"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "wheel-fade-b"
   }));
 }
 
@@ -1068,6 +1102,16 @@ function IngSheet({
     value: f.name,
     onChange: set("name"),
     type: "text"
+  }), !showCat && /*#__PURE__*/React.createElement(KbjuCard, {
+    per100: {
+      k: num(f.k),
+      b: num(f.b),
+      z: num(f.z),
+      u: num(f.u)
+    },
+    grams: num(f.dw) || 100,
+    eyebrow: "итого в котле",
+    hidePer100: true
   }), /*#__PURE__*/React.createElement("p", {
     className: "hint"
   }, "КБЖУ указывается на 100 г продукта"), showCat && !!(apiKey || "").trim() && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
@@ -2275,7 +2319,8 @@ function App() {
       name: e.name,
       grams: e.grams,
       btn: "Сохранить",
-      entryId: e.id
+      entryId: e.id,
+      per100: e.per100
     })
   }, /*#__PURE__*/React.createElement("span", {
     className: e.kind === "dish" ? "dish-mark" : e.kind === "food" ? "food-mark" : "prod-mark"
@@ -2690,7 +2735,8 @@ function App() {
         name: it.name,
         grams: g,
         btn: "Готово",
-        itemId: it.id
+        itemId: it.id,
+        per100: it.per100
       })
     }, fmt(g, 0), " г"));
   }))), sheet?.mode === "addFood" && /*#__PURE__*/React.createElement(Sheet, {
@@ -2855,6 +2901,7 @@ function App() {
     className: "empty"
   }, "Такого продукта ещё нет")))), sheet?.mode === "portion" && /*#__PURE__*/React.createElement(Sheet, {
     title: sheet.name || "Порция",
+    full: true,
     onClose: () => setSheet(null),
     footer: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
       className: "btn solid",
@@ -2884,16 +2931,19 @@ function App() {
       className: "btn ghost",
       onClick: () => setSheet(null)
     }, "Отмена"))
-  }, /*#__PURE__*/React.createElement(PortionCard, {
-    name: sheet.name,
-    T: sheet.T,
-    grams: sheet.grams,
-    onGrams: g => setSheet(s => ({
-      ...s,
+  }, /*#__PURE__*/React.createElement(KbjuCard, {
+    per100: per100Of(sheet.T),
+    grams: sheet.grams
+  }), /*#__PURE__*/React.createElement(Wheel, {
+    bare: true,
+    value: sheet.grams,
+    onChange: g => setSheet(s2 => ({
+      ...s2,
       grams: g
     }))
   })), sheet?.mode === "wheel" && /*#__PURE__*/React.createElement(Sheet, {
     title: sheet.name,
+    full: true,
     onClose: () => setSheet(null),
     footer: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
       className: "btn solid",
@@ -2953,7 +3003,24 @@ function App() {
       className: "btn ghost",
       onClick: () => setSheet(null)
     }, "Отмена"))
-  }, /*#__PURE__*/React.createElement(Wheel, {
+  }, (() => {
+    const p100 = sheet.per100 || sheet.diaryProd && {
+      k: sheet.diaryProd.k,
+      b: sheet.diaryProd.b,
+      z: sheet.diaryProd.z,
+      u: sheet.diaryProd.u
+    } || sheet.diaryFood && {
+      k: sheet.diaryFood.k,
+      b: sheet.diaryFood.b,
+      z: sheet.diaryFood.z,
+      u: sheet.diaryFood.u
+    };
+    return p100 ? /*#__PURE__*/React.createElement(KbjuCard, {
+      per100: p100,
+      grams: sheet.grams
+    }) : null;
+  })(), /*#__PURE__*/React.createElement(Wheel, {
+    bare: true,
     value: sheet.grams,
     onChange: g => setSheet(s => ({
       ...s,
@@ -3232,7 +3299,7 @@ const CSS = `
   --bgT:rgba(20,26,22,0); --bgH:rgba(20,26,22,.72);
 }
 /* ягодное свечение тёмных карточек в ночной теме */
-.app.dark .board,.app.dark .dishcard{
+.app.dark .board{
   background:
     linear-gradient(160deg, rgba(230,74,110,.07), rgba(230,74,110,.02) 60%),
     var(--boardbg);
@@ -3394,17 +3461,6 @@ input::placeholder{color:var(--sub);opacity:.55}
 .ctor-actions{display:flex;gap:10px}
 .ctor-actions .btn{flex:1}
 
-/* ---- тёмная карточка порции ---- */
-.dishcard{background:var(--boardbg);color:#F2F4F0;border:1px solid var(--boardline);border-radius:20px;padding:16px}
-.dc-name{font-weight:600;font-size:15px;margin-bottom:2px}
-.sl-val{display:flex;align-items:baseline;gap:8px;margin-top:8px}
-.sl-val .n{font-family:'Unbounded',sans-serif;font-weight:700;font-size:40px;line-height:1}
-.sl-val .u{color:#9AA69E;font-size:14px}
-.sl-w{font-size:13px;color:#C8D0C8;margin:4px 0 10px}
-.dc-bar{margin:12px 0 14px}
-.dc-row{display:flex;justify-content:space-between;align-items:baseline;
-  font-size:13px;color:#C8D0C8;gap:10px}
-.dc-slider{margin-top:16px!important;height:40px}
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:32px;
   background:transparent;margin:0}
 input[type=range]::-webkit-slider-runnable-track{height:10px;border-radius:6px;
@@ -3422,10 +3478,15 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
 /* ---- барабан ---- */
 .wheel-wrap{position:relative;height:228px;border-radius:18px;background:var(--card);
   overflow:hidden}
+.wheel-wrap.bare{background:none}
+.sheet-body>.wheel-wrap.bare{flex:1 1 auto;height:auto;min-height:176px;
+  margin:24px 0 16px}
+.wheel-wrap.bare .wheel-fade-t{background:linear-gradient(var(--bg),var(--bgT))}
+.wheel-wrap.bare .wheel-fade-b{background:linear-gradient(var(--bgT),var(--bg))}
 .wheel-scroll{height:100%;overflow-y:auto;scroll-snap-type:y mandatory;
   -webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior:contain}
 .wheel-scroll::-webkit-scrollbar{display:none}
-.wheel-scroll::before,.wheel-scroll::after{content:'';display:block;height:92px}
+.wheel-scroll::before,.wheel-scroll::after{content:'';display:block;height:calc(50% - 22px)}
 .wopt{height:44px;display:flex;align-items:center;justify-content:center;
   scroll-snap-align:center;font-family:'JetBrains Mono',monospace;font-size:19px;
   color:var(--sub)}
@@ -3518,7 +3579,7 @@ main>.list{margin-top:10px}
 .sheet-body{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;
   overscroll-behavior:contain;scrollbar-width:none;
   display:flex;flex-direction:column;gap:12px;
-  padding:80px 16px calc(var(--footH,0px) + 18px)}
+  padding:80px 16px calc(var(--footH,0px))}
 .sheet-body::-webkit-scrollbar{display:none}
 .sheet-body>*{flex-shrink:0}
 .sheet-body .board,.sheet-body .list,.sheet-body .controls{margin-bottom:0}
