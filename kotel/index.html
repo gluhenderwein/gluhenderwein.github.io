@@ -321,7 +321,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 </script>
 <script>
 const { useState, useEffect, useMemo, useRef } = React;
-const BUILD = { v: "1.7", date: "2026-07-25", note: "\u043F\u043E\u0434\u0441\u0442\u0440\u043E\u0447\u043D\u0438\u043A\u0438: \u0438\u0442\u043E\u0433 \u043A\u043E\u0442\u043B\u0430 \u0438 \u043F\u043E\u0440\u0446\u0438\u044F \u043F\u043E \u0443\u043C\u043E\u043B\u0447\u0430\u043D\u0438\u044E; \u0433\u043E\u0442\u043E\u0432\u043E\u0435 \u043D\u0435 \u0434\u0443\u0431\u043B\u0438\u0440\u0443\u0435\u0442\u0441\u044F \u0432 \u043A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u044F\u0445; \u0441\u0432\u0435\u0436\u0430\u044F \u0437\u0430\u043F\u0438\u0441\u044C \u0434\u043D\u0435\u0432\u043D\u0438\u043A\u0430 \u0441\u0432\u0435\u0440\u0445\u0443" };
+const BUILD = { v: "1.7.1", date: "2026-07-25", note: "\u043F\u043E\u0438\u0441\u043A \u0432 \u0448\u0442\u043E\u0440\u043A\u0435 \u0434\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u0438\u044F \u043D\u0435 \u0443\u0442\u0435\u043A\u0430\u0435\u0442 \u0432 \u043A\u043B\u0430\u0434\u043E\u0432\u0443\u044E" };
 const uid = () => Math.random().toString(36).slice(2, 10);
 const num = (v) => {
   if (typeof v === "number") return v;
@@ -1252,6 +1252,10 @@ function App() {
   const [draft, setDraft] = useState(null);
   const [sheet, setSheet] = useState(null);
   const [q, setQ] = useState("");
+  const closeAddFood = () => {
+    setQ("");
+    setSheet(null);
+  };
   const [ready, setReady] = useState(false);
   const [storageOK, setStorageOK] = useState(null);
   const firstSave = useRef(true);
@@ -1957,8 +1961,8 @@ function App() {
     {
       title: "\u0427\u0442\u043E \u0441\u044A\u0435\u043B?",
       full: true,
-      onClose: () => setSheet(null),
-      footer: /* @__PURE__ */ React.createElement("button", { className: "btn ghost", onClick: () => setSheet(null) }, "\u041E\u0442\u043C\u0435\u043D\u0430")
+      onClose: closeAddFood,
+      footer: /* @__PURE__ */ React.createElement("button", { className: "btn ghost", onClick: closeAddFood }, "\u041E\u0442\u043C\u0435\u043D\u0430")
     },
     /* @__PURE__ */ React.createElement(
       PantryList,
@@ -1971,6 +1975,7 @@ function App() {
         dishesFiltered,
         onTapDish: (d) => {
           const T = totalsOf(d.items);
+          setQ("");
           setSheet({
             mode: "portion",
             name: d.name,
@@ -1985,13 +1990,16 @@ function App() {
         diaryStats,
         searchLog,
         pushSearchLog,
-        onTapProd: (ing) => setSheet({
-          mode: "wheel",
-          name: ing.name,
-          grams: ing.dw || 100,
-          btn: "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0432\xA0\u0436\u0438\u0432\u043E\u0442\u0438\u043A",
-          diaryIng: ing
-        }),
+        onTapProd: (ing) => {
+          setQ("");
+          setSheet({
+            mode: "wheel",
+            name: ing.name,
+            grams: ing.dw || 100,
+            btn: "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0432\xA0\u0436\u0438\u0432\u043E\u0442\u0438\u043A",
+            diaryIng: ing
+          });
+        },
         cats,
         catF,
         setCatF,
