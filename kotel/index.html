@@ -321,7 +321,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 </script>
 <script>
 const { useState, useEffect, useMemo, useRef } = React;
-const BUILD = { v: "1.6", date: "2026-07-25", note: "\u0447\u0430\u0441\u0442\u044B\u0435 \u0441 \u0448\u0435\u0432\u0440\u043E\u043D\u043E\u043C \u0432\u043C\u0435\u0441\u0442\u043E \u0433\u0440\u0443\u043F\u043F, \u0447\u0438\u043F \xAB\u0412\u0441\u0435\xBB, \u0438\u0441\u0442\u043E\u0440\u0438\u044F \u043F\u043E\u0438\u0441\u043A\u0430, \u0432\u044B\u0445\u043E\u0434 \u0438\u0437 \u043F\u043E\u0438\u0441\u043A\u0430 \u043A\u043D\u043E\u043F\u043A\u043E\u0439" };
+const BUILD = { v: "1.6.2", date: "2026-07-25", note: "\u0443\u0431\u0440\u0430\u043D\u043E \u0441\u043B\u043E\u0432\u043E \xAB\u043F\u043E\u0440\u0446\u0438\u044F\xBB \u0432 \u0434\u043D\u0435\u0432\u043D\u0438\u043A\u0435" };
 const uid = () => Math.random().toString(36).slice(2, 10);
 const num = (v) => {
   if (typeof v === "number") return v;
@@ -1025,15 +1025,16 @@ function PantryList({
   };
   const dishRow = (d, freq) => {
     const T = totalsOf(d.items);
-    const p100 = per100Of(T);
     const kb = T.b * 4, kz = T.z * 9, ku = T.u * 4;
     const s = kb + kz + ku || 1;
-    return /* @__PURE__ */ React.createElement("button", { className: "row lib-row", key: d.id, onClick: () => tapDish(d) }, /* @__PURE__ */ React.createElement("span", { className: "sig" }, /* @__PURE__ */ React.createElement("i", { style: { width: kb / s * 100 + "%", background: C.b } }), /* @__PURE__ */ React.createElement("i", { style: { width: kz / s * 100 + "%", background: C.z } }), /* @__PURE__ */ React.createElement("i", { style: { width: ku / s * 100 + "%", background: C.u } })), /* @__PURE__ */ React.createElement("div", { className: "row-main" }, /* @__PURE__ */ React.createElement("span", { className: "row-name" }, d.name), /* @__PURE__ */ React.createElement("span", { className: "row-sub mono" }, fmt(p100.k, 0), " \u043A\u043A\u0430\u043B/100 \u0433 \xB7 ", d.items.length, " ", plural(d.items.length))), freq ? /* @__PURE__ */ React.createElement(FreqMark, null) : null);
+    return /* @__PURE__ */ React.createElement("button", { className: "row lib-row", key: d.id, onClick: () => tapDish(d) }, /* @__PURE__ */ React.createElement("span", { className: "sig" }, /* @__PURE__ */ React.createElement("i", { style: { width: kb / s * 100 + "%", background: C.b } }), /* @__PURE__ */ React.createElement("i", { style: { width: kz / s * 100 + "%", background: C.z } }), /* @__PURE__ */ React.createElement("i", { style: { width: ku / s * 100 + "%", background: C.u } })), /* @__PURE__ */ React.createElement("div", { className: "row-main" }, /* @__PURE__ */ React.createElement("span", { className: "row-name" }, d.name), /* @__PURE__ */ React.createElement("span", { className: "row-sub mono" }, fmt(T.k, 0), " \u043A\u043A\u0430\u043B \xB7 \u0411 ", fmt(T.b), " \xB7 \u0416 ", fmt(T.z), " \xB7 \u0423 ", fmt(T.u))), freq ? /* @__PURE__ */ React.createElement(FreqMark, null) : null);
   };
   const prodRow = (ing, freq) => {
-    const kb = ing.b * 4, kz = ing.z * 9, ku = ing.u * 4;
+    const g = (num(ing.dw) || 100) / 100;
+    const pk = ing.k * g, pb = ing.b * g, pz = ing.z * g, pu = ing.u * g;
+    const kb = pb * 4, kz = pz * 9, ku = pu * 4;
     const sm = kb + kz + ku || 1;
-    return /* @__PURE__ */ React.createElement("button", { className: "row lib-row", key: ing.id, onClick: () => tapProd(ing) }, /* @__PURE__ */ React.createElement("span", { className: "sig" }, /* @__PURE__ */ React.createElement("i", { style: { width: kb / sm * 100 + "%", background: C.b } }), /* @__PURE__ */ React.createElement("i", { style: { width: kz / sm * 100 + "%", background: C.z } }), /* @__PURE__ */ React.createElement("i", { style: { width: ku / sm * 100 + "%", background: C.u } })), /* @__PURE__ */ React.createElement("div", { className: "row-main" }, /* @__PURE__ */ React.createElement("span", { className: "row-name" }, ing.name), /* @__PURE__ */ React.createElement("span", { className: "row-sub mono" }, fmt(ing.k, 0), " \u043A\u043A\u0430\u043B \xB7 \u0411 ", fmt(ing.b), " \xB7 \u0416 ", fmt(ing.z), " \xB7 \u0423", " ", fmt(ing.u), " ", /* @__PURE__ */ React.createElement("i", null, "/ 100 \u0433"))), freq ? /* @__PURE__ */ React.createElement(FreqMark, null) : null);
+    return /* @__PURE__ */ React.createElement("button", { className: "row lib-row", key: ing.id, onClick: () => tapProd(ing) }, /* @__PURE__ */ React.createElement("span", { className: "sig" }, /* @__PURE__ */ React.createElement("i", { style: { width: kb / sm * 100 + "%", background: C.b } }), /* @__PURE__ */ React.createElement("i", { style: { width: kz / sm * 100 + "%", background: C.z } }), /* @__PURE__ */ React.createElement("i", { style: { width: ku / sm * 100 + "%", background: C.u } })), /* @__PURE__ */ React.createElement("div", { className: "row-main" }, /* @__PURE__ */ React.createElement("span", { className: "row-name" }, ing.name), /* @__PURE__ */ React.createElement("span", { className: "row-sub mono" }, fmt(pk, 0), " \u043A\u043A\u0430\u043B \xB7 \u0411 ", fmt(pb), " \xB7 \u0416 ", fmt(pz), " \xB7 \u0423 ", fmt(pu))), freq ? /* @__PURE__ */ React.createElement(FreqMark, null) : null);
   };
   const sortFrequentFirst = (items, freqMap) => {
     const isFreq = (x) => (freqMap.get(x.name) || 0) >= FREQ_MIN;
@@ -1819,7 +1820,7 @@ function App() {
       }
     ),
     /* @__PURE__ */ React.createElement("time", { className: "mono" }, e.t),
-    /* @__PURE__ */ React.createElement("div", { className: "row-main" }, /* @__PURE__ */ React.createElement("span", { className: "row-name" }, e.name), /* @__PURE__ */ React.createElement("span", { className: "row-sub mono" }, e.kind === "dish" ? "\u043F\u043E\u0440\u0446\u0438\u044F " : "", fmt(e.grams, 0), " \u0433")),
+    /* @__PURE__ */ React.createElement("div", { className: "row-main" }, /* @__PURE__ */ React.createElement("span", { className: "row-name" }, e.name), /* @__PURE__ */ React.createElement("span", { className: "row-sub mono" }, fmt(e.grams, 0), " \u0433")),
     /* @__PURE__ */ React.createElement("span", { className: "entry-k mono" }, fmt(e.per100.k * e.grams / 100, 0))
   )))), !draft && tab === "pantry" && /* @__PURE__ */ React.createElement("main", null, /* @__PURE__ */ React.createElement(
     PantryList,
@@ -2467,12 +2468,6 @@ function App() {
     }
   ));
 }
-const plural = (n) => {
-  const m10 = n % 10, m100 = n % 100;
-  if (m10 === 1 && m100 !== 11) return "\u0438\u043D\u0433\u0440\u0435\u0434\u0438\u0435\u043D\u0442";
-  if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return "\u0438\u043D\u0433\u0440\u0435\u0434\u0438\u0435\u043D\u0442\u0430";
-  return "\u0438\u043D\u0433\u0440\u0435\u0434\u0438\u0435\u043D\u0442\u043E\u0432";
-};
 const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap');
 
