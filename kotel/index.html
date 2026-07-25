@@ -321,7 +321,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 </script>
 <script>
 const { useState, useEffect, useMemo, useRef } = React;
-const BUILD = { v: "1.6.2", date: "2026-07-25", note: "\u0443\u0431\u0440\u0430\u043D\u043E \u0441\u043B\u043E\u0432\u043E \xAB\u043F\u043E\u0440\u0446\u0438\u044F\xBB \u0432 \u0434\u043D\u0435\u0432\u043D\u0438\u043A\u0435" };
+const BUILD = { v: "1.6.3", date: "2026-07-25", note: "\u0433\u043E\u0442\u043E\u0432\u043E\u0435 \u0431\u043E\u043B\u044C\u0448\u0435 \u043D\u0435 \u0434\u0443\u0431\u043B\u0438\u0440\u0443\u0435\u0442\u0441\u044F \u0432 \u043E\u0431\u044B\u0447\u043D\u044B\u0445 \u043A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u044F\u0445" };
 const uid = () => Math.random().toString(36).slice(2, 10);
 const num = (v) => {
   if (typeof v === "number") return v;
@@ -1046,7 +1046,15 @@ function PantryList({
     return [...frequent.map((x) => [x, true]), ...rest.map((x) => [x, false])];
   };
   const contentFor = (cf) => {
-    const items = cf === "all" ? lib : lib.filter((x) => cf === "ready" ? !!x.ready : (x.cat || "other") === cf);
+    const items = cf === "all" ? lib : lib.filter(
+      (x) => (
+        /* «Готовое» — не категория, а флаг, но в интерфейсе это такой же чип,
+           и выбор в форме взаимоисключающий. Поле cat при этом остаётся от
+           прежней категории, поэтому обычные категории обязаны отсеивать
+           ready — иначе товар показывается сразу в двух местах */
+        cf === "ready" ? !!x.ready : !x.ready && (x.cat || "other") === cf
+      )
+    );
     const rows = sortFrequentFirst(items, diaryStats.freq.prod).map(([x, f]) => prodRow(x, f));
     return rows.length ? rows : [/* @__PURE__ */ React.createElement("div", { className: "empty", key: "e" }, PANTRY_EMPTY.prods)];
   };
