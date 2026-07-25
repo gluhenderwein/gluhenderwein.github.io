@@ -321,7 +321,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 </script>
 <script>
 const { useState, useEffect, useMemo, useRef } = React;
-const BUILD = { v: "1.6.3", date: "2026-07-25", note: "\u0433\u043E\u0442\u043E\u0432\u043E\u0435 \u0431\u043E\u043B\u044C\u0448\u0435 \u043D\u0435 \u0434\u0443\u0431\u043B\u0438\u0440\u0443\u0435\u0442\u0441\u044F \u0432 \u043E\u0431\u044B\u0447\u043D\u044B\u0445 \u043A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u044F\u0445" };
+const BUILD = { v: "1.7", date: "2026-07-25", note: "\u043F\u043E\u0434\u0441\u0442\u0440\u043E\u0447\u043D\u0438\u043A\u0438: \u0438\u0442\u043E\u0433 \u043A\u043E\u0442\u043B\u0430 \u0438 \u043F\u043E\u0440\u0446\u0438\u044F \u043F\u043E \u0443\u043C\u043E\u043B\u0447\u0430\u043D\u0438\u044E; \u0433\u043E\u0442\u043E\u0432\u043E\u0435 \u043D\u0435 \u0434\u0443\u0431\u043B\u0438\u0440\u0443\u0435\u0442\u0441\u044F \u0432 \u043A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u044F\u0445; \u0441\u0432\u0435\u0436\u0430\u044F \u0437\u0430\u043F\u0438\u0441\u044C \u0434\u043D\u0435\u0432\u043D\u0438\u043A\u0430 \u0441\u0432\u0435\u0440\u0445\u0443" };
 const uid = () => Math.random().toString(36).slice(2, 10);
 const num = (v) => {
   if (typeof v === "number") return v;
@@ -701,17 +701,39 @@ function DayBoard({ boardRef, className, label, eaten, gK, gB, gZ, gU }) {
   ), m.g ? ` / ${fmt(m.g, 0)} \u0433` : " \u0433")))));
 }
 const W_MIN = 10, W_STEP = 10, W_MAX = 1e3;
+function useTween(target, ms = 200) {
+  const [v, setV] = useState(target);
+  const raf = useRef(0);
+  const from = useRef(target);
+  const cur = useRef(target);
+  useEffect(() => {
+    cancelAnimationFrame(raf.current);
+    from.current = cur.current;
+    if (from.current === target) return;
+    const t0 = performance.now();
+    const step = (now) => {
+      const p = Math.min(1, (now - t0) / ms);
+      const e = 1 - Math.pow(1 - p, 3);
+      cur.current = from.current + (target - from.current) * e;
+      setV(cur.current);
+      if (p < 1) raf.current = requestAnimationFrame(step);
+    };
+    raf.current = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf.current);
+  }, [target, ms]);
+  return v;
+}
 function KbjuCard({ per100, grams, eyebrow, hidePer100 }) {
-  const r = grams / 100;
+  const g = useTween(num(grams));
+  const r = g / 100;
   const k = per100.k * r, b = per100.b * r, z = per100.z * r, u = per100.u * r;
   const kb = b * 4, kz = z * 9, ku = u * 4;
   const sum = kb + kz + ku || 1;
-  return /* @__PURE__ */ React.createElement("section", { className: "board board-sum" }, /* @__PURE__ */ React.createElement("div", { className: "board-top" }, /* @__PURE__ */ React.createElement("span", { className: "eyebrow" }, eyebrow || "\u043F\u043E\u0440\u0446\u0438\u044F"), /* @__PURE__ */ React.createElement("span", { className: "weight mono" }, fmt(grams, 0), " ", /* @__PURE__ */ React.createElement("i", null, "\u0433"))), /* @__PURE__ */ React.createElement("div", { className: "kcal" }, /* @__PURE__ */ React.createElement("span", { className: "kcal-n" }, fmt(k, 0)), /* @__PURE__ */ React.createElement("span", { className: "kcal-u" }, "\u043A\u043A\u0430\u043B")), /* @__PURE__ */ React.createElement("div", { className: "bar", "aria-hidden": true }, /* @__PURE__ */ React.createElement("i", { style: { width: kb / sum * 100 + "%", background: C.b } }), /* @__PURE__ */ React.createElement("i", { style: { width: kz / sum * 100 + "%", background: C.z } }), /* @__PURE__ */ React.createElement("i", { style: { width: ku / sum * 100 + "%", background: C.u } })), /* @__PURE__ */ React.createElement("div", { className: "chips tri" }, /* @__PURE__ */ React.createElement("span", { className: "chip" }, /* @__PURE__ */ React.createElement("span", { className: "ct", style: { color: C.b } }, "\u0411\u0435\u043B\u043A\u0438"), /* @__PURE__ */ React.createElement("b", { className: "mono" }, fmt(b), " \u0433"), /* @__PURE__ */ React.createElement("em", { className: "mono kc" }, fmt(kb, 0))), /* @__PURE__ */ React.createElement("span", { className: "chip" }, /* @__PURE__ */ React.createElement("span", { className: "ct", style: { color: C.z } }, "\u0416\u0438\u0440\u044B"), /* @__PURE__ */ React.createElement("b", { className: "mono" }, fmt(z), " \u0433"), /* @__PURE__ */ React.createElement("em", { className: "mono kc" }, fmt(kz, 0))), /* @__PURE__ */ React.createElement("span", { className: "chip" }, /* @__PURE__ */ React.createElement("span", { className: "ct", style: { color: C.u } }, "\u0423\u0433\u043B\u0435\u0432\u043E\u0434\u044B"), /* @__PURE__ */ React.createElement("b", { className: "mono" }, fmt(u), " \u0433"), /* @__PURE__ */ React.createElement("em", { className: "mono kc" }, fmt(ku, 0)))), !hidePer100 && /* @__PURE__ */ React.createElement("div", { className: "per100 mono" }, "\u043D\u0430 100 \u0433: ", fmt(per100.k, 0), " \u043A\u043A\u0430\u043B \xB7 \u0411 ", fmt(per100.b), " \xB7 \u0416 ", fmt(per100.z), " \xB7 \u0423 ", fmt(per100.u)));
+  return /* @__PURE__ */ React.createElement("section", { className: "board board-sum" }, /* @__PURE__ */ React.createElement("div", { className: "board-top" }, /* @__PURE__ */ React.createElement("span", { className: "eyebrow" }, eyebrow || "\u043F\u043E\u0440\u0446\u0438\u044F"), /* @__PURE__ */ React.createElement("span", { className: "weight mono" }, fmt(g, 0), " ", /* @__PURE__ */ React.createElement("i", null, "\u0433"))), /* @__PURE__ */ React.createElement("div", { className: "kcal" }, /* @__PURE__ */ React.createElement("span", { className: "kcal-n" }, fmt(k, 0)), /* @__PURE__ */ React.createElement("span", { className: "kcal-u" }, "\u043A\u043A\u0430\u043B")), /* @__PURE__ */ React.createElement("div", { className: "bar", "aria-hidden": true }, /* @__PURE__ */ React.createElement("i", { style: { width: kb / sum * 100 + "%", background: C.b } }), /* @__PURE__ */ React.createElement("i", { style: { width: kz / sum * 100 + "%", background: C.z } }), /* @__PURE__ */ React.createElement("i", { style: { width: ku / sum * 100 + "%", background: C.u } })), /* @__PURE__ */ React.createElement("div", { className: "chips tri" }, /* @__PURE__ */ React.createElement("span", { className: "chip" }, /* @__PURE__ */ React.createElement("span", { className: "ct", style: { color: C.b } }, "\u0411\u0435\u043B\u043A\u0438"), /* @__PURE__ */ React.createElement("b", { className: "mono" }, fmt(b), " \u0433"), /* @__PURE__ */ React.createElement("em", { className: "mono kc" }, fmt(kb, 0))), /* @__PURE__ */ React.createElement("span", { className: "chip" }, /* @__PURE__ */ React.createElement("span", { className: "ct", style: { color: C.z } }, "\u0416\u0438\u0440\u044B"), /* @__PURE__ */ React.createElement("b", { className: "mono" }, fmt(z), " \u0433"), /* @__PURE__ */ React.createElement("em", { className: "mono kc" }, fmt(kz, 0))), /* @__PURE__ */ React.createElement("span", { className: "chip" }, /* @__PURE__ */ React.createElement("span", { className: "ct", style: { color: C.u } }, "\u0423\u0433\u043B\u0435\u0432\u043E\u0434\u044B"), /* @__PURE__ */ React.createElement("b", { className: "mono" }, fmt(u), " \u0433"), /* @__PURE__ */ React.createElement("em", { className: "mono kc" }, fmt(ku, 0)))), !hidePer100 && /* @__PURE__ */ React.createElement("div", { className: "per100 mono" }, "\u043D\u0430 100 \u0433: ", fmt(per100.k, 0), " \u043A\u043A\u0430\u043B \xB7 \u0411 ", fmt(per100.b), " \xB7 \u0416 ", fmt(per100.z), " \xB7 \u0423 ", fmt(per100.u)));
 }
 function Wheel({ value, onChange, bare, max }) {
   const ref = useRef(null);
   const wrapRef = useRef(null);
-  const t = useRef(null);
   const H = 44;
   const top = Math.max(W_MIN, max || W_MAX);
   const opts = [];
@@ -722,15 +744,16 @@ function Wheel({ value, onChange, bare, max }) {
     const i = Math.round((num(value) - W_MIN) / W_STEP);
     el.scrollTop = Math.max(0, Math.min(opts.length - 1, i)) * H;
   }, []);
+  const lastG = useRef(null);
   const onScroll = () => {
-    clearTimeout(t.current);
-    t.current = setTimeout(() => {
-      const el = ref.current;
-      if (!el) return;
-      const i = Math.round(el.scrollTop / H);
-      const g = W_MIN + Math.max(0, Math.min(opts.length - 1, i)) * W_STEP;
+    const el = ref.current;
+    if (!el) return;
+    const i = Math.round(el.scrollTop / H);
+    const g = W_MIN + Math.max(0, Math.min(opts.length - 1, i)) * W_STEP;
+    if (g !== lastG.current) {
+      lastG.current = g;
       onChange(g);
-    }, 90);
+    }
   };
   return /* @__PURE__ */ React.createElement("div", { ref: wrapRef, className: "wheel-wrap" + (bare ? " bare" : "") }, /* @__PURE__ */ React.createElement("div", { className: "wheel-scroll", ref, onScroll }, opts.map((g) => /* @__PURE__ */ React.createElement("div", { className: "wopt", key: g }, g, " \u0433"))), /* @__PURE__ */ React.createElement("div", { className: "wheel-line" }), /* @__PURE__ */ React.createElement("div", { className: "wheel-fade-t" }), /* @__PURE__ */ React.createElement("div", { className: "wheel-fade-b" }));
 }
@@ -1793,7 +1816,7 @@ function App() {
       }
     },
     "+ \u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C"
-  )), /* @__PURE__ */ React.createElement("section", { key: flashGenRef.current, className: "list" + (flashGenRef.current > 0 ? " day-flash" : "") }, feed.length === 0 && /* @__PURE__ */ React.createElement("div", { className: "empty" }, "\u0417\u0430 \u044D\u0442\u043E\u0442 \u0434\u0435\u043D\u044C \u0437\u0430\u043F\u0438\u0441\u0435\u0439 \u043D\u0435\u0442"), feed.map((e) => /* @__PURE__ */ React.createElement(
+  )), /* @__PURE__ */ React.createElement("section", { key: flashGenRef.current, className: "list" + (flashGenRef.current > 0 ? " day-flash" : "") }, feed.length === 0 && /* @__PURE__ */ React.createElement("div", { className: "empty" }, "\u0417\u0430 \u044D\u0442\u043E\u0442 \u0434\u0435\u043D\u044C \u0437\u0430\u043F\u0438\u0441\u0435\u0439 \u043D\u0435\u0442"), [...feed].reverse().map((e) => /* @__PURE__ */ React.createElement(
     SwipeRow,
     {
       key: e.id,
