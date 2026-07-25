@@ -321,7 +321,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 </script>
 <script>
 const { useState, useEffect, useMemo, useRef } = React;
-const BUILD = { v: "1.7.1", date: "2026-07-25", note: "\u043F\u043E\u0438\u0441\u043A \u0432 \u0448\u0442\u043E\u0440\u043A\u0435 \u0434\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u0438\u044F \u043D\u0435 \u0443\u0442\u0435\u043A\u0430\u0435\u0442 \u0432 \u043A\u043B\u0430\u0434\u043E\u0432\u0443\u044E" };
+const BUILD = { v: "1.7.6", date: "2026-07-25", note: "\u0441\u043D\u044D\u043A\u0431\u0430\u0440: \u0443\u0431\u0440\u0430\u043D\u0430 \u0440\u0430\u043C\u043A\u0430 \u043A\u043D\u043E\u043F\u043A\u0438, \u0432\u0441\u0442\u0430\u0451\u0442 \u0432\u043F\u043B\u043E\u0442\u043D\u0443\u044E \u043A \u0444\u0443\u0442\u0435\u0440\u0443, \u043D\u0435 \u043F\u0435\u0440\u0435\u043A\u0440\u044B\u0432\u0430\u0435\u0442 \u043D\u0438\u0437 \u0441\u043F\u0438\u0441\u043A\u0430" };
 const uid = () => Math.random().toString(36).slice(2, 10);
 const num = (v) => {
   if (typeof v === "number") return v;
@@ -418,6 +418,41 @@ const matchesQuery = (name, q) => {
   const words = normS(name).split(/[^\p{L}\p{N}]+/u).filter(Boolean);
   return terms.every((t) => words.some((w) => w.startsWith(t)));
 };
+const UNIT_WORDS = /* @__PURE__ */ new Set(["\u0433", "\u043A\u0433", "\u043C\u0433", "\u043C\u043B", "\u043B", "\u0448\u0442", "\u043A\u043A\u0430\u043B", "\u0443\u043F", "%"]);
+const queryScore = (name, q) => {
+  const terms = normS(q).split(/\s+/).filter(Boolean);
+  if (!terms.length) return 0;
+  const n = normS(name);
+  const words = [];
+  let paren = 0, cur = "";
+  for (let i = 0; i <= n.length; i++) {
+    const ch = i < n.length ? n[i] : "";
+    if (ch === "(") paren++;
+    if (ch && /[\p{L}\p{N}]/u.test(ch)) {
+      cur += ch;
+      continue;
+    }
+    if (cur) {
+      words.push({ w: cur, idx: words.length, paren: paren > 0 });
+      cur = "";
+    }
+    if (ch === ")") paren = Math.max(0, paren - 1);
+  }
+  let total = 0;
+  for (const t of terms) {
+    if (n.startsWith(t)) continue;
+    let best = Infinity;
+    for (const { w, idx, paren: inParen } of words) {
+      if (!w.startsWith(t)) continue;
+      let sc = 10 + idx;
+      if (UNIT_WORDS.has(w) || /^\d+$/.test(w)) sc += 100;
+      if (inParen) sc += 50;
+      if (sc < best) best = sc;
+    }
+    total += best === Infinity ? 1e3 : best;
+  }
+  return total;
+};
 function SearchBox({ q, setQ, placeholder, onFocusChange, showBack }) {
   const blurT = useRef(null);
   const inputRef = useRef(null);
@@ -473,7 +508,13 @@ function SearchBox({ q, setQ, placeholder, onFocusChange, showBack }) {
     {
       className: "search-x",
       "aria-label": "\u041E\u0447\u0438\u0441\u0442\u0438\u0442\u044C \u043F\u043E\u0438\u0441\u043A",
-      onClick: () => setQ("")
+      onMouseDown: (e) => e.preventDefault(),
+      onClick: () => {
+        var _a;
+        clearTimeout(blurT.current);
+        setQ("");
+        (_a = inputRef.current) == null ? void 0 : _a.focus();
+      }
     },
     /* @__PURE__ */ React.createElement(
       "svg",
@@ -547,14 +588,18 @@ function Sheet({ title, onClose, full, footer, children }) {
   useEffect(() => {
     const sh = ref.current;
     if (!sh) return;
-    const set = () => sh.style.setProperty(
-      "--footH",
-      (footRef.current ? footRef.current.offsetHeight : 0) + "px"
-    );
+    const set = () => {
+      const h = (footRef.current ? footRef.current.offsetHeight : 0) + "px";
+      sh.style.setProperty("--footH", h);
+      document.documentElement.style.setProperty("--sheetFootH", h);
+    };
     set();
     const ro = footRef.current && window.ResizeObserver ? new ResizeObserver(set) : null;
     if (ro) ro.observe(footRef.current);
-    return () => ro && ro.disconnect();
+    return () => {
+      if (ro) ro.disconnect();
+      document.documentElement.style.setProperty("--sheetFootH", "0px");
+    };
   }, [footer]);
   const drag = useRef({ y0: 0, dy: 0, on: false });
   useEffect(() => {
@@ -1033,7 +1078,9 @@ function PantryList({
   addLabel,
   onAdd,
   searchLog,
-  pushSearchLog
+  pushSearchLog,
+  hideSeg,
+  selectedIds
 }) {
   const [searchFocused, setSearchFocused] = useState(false);
   const inSearch = !!q;
@@ -1057,7 +1104,17 @@ function PantryList({
     const pk = ing.k * g, pb = ing.b * g, pz = ing.z * g, pu = ing.u * g;
     const kb = pb * 4, kz = pz * 9, ku = pu * 4;
     const sm = kb + kz + ku || 1;
-    return /* @__PURE__ */ React.createElement("button", { className: "row lib-row", key: ing.id, onClick: () => tapProd(ing) }, /* @__PURE__ */ React.createElement("span", { className: "sig" }, /* @__PURE__ */ React.createElement("i", { style: { width: kb / sm * 100 + "%", background: C.b } }), /* @__PURE__ */ React.createElement("i", { style: { width: kz / sm * 100 + "%", background: C.z } }), /* @__PURE__ */ React.createElement("i", { style: { width: ku / sm * 100 + "%", background: C.u } })), /* @__PURE__ */ React.createElement("div", { className: "row-main" }, /* @__PURE__ */ React.createElement("span", { className: "row-name" }, ing.name), /* @__PURE__ */ React.createElement("span", { className: "row-sub mono" }, fmt(pk, 0), " \u043A\u043A\u0430\u043B \xB7 \u0411 ", fmt(pb), " \xB7 \u0416 ", fmt(pz), " \xB7 \u0423 ", fmt(pu))), freq ? /* @__PURE__ */ React.createElement(FreqMark, null) : null);
+    return /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        className: "row lib-row" + ((selectedIds == null ? void 0 : selectedIds.has(ing.id)) ? " picked" : ""),
+        key: ing.id,
+        onClick: () => tapProd(ing)
+      },
+      /* @__PURE__ */ React.createElement("span", { className: "sig" }, /* @__PURE__ */ React.createElement("i", { style: { width: kb / sm * 100 + "%", background: C.b } }), /* @__PURE__ */ React.createElement("i", { style: { width: kz / sm * 100 + "%", background: C.z } }), /* @__PURE__ */ React.createElement("i", { style: { width: ku / sm * 100 + "%", background: C.u } })),
+      /* @__PURE__ */ React.createElement("div", { className: "row-main" }, /* @__PURE__ */ React.createElement("span", { className: "row-name" }, ing.name), /* @__PURE__ */ React.createElement("span", { className: "row-sub mono" }, fmt(pk, 0), " \u043A\u043A\u0430\u043B \xB7 \u0411 ", fmt(pb), " \xB7 \u0416 ", fmt(pz), " \xB7 \u0423 ", fmt(pu))),
+      (selectedIds == null ? void 0 : selectedIds.has(ing.id)) ? null : freq ? /* @__PURE__ */ React.createElement(FreqMark, null) : null
+    );
   };
   const sortFrequentFirst = (items, freqMap) => {
     const isFreq = (x) => (freqMap.get(x.name) || 0) >= FREQ_MIN;
@@ -1084,7 +1141,7 @@ function PantryList({
   const dishesContent = dishes.length ? sortFrequentFirst(dishesFiltered, diaryStats.freq.dish).map(([d, f]) => dishRow(d, f)) : [/* @__PURE__ */ React.createElement("div", { className: "empty", key: "e" }, PANTRY_EMPTY.dishes)];
   const catGroupRows = contentFor(catF);
   const stops = [
-    { seg: "dishes", catF: null },
+    ...hideSeg ? [] : [{ seg: "dishes", catF: null }],
     { seg: "prods", catF: "all" },
     { seg: "prods", catF: "ready" },
     ...cats.map((c) => ({ seg: "prods", catF: c.id }))
@@ -1219,7 +1276,11 @@ function PantryList({
       onFocusChange: setSearchFocused,
       showBack: searchMode
     }
-  ), /* @__PURE__ */ React.createElement("div", { className: "segwrap" + (searchMode ? " hid" : "") }, /* @__PURE__ */ React.createElement("div", { className: "seg" }, /* @__PURE__ */ React.createElement("button", { className: seg === "dishes" ? "on" : "", onClick: () => setSegTracked("dishes") }, "\u0411\u043B\u044E\u0434\u0430"), /* @__PURE__ */ React.createElement("button", { className: seg === "prods" ? "on" : "", onClick: () => setSegTracked("prods") }, "\u041F\u0440\u043E\u0434\u0443\u043A\u0442\u044B"))), !searchMode && /* @__PURE__ */ React.createElement("button", { className: "btn solid wide", onClick: onAdd }, "+ ", addLabel), !searchMode && seg === "prods" && /* @__PURE__ */ React.createElement(CatBar, { bleed: true, readyChip: true, cats, catF, setCatF: setCatFTracked, onGear }), q ? /* @__PURE__ */ React.createElement("section", { className: "list" }, searchRows.length ? searchRows : /* @__PURE__ */ React.createElement("div", { className: "empty" }, "\u041D\u0438\u0447\u0435\u0433\u043E \u043D\u0435 \u043D\u0430\u0448\u043B\u043E\u0441\u044C")) : searchMode ? historyRows.length ? /* @__PURE__ */ React.createElement("section", { className: "list" }, /* @__PURE__ */ React.createElement("div", { className: "grp" }, "\u041D\u0435\u0434\u0430\u0432\u043D\u043E \u0438\u0441\u043A\u0430\u043B\u0438"), historyRows) : /* @__PURE__ */ React.createElement("div", { className: "empty" }, "\u0422\u0443\u0442 \u043F\u043E\u044F\u0432\u0438\u0442\u0441\u044F \u0442\u043E, \u0447\u0442\u043E \u043D\u0430\u0439\u0434\u0451\u0448\u044C \u0447\u0435\u0440\u0435\u0437 \u043F\u043E\u0438\u0441\u043A") : /* @__PURE__ */ React.createElement("div", { className: "list-stage" }, peek && /* @__PURE__ */ React.createElement("section", { className: "list list-peek peek-" + peek.dir, ref: peekRef }, peek.content), /* @__PURE__ */ React.createElement("section", { className: "list list-live", ref: listRef }, seg === "dishes" ? dishesContent : catGroupRows)));
+  ), /* @__PURE__ */ React.createElement("div", { className: "segwrap" + (searchMode || hideSeg ? " hid" : "") }, /* @__PURE__ */ React.createElement("div", { className: "seg" }, /* @__PURE__ */ React.createElement("button", { className: seg === "dishes" ? "on" : "", onClick: () => setSegTracked("dishes") }, "\u0411\u043B\u044E\u0434\u0430"), /* @__PURE__ */ React.createElement("button", { className: seg === "prods" ? "on" : "", onClick: () => setSegTracked("prods") }, "\u041F\u0440\u043E\u0434\u0443\u043A\u0442\u044B"))), !searchMode && /* @__PURE__ */ React.createElement("button", { className: "btn solid wide", onClick: onAdd }, "+ ", addLabel), !searchMode && seg === "prods" && /* @__PURE__ */ React.createElement(CatBar, { bleed: true, readyChip: true, cats, catF, setCatF: setCatFTracked, onGear }), q ? /* @__PURE__ */ React.createElement("section", { className: "list" }, searchRows.length ? searchRows : /* @__PURE__ */ React.createElement("div", { className: "empty" }, "\u041D\u0438\u0447\u0435\u0433\u043E \u043D\u0435 \u043D\u0430\u0448\u043B\u043E\u0441\u044C")) : searchMode ? historyRows.length ? /* @__PURE__ */ React.createElement("section", { className: "list" }, /* @__PURE__ */ React.createElement("div", { className: "grp" }, "\u041D\u0435\u0434\u0430\u0432\u043D\u043E \u0438\u0441\u043A\u0430\u043B\u0438"), historyRows) : (
+    /* в той же обёртке, что и «Ничего не нашлось», иначе два пустых состояния
+       поиска встают на разной высоте: у .list свой верхний отступ */
+    /* @__PURE__ */ React.createElement("section", { className: "list" }, /* @__PURE__ */ React.createElement("div", { className: "empty" }, "\u0422\u0443\u0442 \u043F\u043E\u044F\u0432\u0438\u0442\u0441\u044F \u0442\u043E, \u0447\u0442\u043E \u043D\u0430\u0439\u0434\u0451\u0448\u044C \u0447\u0435\u0440\u0435\u0437 \u043F\u043E\u0438\u0441\u043A"))
+  ) : /* @__PURE__ */ React.createElement("div", { className: "list-stage" }, peek && /* @__PURE__ */ React.createElement("section", { className: "list list-peek peek-" + peek.dir, ref: peekRef }, peek.content), /* @__PURE__ */ React.createElement("section", { className: "list list-live", ref: listRef }, seg === "dishes" ? dishesContent : catGroupRows)));
 }
 function App() {
   const [tab, setTab] = useState("belly");
@@ -1253,6 +1314,10 @@ function App() {
   const [sheet, setSheet] = useState(null);
   const [q, setQ] = useState("");
   const closeAddFood = () => {
+    setQ("");
+    setSheet(null);
+  };
+  const closePick = () => {
     setQ("");
     setSheet(null);
   };
@@ -1483,9 +1548,6 @@ function App() {
       (x) => x.id === pid ? { ...x, dw: grams, uses: (x.uses || 0) + 1 } : x
     )
   );
-  const markUsed = (pid) => setLib(
-    (l) => l.map((x) => x.id === pid ? { ...x, uses: (x.uses || 0) + 1 } : x)
-  );
   const draftT = draft ? totalsOf(draft.items) : null;
   const draftItem = (ing) => ({
     id: uid(),
@@ -1495,8 +1557,6 @@ function App() {
     grams: ing.dw || 100
   });
   const toggleInDraft = (ing) => {
-    const has = draft.items.find((x) => x.pid === ing.id);
-    if (!has) markUsed(ing.id);
     setDraft((dr) => {
       const h = dr.items.find((x) => x.pid === ing.id);
       return h ? { ...dr, items: dr.items.filter((x) => x.pid !== ing.id) } : { ...dr, items: [...dr.items, draftItem(ing)] };
@@ -1596,12 +1656,14 @@ function App() {
     }
     return { freq };
   }, [days]);
-  const filtered = [...lib].sort(
-    (a, b) => (b.uses || 0) - (a.uses || 0) || a.name.localeCompare(b.name, "ru")
-  ).filter((x) => matchesQuery(x.name, q));
   const byUses = (a, b) => (b.uses || 0) - (a.uses || 0) || a.name.localeCompare(b.name, "ru");
-  const dishesFiltered = [...dishes].sort(byUses).filter((x) => matchesQuery(x.name, q));
-  const pickCatKnown = cats.some((c) => c.id === catF);
+  const byQuery = (src) => {
+    const hits = src.filter((x) => matchesQuery(x.name, q));
+    if (!q) return hits.sort(byUses);
+    return hits.map((x) => ({ x, s: queryScore(x.name, q) })).sort((a, b) => a.s - b.s || a.x.name.localeCompare(b.x.name, "ru")).map((r) => r.x);
+  };
+  const filtered = byQuery(lib);
+  const dishesFiltered = byQuery(dishes);
   const deleteDish = (d) => {
     setDishes((ds) => ds.filter((x) => x.id !== d.id));
     notify(`\xAB${d.name}\xBB \u0443\u0434\u0430\u043B\u0435\u043D\u043E`, () => setDishes((ds) => [d, ...ds]));
@@ -1752,7 +1814,7 @@ function App() {
   };
   if (!ready)
     return /* @__PURE__ */ React.createElement("div", { className: "app" + (dark ? " dark" : "") }, /* @__PURE__ */ React.createElement("style", null, CSS), /* @__PURE__ */ React.createElement("div", { className: "loading" }, "\u0417\u0430\u0433\u0440\u0443\u0437\u043A\u0430\u2026"));
-  return /* @__PURE__ */ React.createElement("div", { className: "app" + (dark ? " dark" : "") }, /* @__PURE__ */ React.createElement("style", null, CSS), !draft && /* @__PURE__ */ React.createElement("header", { className: "top" }, /* @__PURE__ */ React.createElement("div", { className: "brand" }, /* @__PURE__ */ React.createElement("h1", null, "\u041A\u043E\u0442\u0451\u043B"), /* @__PURE__ */ React.createElement("span", { className: "hsl" }, "/"), /* @__PURE__ */ React.createElement("span", { className: "hsec" }, tab === "belly" ? "\u0416\u0438\u0432\u043E\u0442\u0438\u043A" : tab === "pantry" ? "\u041A\u043B\u0430\u0434\u043E\u0432\u0430\u044F" : "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438"))), !draft && tab === "belly" && /* @__PURE__ */ React.createElement("main", null, storageOK === false && /* @__PURE__ */ React.createElement("div", { className: "warn" }, "\u0425\u0440\u0430\u043D\u0438\u043B\u0438\u0449\u0435 \u043D\u0435\u0434\u043E\u0441\u0442\u0443\u043F\u043D\u043E \u2014 \u0434\u0430\u043D\u043D\u044B\u0435 \u043F\u0440\u043E\u043F\u0430\u0434\u0443\u0442 \u043F\u0440\u0438 \u0437\u0430\u043A\u0440\u044B\u0442\u0438\u0438. \u0421\u0434\u0435\u043B\u0430\u0439 \u044D\u043A\u0441\u043F\u043E\u0440\u0442 \u0432\xA0\u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0430\u0445 \u2699"), /* @__PURE__ */ React.createElement("div", { className: "board-stage" }, peek && /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement("div", { className: "app" + (dark ? " dark" : "") + (toast ? " toast-on" : "") }, /* @__PURE__ */ React.createElement("style", null, CSS), !draft && /* @__PURE__ */ React.createElement("header", { className: "top" }, /* @__PURE__ */ React.createElement("div", { className: "brand" }, /* @__PURE__ */ React.createElement("h1", null, "\u041A\u043E\u0442\u0451\u043B"), /* @__PURE__ */ React.createElement("span", { className: "hsl" }, "/"), /* @__PURE__ */ React.createElement("span", { className: "hsec" }, tab === "belly" ? "\u0416\u0438\u0432\u043E\u0442\u0438\u043A" : tab === "pantry" ? "\u041A\u043B\u0430\u0434\u043E\u0432\u0430\u044F" : "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438"))), !draft && tab === "belly" && /* @__PURE__ */ React.createElement("main", null, storageOK === false && /* @__PURE__ */ React.createElement("div", { className: "warn" }, "\u0425\u0440\u0430\u043D\u0438\u043B\u0438\u0449\u0435 \u043D\u0435\u0434\u043E\u0441\u0442\u0443\u043F\u043D\u043E \u2014 \u0434\u0430\u043D\u043D\u044B\u0435 \u043F\u0440\u043E\u043F\u0430\u0434\u0443\u0442 \u043F\u0440\u0438 \u0437\u0430\u043A\u0440\u044B\u0442\u0438\u0438. \u0421\u0434\u0435\u043B\u0430\u0439 \u044D\u043A\u0441\u043F\u043E\u0440\u0442 \u0432\xA0\u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0430\u0445 \u2699"), /* @__PURE__ */ React.createElement("div", { className: "board-stage" }, peek && /* @__PURE__ */ React.createElement(
     DayBoard,
     {
       boardRef: peekRef,
@@ -2159,7 +2221,7 @@ function App() {
             })
           },
           fmt(g, 0),
-          " \u0433"
+          /* @__PURE__ */ React.createElement("em", null, "\u0433")
         )
       );
     })),
@@ -2259,50 +2321,37 @@ function App() {
     {
       title: "\u0427\u0442\u043E \u043A\u043B\u0430\u0434\u0451\u043C?",
       full: true,
-      onClose: () => setSheet(null),
-      footer: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", { className: "btn solid", onClick: () => setSheet(null) }, "\u0413\u043E\u0442\u043E\u0432\u043E"), /* @__PURE__ */ React.createElement("button", { className: "btn ghost", onClick: () => setSheet(null) }, "\u041E\u0442\u043C\u0435\u043D\u0430"))
+      onClose: closePick,
+      footer: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", { className: "btn solid", onClick: closePick }, "\u0413\u043E\u0442\u043E\u0432\u043E"), /* @__PURE__ */ React.createElement("button", { className: "btn ghost", onClick: closePick }, "\u041E\u0442\u043C\u0435\u043D\u0430"))
     },
-    lib.length > 10 ? /* @__PURE__ */ React.createElement("div", { className: "srow" }, /* @__PURE__ */ React.createElement(SearchBox, { q, setQ, placeholder: "\u041F\u043E\u0438\u0441\u043A \u043F\u043E\xA0\u043F\u0440\u043E\u0434\u0443\u043A\u0442\u0430\u043C" }), /* @__PURE__ */ React.createElement(
-      "button",
+    /* @__PURE__ */ React.createElement(
+      PantryList,
       {
-        className: "btn solid plus",
-        "aria-label": "\u041D\u043E\u0432\u044B\u0439 \u043F\u0440\u043E\u0434\u0443\u043A\u0442",
-        onClick: () => setSheet({ mode: "new" })
-      },
-      "+"
-    )) : /* @__PURE__ */ React.createElement(
-      "button",
-      {
-        className: "btn solid wide",
-        onClick: () => setSheet({ mode: "new" })
-      },
-      "+ \u041D\u043E\u0432\u044B\u0439 \u043F\u0440\u043E\u0434\u0443\u043A\u0442"
-    ),
-    !q && /* @__PURE__ */ React.createElement(
-      CatBar,
-      {
-        bleed: true,
+        q,
+        setQ,
+        seg: "prods",
+        hideSeg: true,
+        setSeg: () => {
+        },
+        dishes,
+        dishesFiltered,
+        onTapDish: () => {
+        },
+        lib,
+        filtered,
+        diaryStats,
+        searchLog,
+        pushSearchLog,
+        selectedIds: new Set(draft.items.map((x) => x.pid)),
+        onTapProd: toggleInDraft,
         cats,
         catF,
         setCatF,
-        onGear: () => setSheet({ mode: "cats", list: cats.map((c) => ({ ...c })) })
+        onGear: () => setSheet({ mode: "cats", list: cats.map((c) => ({ ...c })) }),
+        addLabel: "\u041D\u043E\u0432\u044B\u0439 \u043F\u0440\u043E\u0434\u0443\u043A\u0442",
+        onAdd: () => setSheet({ mode: "new" })
       }
-    ),
-    /* @__PURE__ */ React.createElement("div", { className: "pick-list" }, filtered.filter((x) => !pickCatKnown || (x.cat || "other") === catF).map((ing) => {
-      const inDraft = draft.items.find((x) => x.pid === ing.id);
-      return /* @__PURE__ */ React.createElement(
-        "button",
-        {
-          className: "pick" + (inDraft ? " picked" : ""),
-          key: ing.id,
-          onClick: () => toggleInDraft(ing)
-        },
-        /* @__PURE__ */ React.createElement("span", null, ing.name),
-        /* @__PURE__ */ React.createElement("span", { className: "mono sub" }, inDraft ? `\u2713 ${fmt(num(inDraft.grams), 0)} \u0433` : `${fmt(ing.k, 0)} \u043A\u043A\u0430\u043B/100 \u0433`)
-      );
-    }), filtered.filter(
-      (x) => !pickCatKnown || (x.cat || "other") === catF
-    ).length === 0 && /* @__PURE__ */ React.createElement("div", { className: "empty" }, "\u0422\u0430\u043A\u043E\u0433\u043E \u043F\u0440\u043E\u0434\u0443\u043A\u0442\u0430 \u0435\u0449\u0451 \u043D\u0435\u0442"))
+    )
   ), (sheet == null ? void 0 : sheet.mode) === "cats" && /* @__PURE__ */ React.createElement(
     Sheet,
     {
@@ -2573,15 +2622,21 @@ input::placeholder{color:var(--sub);opacity:.55}
 .tabbar svg{display:block}
 
 /* ---- \u0441\u043D\u044D\u043A\u0431\u0430\u0440 \u0441 \u043E\u0442\u043C\u0435\u043D\u043E\u0439: \u043A\u043E\u043D\u0442\u0440\u0430\u0441\u0442\u043D\u044B\u0439, \u0431\u0435\u0437 \u0442\u0435\u043D\u0438/\u0431\u043B\u044E\u0440\u0430, \u0441 \u043F\u043E\u043B\u043E\u0441\u043E\u0439 \u043F\u0440\u043E\u0433\u0440\u0435\u0441\u0441\u0430 ---- */
-.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:200;
+.toast{position:fixed;left:50%;transform:translateX(-50%);z-index:200;
+  bottom:calc(max(12px,env(safe-area-inset-bottom)) + 73px);
   width:calc(100% - 28px);max-width:492px;
   background:var(--pill);color:var(--pillT);border-radius:16px;
   overflow:hidden;animation:toastup .18s ease}
-.toast.raised{bottom:152px}
+.toast.raised{bottom:calc(var(--sheetFootH,0px) + 10px)}
+/* \u043F\u043E\u043A\u0430 \u0441\u043D\u044D\u043A \u0432\u0438\u0441\u0438\u0442, \u043E\u043D \u043F\u0435\u0440\u0435\u043A\u0440\u044B\u0432\u0430\u0435\u0442 \u043D\u0438\u0437 \u0441\u043F\u0438\u0441\u043A\u0430 \u2014 \u043E\u0441\u0432\u043E\u0431\u043E\u0436\u0434\u0430\u0435\u043C \u043C\u0435\u0441\u0442\u043E \u043F\u043E\u0434 \u043D\u0438\u043C,
+   \u0438\u043D\u0430\u0447\u0435 \u0434\u043E \u043F\u043E\u0441\u043B\u0435\u0434\u043D\u0435\u0433\u043E \u043F\u0443\u043D\u043A\u0442\u0430 \u043D\u0435 \u0434\u043E\u0442\u044F\u043D\u0443\u0442\u044C\u0441\u044F. \u0423\u0431\u0438\u0440\u0430\u0435\u0442\u0441\u044F \u0432\u043C\u0435\u0441\u0442\u0435 \u0441\u043E \u0441\u043D\u044D\u043A\u043E\u043C */
+.app.toast-on{padding-bottom:calc(108px + 68px + env(safe-area-inset-bottom))}
+.app.toast-on .sheet-body{padding-bottom:calc(var(--footH,0px) + 68px)}
 .toast-row{display:flex;align-items:center;gap:16px;padding:15px 16px}
 .toast-msg{flex:1;font-size:15px;font-weight:500;line-height:1.35;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.toast-undo{flex-shrink:0;color:var(--accent);font-weight:700;font-size:15px;cursor:pointer}
+.toast-undo{flex-shrink:0;border:0;background:transparent;padding:0;font:inherit;
+  color:var(--accent);font-weight:700;font-size:15px;cursor:pointer}
 .toast-track{height:3px;background:rgba(128,128,128,.3)}
 .toast-track i{display:block;height:100%;width:100%;background:var(--accent);
   transform-origin:left;animation:toastshrink 5s linear forwards}
@@ -2702,8 +2757,13 @@ input::placeholder{color:var(--sub);opacity:.55}
 .lib-row{cursor:pointer;font:inherit;text-align:left}
 .empty{padding:22px 16px;text-align:center;color:var(--sub);
   background:var(--emptybg);border-radius:var(--r);font-size:14px}
-.wchip{border:0;background:var(--fieldbg);border-radius:12px;
-  padding:10px 13px;font-size:15px;color:var(--ink);flex-shrink:0;cursor:pointer}
+/* \u0432\u0435\u0441 \u0438\u043D\u0433\u0440\u0435\u0434\u0438\u0435\u043D\u0442\u0430 \u2014 \u044D\u0442\u043E \u043F\u043E\u043B\u0435 \u0432\u0432\u043E\u0434\u0430, \u0430 \u043D\u0435 \u043F\u043E\u0434\u043F\u0438\u0441\u044C: \u0442\u0435 \u0436\u0435 \u0444\u043E\u043D, \u0440\u0430\u043C\u043A\u0430 \u0438 \u0441\u043A\u0440\u0443\u0433\u043B\u0435\u043D\u0438\u0435,
+   \u0447\u0442\u043E \u0443 .fld, \u0438\u043D\u0430\u0447\u0435 \u043D\u0435 \u0447\u0438\u0442\u0430\u0435\u0442\u0441\u044F \u043A\u0430\u043A \u0442\u043E, \u0447\u0442\u043E \u043C\u043E\u0436\u043D\u043E \u043D\u0430\u0436\u0430\u0442\u044C \u0438 \u043F\u043E\u043C\u0435\u043D\u044F\u0442\u044C */
+.wchip{background:var(--fieldbg);border:.5px solid var(--line);border-radius:14px;
+  padding:10px 13px;font-size:16px;color:var(--ink);flex-shrink:0;cursor:pointer;
+  display:flex;align-items:baseline;gap:5px}
+.wchip em{font-style:normal;font-size:13px;color:var(--sub)}
+.wchip:active{box-shadow:0 0 0 1.5px var(--accent)}
 
 /* ---- \u0441\u0432\u0430\u0439\u043F-\u0443\u0434\u0430\u043B\u0435\u043D\u0438\u0435 ---- */
 .swipe{position:relative;border-radius:var(--r);overflow:hidden}
@@ -2849,9 +2909,11 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
    \u043D\u0435 \u0430\u043A\u0446\u0435\u043D\u0442\u043D\u044B\u0439 \u2014 \u044F\u0433\u043E\u0434\u043D\u044B\u0439 \u0446\u0432\u0435\u0442 \u0432 \u0438\u043D\u0442\u0435\u0440\u0444\u0435\u0439\u0441\u0435 \u043E\u0437\u043D\u0430\u0447\u0430\u0435\u0442 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0435 \u0438\u043B\u0438 \u043E\u0448\u0438\u0431\u043A\u0443,
    \u0430 \u044D\u0442\u043E \u043F\u0440\u043E\u0441\u0442\u043E \u043F\u043E\u043C\u0435\u0442\u043A\u0430, \u043E\u043D\u0430 \u043D\u0435 \u0434\u043E\u043B\u0436\u043D\u0430 \u043A\u043E\u043D\u043A\u0443\u0440\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u0441 \u043A\u043D\u043E\u043F\u043A\u0430\u043C\u0438 \u0437\u0430 \u0432\u043D\u0438\u043C\u0430\u043D\u0438\u0435 */
 .freq-mark{flex-shrink:0;display:flex;align-items:center;color:var(--sub);opacity:.75}
+.row.picked{border-color:var(--accent);box-shadow:inset 0 0 0 .5px var(--accent);background:var(--picked)}
+.row.picked .row-name{color:var(--accent)}
 .grp{font-size:11px;letter-spacing:.12em;text-transform:uppercase;
   color:var(--sub);font-weight:600;padding:8px 2px 0}
-.list>.grp:first-child,.pick-list>.grp:first-child{padding-top:0}
+.list>.grp:first-child{padding-top:0}
 
 /* ---- \u0444\u043E\u0440\u043C\u044B ---- */
 .grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
@@ -2882,7 +2944,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
 }
 main{display:flex;flex-direction:column;gap:16px;flex:1;min-height:0}
 main>.list,main>.list-stage,
-.sheet-body>.pick-list,.sheet-body>.list,.sheet-body>.list-stage{margin-top:8px}
+.sheet-body>.list,.sheet-body>.list-stage{margin-top:8px}
 .form{display:flex;flex-direction:column;gap:16px}
 .hint{font-size:12px;color:var(--sub);line-height:1.45}
 .build-tag{font-size:11px;color:var(--sub);opacity:.5;text-align:center;margin-top:4px}
@@ -2957,15 +3019,6 @@ main>.list,main>.list-stage,
 .x-plain{border:0;background:transparent;color:var(--sub);width:44px;height:44px;
   margin:-5px -12px -5px 0;font-size:22px;line-height:1;cursor:pointer;
   display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.pick-list{display:flex;flex-direction:column;gap:8px}
-.pick{display:flex;justify-content:space-between;align-items:center;gap:10px;
-  border:.5px solid var(--line);background:var(--card);border-radius:14px;
-  padding:13px 14px;font:inherit;cursor:pointer;text-align:left}
-.pick:active{background:var(--picked)}
-.pick.picked{background:var(--picked);border-color:var(--accent);
-  box-shadow:inset 0 0 0 .5px var(--accent)}
-.pick.picked span:first-child{color:var(--accent)}
-.pick .sub{font-size:11.5px;color:var(--sub);flex-shrink:0}
 
 @keyframes up{from{transform:translateY(24px);opacity:.6}to{transform:none;opacity:1}}
 @keyframes fade{from{opacity:0}to{opacity:1}}
