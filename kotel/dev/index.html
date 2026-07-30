@@ -321,7 +321,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 </script>
 <script>
 const { useState, useEffect, useMemo, useRef } = React;
-const BUILD = { v: "1.7.10", date: "2026-07-30", note: "\u0431\u0430\u0437\u0430 \u043F\u0440\u043E\u0434\u0443\u043A\u0442\u043E\u0432 \u0438 \u0431\u043B\u044E\u0434 \u0438\u0437 \u0431\u044D\u043A\u0430\u043F\u0430" };
+const BUILD = { v: "1.7.11", date: "2026-07-30", note: "\u043E\u0442\u043B\u0430\u0434\u043E\u0447\u043D\u044B\u0439 \u0431\u043B\u043E\u043A \u0432 \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0430\u0445" };
 const uid = () => Math.random().toString(36).slice(2, 10);
 const num = (v) => {
   if (typeof v === "number") return v;
@@ -581,6 +581,96 @@ function Field({ label, value, onChange, suffix, type = "decimal", dot, placehol
     }
   ), suffix && /* @__PURE__ */ React.createElement("em", null, suffix)));
 }
+function DiagPanel() {
+  const [now, setNow] = useState(null);
+  const [copied, setCopied] = useState(false);
+  useEffect(() => {
+    const tick = () => setNow(readEnv());
+    tick();
+    const id = setInterval(tick, 1e3);
+    return () => clearInterval(id);
+  }, []);
+  const dump = JSON.stringify(
+    { build: BUILD.v, boot: DIAG.boot, late: DIAG.late, now, sheet: DIAG.sheet },
+    null,
+    1
+  );
+  const copy = () => {
+    const done = () => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(dump).then(done, () => {
+      });
+      return;
+    }
+    const ta = document.createElement("textarea");
+    ta.value = dump;
+    ta.style.cssText = "position:fixed;top:0;left:0;opacity:0";
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand("copy");
+      done();
+    } catch (e) {
+    }
+    ta.remove();
+  };
+  return /* @__PURE__ */ React.createElement("div", { className: "ctrl" }, /* @__PURE__ */ React.createElement("span", { className: "lab" }, "\u041E\u0442\u043B\u0430\u0434\u043A\u0430"), /* @__PURE__ */ React.createElement(
+    "pre",
+    {
+      className: "mono",
+      style: {
+        margin: 0,
+        padding: 12,
+        background: "var(--card)",
+        borderRadius: 14,
+        fontSize: 11,
+        lineHeight: 1.45,
+        whiteSpace: "pre-wrap",
+        wordBreak: "break-word",
+        maxHeight: 320,
+        overflow: "auto"
+      }
+    },
+    dump
+  ), /* @__PURE__ */ React.createElement("button", { className: "btn ghost", onClick: copy }, copied ? "\u0421\u043A\u043E\u043F\u0438\u0440\u043E\u0432\u0430\u043D\u043E" : "\u0421\u043A\u043E\u043F\u0438\u0440\u043E\u0432\u0430\u0442\u044C"), /* @__PURE__ */ React.createElement("p", { className: "hint" }, "\u041E\u0442\u043A\u0440\u043E\u0439 \u0448\u0442\u043E\u0440\u043A\u0443, \u043F\u043E\u043F\u0440\u043E\u0431\u0443\u0439 \u043F\u0440\u043E\u0441\u043A\u0440\u043E\u043B\u043B\u0438\u0442\u044C, \u0437\u0430\u043A\u0440\u043E\u0439 \u2014 \u0431\u043B\u043E\u043A \u043F\u043E\u043A\u0430\u0436\u0435\u0442 \u043F\u043E\u0441\u043B\u0435\u0434\u043D\u0438\u0439 \u0437\u0430\u043C\u0435\u0440. `room` \u2014 \u0441\u043A\u043E\u043B\u044C\u043A\u043E \u043F\u0438\u043A\u0441\u0435\u043B\u0435\u0439 \u0435\u0441\u0442\u044C \u043A\u0443\u0434\u0430 \u043A\u0440\u0443\u0442\u0438\u0442\u044C, `maxTop` \u2014 \u0441\u043A\u043E\u043B\u044C\u043A\u043E \u0440\u0435\u0430\u043B\u044C\u043D\u043E \u043F\u0440\u043E\u043A\u0440\u0443\u0442\u0438\u043B\u043E\u0441\u044C, `moves` \u2014 \u0441\u043A\u043E\u043B\u044C\u043A\u043E touchmove \u0434\u043E\u0448\u043B\u043E \u0434\u043E \u0448\u0442\u043E\u0440\u043A\u0438."));
+}
+const DIAG = { boot: null, late: null, sheet: null };
+function readEnv() {
+  try {
+    if (!document.body) return null;
+    const p = document.createElement("div");
+    p.style.cssText = "position:fixed;left:-9999px;top:0;width:1px;visibility:hidden;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)";
+    document.body.appendChild(p);
+    const cs = getComputedStyle(p);
+    const r = {
+      t: Math.round(performance.now()),
+      sat: Math.round(parseFloat(cs.paddingTop) || 0),
+      sab: Math.round(parseFloat(cs.paddingBottom) || 0),
+      dvh: Math.round(parseFloat(cs.height) || 0),
+      innerH: window.innerHeight,
+      vvH: window.visualViewport ? Math.round(window.visualViewport.height) : null,
+      screenH: window.screen ? window.screen.height : null,
+      standalone: !!window.navigator.standalone || window.matchMedia && window.matchMedia("(display-mode: standalone)").matches
+    };
+    p.remove();
+    return r;
+  } catch (e) {
+    return { err: String(e) };
+  }
+}
+if (typeof document !== "undefined") {
+  const bootDiag = () => {
+    DIAG.boot = readEnv();
+    setTimeout(() => {
+      DIAG.late = readEnv();
+    }, 1500);
+  };
+  if (document.body) bootDiag();
+  else document.addEventListener("DOMContentLoaded", bootDiag);
+}
 let openSheets = 0;
 let lockedY = 0;
 function lockDoc() {
@@ -612,6 +702,47 @@ function Sheet({ title, onClose, full, footer, children }) {
     lockDoc();
     return unlockDoc;
   }, []);
+  useEffect(() => {
+    const s = {
+      title,
+      full: !!full,
+      opened: Math.round(performance.now()),
+      envAtOpen: readEnv(),
+      moves: 0,
+      maxTop: 0,
+      docMax: 0
+    };
+    DIAG.sheet = s;
+    const tick = () => {
+      const sh = ref.current, bd = bodyRef.current, ft = footRef.current;
+      if (!sh || !bd) return;
+      const wr = sh.parentNode;
+      s.wrapH = wr && wr.offsetHeight;
+      s.sheetH = sh.offsetHeight;
+      s.bodyH = bd.clientHeight;
+      s.scrollH = bd.scrollHeight;
+      s.room = bd.scrollHeight - bd.clientHeight;
+      s.top = Math.round(bd.scrollTop);
+      s.maxTop = Math.max(s.maxTop, Math.round(bd.scrollTop));
+      s.footH = ft && ft.offsetHeight;
+      s.footVar = sh.style.getPropertyValue("--footH");
+      s.bodyPos = getComputedStyle(document.body).position;
+      s.bodyOffset = document.body.style.top || "0px";
+      s.locks = openSheets;
+      s.docMax = Math.max(s.docMax, Math.abs(Math.round(window.scrollY)));
+    };
+    tick();
+    const id = setInterval(tick, 400);
+    const el = ref.current;
+    const onMove = () => {
+      s.moves++;
+    };
+    if (el) el.addEventListener("touchmove", onMove, { passive: true });
+    return () => {
+      clearInterval(id);
+      if (el) el.removeEventListener("touchmove", onMove);
+    };
+  }, [title, full]);
   useEffect(() => {
     const sh = ref.current;
     if (!sh) return;
@@ -2044,7 +2175,7 @@ function App() {
       /* @__PURE__ */ React.createElement("circle", { cx: "12", cy: "12", r: "3" }),
       keyShown && /* @__PURE__ */ React.createElement("path", { d: "M4 20 20 4" })
     )
-  )), /* @__PURE__ */ React.createElement("p", { className: "hint" }, "\u0421 \u043A\u043B\u044E\u0447\u043E\u043C \u0432\xA0\u043A\u0430\u0440\u0442\u043E\u0447\u043A\u0435 \u043F\u0440\u043E\u0434\u0443\u043A\u0442\u0430 \u043F\u043E\u044F\u0432\u0438\u0442\u0441\u044F \u043A\u043D\u043E\u043F\u043A\u0430 \xAB\u0417\u0430\u043F\u0440\u043E\u0441\u0438\u0442\u044C \u041A\u0411\u0416\u0423\xBB \u2014 Claude Haiku \u043F\u043E\u0434\u0441\u0442\u0430\u0432\u0438\u0442 \u043F\u0440\u0438\u043C\u0435\u0440\u043D\u044B\u0435 \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u044F \u043D\u0430 100 \u0433. \u0425\u0440\u0430\u043D\u0438\u0442\u0441\u044F \u0442\u043E\u043B\u044C\u043A\u043E \u043D\u0430\xA0\u044D\u0442\u043E\u043C \u0443\u0441\u0442\u0440\u043E\u0439\u0441\u0442\u0432\u0435.")), /* @__PURE__ */ React.createElement("p", { className: "build-tag mono" }, "v", BUILD.v, " \xB7 ", BUILD.date)), (sheet == null ? void 0 : sheet.mode) === "addFood" && /* @__PURE__ */ React.createElement(
+  )), /* @__PURE__ */ React.createElement("p", { className: "hint" }, "\u0421 \u043A\u043B\u044E\u0447\u043E\u043C \u0432\xA0\u043A\u0430\u0440\u0442\u043E\u0447\u043A\u0435 \u043F\u0440\u043E\u0434\u0443\u043A\u0442\u0430 \u043F\u043E\u044F\u0432\u0438\u0442\u0441\u044F \u043A\u043D\u043E\u043F\u043A\u0430 \xAB\u0417\u0430\u043F\u0440\u043E\u0441\u0438\u0442\u044C \u041A\u0411\u0416\u0423\xBB \u2014 Claude Haiku \u043F\u043E\u0434\u0441\u0442\u0430\u0432\u0438\u0442 \u043F\u0440\u0438\u043C\u0435\u0440\u043D\u044B\u0435 \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u044F \u043D\u0430 100 \u0433. \u0425\u0440\u0430\u043D\u0438\u0442\u0441\u044F \u0442\u043E\u043B\u044C\u043A\u043E \u043D\u0430\xA0\u044D\u0442\u043E\u043C \u0443\u0441\u0442\u0440\u043E\u0439\u0441\u0442\u0432\u0435.")), /* @__PURE__ */ React.createElement(DiagPanel, null), /* @__PURE__ */ React.createElement("p", { className: "build-tag mono" }, "v", BUILD.v, " \xB7 ", BUILD.date)), (sheet == null ? void 0 : sheet.mode) === "addFood" && /* @__PURE__ */ React.createElement(
     Sheet,
     {
       title: "\u0427\u0442\u043E \u0441\u044A\u0435\u043B?",
