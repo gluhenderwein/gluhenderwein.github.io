@@ -321,7 +321,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 </script>
 <script>
 const { useState, useEffect, useMemo, useRef } = React;
-const BUILD = { v: "1.7.11", date: "2026-07-30", note: "\u043E\u0442\u043B\u0430\u0434\u043E\u0447\u043D\u044B\u0439 \u0431\u043B\u043E\u043A \u0432 \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0430\u0445" };
+const BUILD = { v: "1.7.16", date: "2026-07-31", note: "\u043E\u0442\u043B\u0430\u0434\u043A\u0430 \u0441\u0432\u0451\u0440\u043D\u0443\u0442\u0430 \u0432 \u043A\u043D\u043E\u043F\u043A\u0443" };
 const uid = () => Math.random().toString(36).slice(2, 10);
 const num = (v) => {
   if (typeof v === "number") return v;
@@ -591,7 +591,7 @@ function DiagPanel() {
     return () => clearInterval(id);
   }, []);
   const dump = JSON.stringify(
-    { build: BUILD.v, boot: DIAG.boot, late: DIAG.late, now, sheet: DIAG.sheet },
+    { build: BUILD.v, boot: DIAG.boot, late: DIAG.late, now, sheets: DIAG.sheets },
     null,
     1
   );
@@ -617,27 +617,9 @@ function DiagPanel() {
     }
     ta.remove();
   };
-  return /* @__PURE__ */ React.createElement("div", { className: "ctrl" }, /* @__PURE__ */ React.createElement("span", { className: "lab" }, "\u041E\u0442\u043B\u0430\u0434\u043A\u0430"), /* @__PURE__ */ React.createElement(
-    "pre",
-    {
-      className: "mono",
-      style: {
-        margin: 0,
-        padding: 12,
-        background: "var(--card)",
-        borderRadius: 14,
-        fontSize: 11,
-        lineHeight: 1.45,
-        whiteSpace: "pre-wrap",
-        wordBreak: "break-word",
-        maxHeight: 320,
-        overflow: "auto"
-      }
-    },
-    dump
-  ), /* @__PURE__ */ React.createElement("button", { className: "btn ghost", onClick: copy }, copied ? "\u0421\u043A\u043E\u043F\u0438\u0440\u043E\u0432\u0430\u043D\u043E" : "\u0421\u043A\u043E\u043F\u0438\u0440\u043E\u0432\u0430\u0442\u044C"), /* @__PURE__ */ React.createElement("p", { className: "hint" }, "\u041E\u0442\u043A\u0440\u043E\u0439 \u0448\u0442\u043E\u0440\u043A\u0443, \u043F\u043E\u043F\u0440\u043E\u0431\u0443\u0439 \u043F\u0440\u043E\u0441\u043A\u0440\u043E\u043B\u043B\u0438\u0442\u044C, \u0437\u0430\u043A\u0440\u043E\u0439 \u2014 \u0431\u043B\u043E\u043A \u043F\u043E\u043A\u0430\u0436\u0435\u0442 \u043F\u043E\u0441\u043B\u0435\u0434\u043D\u0438\u0439 \u0437\u0430\u043C\u0435\u0440. `room` \u2014 \u0441\u043A\u043E\u043B\u044C\u043A\u043E \u043F\u0438\u043A\u0441\u0435\u043B\u0435\u0439 \u0435\u0441\u0442\u044C \u043A\u0443\u0434\u0430 \u043A\u0440\u0443\u0442\u0438\u0442\u044C, `maxTop` \u2014 \u0441\u043A\u043E\u043B\u044C\u043A\u043E \u0440\u0435\u0430\u043B\u044C\u043D\u043E \u043F\u0440\u043E\u043A\u0440\u0443\u0442\u0438\u043B\u043E\u0441\u044C, `moves` \u2014 \u0441\u043A\u043E\u043B\u044C\u043A\u043E touchmove \u0434\u043E\u0448\u043B\u043E \u0434\u043E \u0448\u0442\u043E\u0440\u043A\u0438."));
+  return /* @__PURE__ */ React.createElement("button", { className: "btn ghost", onClick: copy }, copied ? "\u0421\u043A\u043E\u043F\u0438\u0440\u043E\u0432\u0430\u043D\u043E" : "\u0421\u043A\u043E\u043F\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u043B\u043E\u0433\u0438");
 }
-const DIAG = { boot: null, late: null, sheet: null };
+const DIAG = { boot: null, late: null, sheets: [] };
 function readEnv() {
   try {
     if (!document.body) return null;
@@ -677,21 +659,29 @@ function lockDoc() {
   if (openSheets++ > 0) return;
   lockedY = window.scrollY || document.documentElement.scrollTop || 0;
   const b = document.body;
+  const h = document.documentElement;
   b.style.position = "fixed";
   b.style.top = -lockedY + "px";
   b.style.left = "0";
   b.style.right = "0";
   b.style.width = "100%";
+  b.style.height = "100%";
+  b.style.overflow = "hidden";
+  h.style.overflow = "hidden";
 }
 function unlockDoc() {
   openSheets = Math.max(0, openSheets - 1);
   if (openSheets > 0) return;
   const b = document.body;
+  const h = document.documentElement;
   b.style.position = "";
   b.style.top = "";
   b.style.left = "";
   b.style.right = "";
   b.style.width = "";
+  b.style.height = "";
+  b.style.overflow = "";
+  h.style.overflow = "";
   window.scrollTo(0, lockedY);
 }
 function Sheet({ title, onClose, full, footer, children }) {
@@ -712,7 +702,8 @@ function Sheet({ title, onClose, full, footer, children }) {
       maxTop: 0,
       docMax: 0
     };
-    DIAG.sheet = s;
+    DIAG.sheets.push(s);
+    if (DIAG.sheets.length > 10) DIAG.sheets.shift();
     const tick = () => {
       const sh = ref.current, bd = bodyRef.current, ft = footRef.current;
       if (!sh || !bd) return;
@@ -725,11 +716,31 @@ function Sheet({ title, onClose, full, footer, children }) {
       s.top = Math.round(bd.scrollTop);
       s.maxTop = Math.max(s.maxTop, Math.round(bd.scrollTop));
       s.footH = ft && ft.offsetHeight;
-      s.footVar = sh.style.getPropertyValue("--footH");
+      s.midH = sh.querySelector(".sheet-mid") ? sh.querySelector(".sheet-mid").offsetHeight : null;
+      s.topH = sh.querySelector(".sheet-top") ? sh.querySelector(".sheet-top").offsetHeight : null;
       s.bodyPos = getComputedStyle(document.body).position;
       s.bodyOffset = document.body.style.top || "0px";
       s.locks = openSheets;
       s.docMax = Math.max(s.docMax, Math.abs(Math.round(window.scrollY)));
+      const cs = getComputedStyle(bd);
+      let sum = 0;
+      s.kids = [].map.call(bd.children, (c) => {
+        const h = c.offsetHeight;
+        sum += h;
+        return (c.className || c.tagName).toString().slice(0, 22) + ":" + h;
+      });
+      s.kidsSum = sum;
+      s.padV = Math.round(parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom));
+      s.gapV = Math.round((parseFloat(cs.rowGap) || 0) * Math.max(0, bd.children.length - 1));
+      s.expected = sum + s.padV + s.gapV;
+      s.docSH = document.documentElement.scrollHeight;
+      s.docCH = document.documentElement.clientHeight;
+      s.bodySH = document.body.scrollHeight;
+      s.hist = s.hist || [];
+      s.hist.push(
+        Math.round(performance.now() - s.opened) + "ms room" + s.room + " top" + s.top + " exp" + s.expected + " docY" + Math.round(window.scrollY)
+      );
+      if (s.hist.length > 14) s.hist.shift();
     };
     tick();
     const id = setInterval(tick, 400);
@@ -741,14 +752,12 @@ function Sheet({ title, onClose, full, footer, children }) {
     return () => {
       clearInterval(id);
       if (el) el.removeEventListener("touchmove", onMove);
+      s.closed = Math.round(performance.now());
     };
   }, [title, full]);
   useEffect(() => {
-    const sh = ref.current;
-    if (!sh) return;
     const set = () => {
       const h = (footRef.current ? footRef.current.offsetHeight : 0) + "px";
-      sh.style.setProperty("--footH", h);
       document.documentElement.style.setProperty("--sheetFootH", h);
     };
     set();
@@ -820,7 +829,7 @@ function Sheet({ title, onClose, full, footer, children }) {
       },
       /* @__PURE__ */ React.createElement("path", { d: "M6 6l12 12M18 6L6 18" })
     )))),
-    /* @__PURE__ */ React.createElement("div", { className: "sheet-body", ref: bodyRef }, children),
+    /* @__PURE__ */ React.createElement("div", { className: "sheet-mid" }, /* @__PURE__ */ React.createElement("div", { className: "sheet-body", ref: bodyRef }, children), /* @__PURE__ */ React.createElement("div", { className: "sheet-fade top", "aria-hidden": true }), /* @__PURE__ */ React.createElement("div", { className: "sheet-fade bot", "aria-hidden": true })),
     footer && /* @__PURE__ */ React.createElement("div", { className: "sheet-foot", ref: footRef }, footer)
   ));
 }
@@ -2616,7 +2625,7 @@ function App() {
         } else setSheet(null);
       }
     }
-  ), !draft && /* @__PURE__ */ React.createElement("nav", { className: "tabbar" }, /* @__PURE__ */ React.createElement(
+  ), !draft && /* @__PURE__ */ React.createElement("div", { className: "tabbar-layer" }, /* @__PURE__ */ React.createElement("nav", { className: "tabbar" }, /* @__PURE__ */ React.createElement(
     "button",
     {
       className: tab === "belly" ? "on" : "",
@@ -2681,7 +2690,7 @@ function App() {
       /* @__PURE__ */ React.createElement("path", { d: "M12 2.8v2.6M12 18.6v2.6M2.8 12h2.6M18.6 12h2.6M5.5 5.5l1.9 1.9M16.6 16.6l1.9 1.9M18.5 5.5l-1.9 1.9M7.4 16.6l-1.9 1.9" })
     ),
     /* @__PURE__ */ React.createElement("span", null, "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438")
-  )), (sheet == null ? void 0 : sheet.mode) === "edit" && /* @__PURE__ */ React.createElement(
+  ))), (sheet == null ? void 0 : sheet.mode) === "edit" && /* @__PURE__ */ React.createElement(
     IngSheet,
     {
       title: "\u041F\u0440\u043E\u0434\u0443\u043A\u0442",
@@ -2762,8 +2771,14 @@ input::placeholder{color:var(--sub);opacity:.55}
 .loading{padding:48px;text-align:center;color:var(--sub)}
 
 /* ---- \u043D\u0438\u0436\u043D\u044F\u044F \u043D\u0430\u0432\u0438\u0433\u0430\u0446\u0438\u044F: \u0436\u0438\u0434\u043A\u043E\u0435 \u0441\u0442\u0435\u043A\u043B\u043E ---- */
-.tabbar{position:fixed;left:50%;transform:translateX(-50%);
-  bottom:max(12px,env(safe-area-inset-bottom));z-index:40;
+/* \u0421\u043B\u043E\u0439 \u0432\u043C\u0435\u0441\u0442\u043E bottom \u0443 \u0441\u0430\u043C\u043E\u0433\u043E \u0442\u0430\u0431\u0431\u0430\u0440\u0430: containing block \u0434\u043B\u044F fixed \u0432
+   standalone-PWA \u0437\u0430\u0441\u0442\u0440\u0435\u0432\u0430\u0435\u0442 \u043D\u0430 \u0441\u0442\u0430\u0440\u0442\u043E\u0432\u043E\u043C \u0432\u044C\u044E\u043F\u043E\u0440\u0442\u0435, \u0443\u0440\u0435\u0437\u0430\u043D\u043D\u043E\u043C \u043D\u0430 \u0441\u0442\u0430\u0442\u0443\u0441-\u0431\u0430\u0440,
+   \u0438 bottom \u043E\u0442\u0441\u0447\u0438\u0442\u044B\u0432\u0430\u0435\u0442\u0441\u044F \u043E\u0442 \u043D\u0435\u0433\u043E \u2014 \u043F\u0430\u043D\u0435\u043B\u044C \u0432\u0438\u0441\u0438\u0442 \u043D\u0430 62 px \u0432\u044B\u0448\u0435 \u0434\u043D\u0430. \u0423 \u0441\u043B\u043E\u044F
+   \u0432\u044B\u0441\u043E\u0442\u0430 \u0437\u0430\u0434\u0430\u043D\u0430 \u0447\u0435\u0440\u0435\u0437 100dvh, \u043A\u043E\u0442\u043E\u0440\u044B\u0439 \u043E\u0442\u0434\u0430\u0451\u0442 \u0432\u0435\u0440\u043D\u043E\u0435 \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u0435. */
+.tabbar-layer{position:fixed;top:0;left:0;right:0;height:100dvh;z-index:40;
+  pointer-events:none;display:flex;align-items:flex-end;justify-content:center;
+  padding-bottom:max(12px,env(safe-area-inset-bottom))}
+.tabbar{position:relative;pointer-events:auto;
   display:flex;gap:4px;padding:5px;border-radius:999px;
   background:var(--glass);
   -webkit-backdrop-filter:blur(22px) saturate(170%);
@@ -2788,7 +2803,7 @@ input::placeholder{color:var(--sub);opacity:.55}
 /* \u043F\u043E\u043A\u0430 \u0441\u043D\u044D\u043A \u0432\u0438\u0441\u0438\u0442, \u043E\u043D \u043F\u0435\u0440\u0435\u043A\u0440\u044B\u0432\u0430\u0435\u0442 \u043D\u0438\u0437 \u0441\u043F\u0438\u0441\u043A\u0430 \u2014 \u043E\u0441\u0432\u043E\u0431\u043E\u0436\u0434\u0430\u0435\u043C \u043C\u0435\u0441\u0442\u043E \u043F\u043E\u0434 \u043D\u0438\u043C,
    \u0438\u043D\u0430\u0447\u0435 \u0434\u043E \u043F\u043E\u0441\u043B\u0435\u0434\u043D\u0435\u0433\u043E \u043F\u0443\u043D\u043A\u0442\u0430 \u043D\u0435 \u0434\u043E\u0442\u044F\u043D\u0443\u0442\u044C\u0441\u044F. \u0423\u0431\u0438\u0440\u0430\u0435\u0442\u0441\u044F \u0432\u043C\u0435\u0441\u0442\u0435 \u0441\u043E \u0441\u043D\u044D\u043A\u043E\u043C */
 .app.toast-on{padding-bottom:calc(108px + 68px + env(safe-area-inset-bottom))}
-.app.toast-on .sheet-body{padding-bottom:calc(var(--footH,0px) + 68px)}
+.app.toast-on .sheet-body{padding-bottom:92px}
 .toast-row{display:flex;align-items:center;gap:16px;padding:15px 16px}
 .toast-msg{flex:1;font-size:15px;font-weight:500;line-height:1.35;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -3130,7 +3145,11 @@ main>.list,main>.list-stage,
   color:var(--sub);display:flex;align-items:center;justify-content:center;cursor:pointer}
 
 /* ---- \u0448\u0442\u043E\u0440\u043A\u0430 ---- */
-.sheet-wrap{position:fixed;inset:0;background:rgba(20,26,22,.45);
+/* height:100dvh, \u0430 \u043D\u0435 inset:0: \u0432 standalone-PWA containing block \u0434\u043B\u044F fixed
+   \u0437\u0430\u0441\u0442\u0440\u0435\u0432\u0430\u0435\u0442 \u043D\u0430 \u0441\u0442\u0430\u0440\u0442\u043E\u0432\u043E\u043C \u0432\u044C\u044E\u043F\u043E\u0440\u0442\u0435, \u0443\u0440\u0435\u0437\u0430\u043D\u043D\u043E\u043C \u043D\u0430 \u0441\u0442\u0430\u0442\u0443\u0441-\u0431\u0430\u0440, \u0438 \u043D\u0435 \u043E\u0431\u043D\u043E\u0432\u043B\u044F\u0435\u0442\u0441\u044F
+   \u043F\u043E\u0441\u043B\u0435 \u0432\u043A\u043B\u044E\u0447\u0435\u043D\u0438\u044F viewport-fit=cover. \u0417\u0430\u043C\u0435\u0440 \u043D\u0430 \u0443\u0441\u0442\u0440\u043E\u0439\u0441\u0442\u0432\u0435: inset:0 \u0434\u0430\u0451\u0442 894 \u043F\u0440\u0438
+   \u044D\u043A\u0440\u0430\u043D\u0435 956, \u0430 100dvh \u043D\u0430 \u0442\u043E\u043C \u0436\u0435 fixed-\u044D\u043B\u0435\u043C\u0435\u043D\u0442\u0435 \u2014 \u0447\u0435\u0441\u0442\u043D\u044B\u0435 956. */
+.sheet-wrap{position:fixed;top:0;left:0;right:0;height:100dvh;background:rgba(20,26,22,.45);
   display:flex;align-items:flex-end;justify-content:center;z-index:50;
   animation:fade .18s ease}
 .sheet{position:relative;width:100%;max-width:520px;background:var(--bg);
@@ -3138,21 +3157,34 @@ main>.list,main>.list-stage,
   max-height:82dvh;overflow:hidden;
   display:flex;flex-direction:column;
   animation:up .22s ease}
-.sheet-top{position:absolute;top:0;left:0;right:0;z-index:3;
-  padding:8px 16px 16px;
-  background:linear-gradient(to bottom,var(--bg) 28%,var(--bgH) 62%,var(--bgT) 96%)}
-.sheet-top::before,.sheet-top::after{content:'';position:absolute;inset:0 0 -8px;
-  z-index:-1;pointer-events:none}
-.sheet-top::before{-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
-  -webkit-mask-image:linear-gradient(to bottom,#000 40%,rgba(0,0,0,.55) 68%,transparent 96%);
-  mask-image:linear-gradient(to bottom,#000 40%,rgba(0,0,0,.55) 68%,transparent 96%)}
-.sheet-top::after{-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
-  -webkit-mask-image:linear-gradient(to bottom,#000 30%,transparent 66%);
-  mask-image:linear-gradient(to bottom,#000 30%,transparent 66%)}
+/* \u0428\u0442\u043E\u0440\u043A\u0430 \u2014 \u043A\u043E\u043B\u043E\u043D\u043A\u0430 \u0438\u0437 \u0442\u0440\u0451\u0445 \u0431\u043B\u043E\u043A\u043E\u0432 \u0432 \u043F\u043E\u0442\u043E\u043A\u0435: \u0448\u0430\u043F\u043A\u0430, \u043E\u0431\u043B\u0430\u0441\u0442\u044C \u043F\u0440\u043E\u043A\u0440\u0443\u0442\u043A\u0438, \u0444\u0443\u0442\u0435\u0440.
+   \u0420\u0430\u043D\u044C\u0448\u0435 \u0448\u0430\u043F\u043A\u0430 \u0438 \u0444\u0443\u0442\u0435\u0440 \u0431\u044B\u043B\u0438 \u0430\u0431\u0441\u043E\u043B\u044E\u0442\u043D\u044B\u043C\u0438 \u043F\u043E\u0432\u0435\u0440\u0445 \u0442\u0435\u043B\u0430, \u0430 \u043C\u0435\u0441\u0442\u043E \u043F\u043E\u0434 \u043D\u0438\u0445
+   \u0440\u0435\u0437\u0435\u0440\u0432\u0438\u0440\u043E\u0432\u0430\u043B\u043E\u0441\u044C \u043F\u0430\u0434\u0434\u0438\u043D\u0433\u043E\u043C \u0441 \u0432\u044B\u0441\u043E\u0442\u043E\u0439 \u0444\u0443\u0442\u0435\u0440\u0430, \u0438\u0437\u043C\u0435\u0440\u0435\u043D\u043D\u043E\u0439 ResizeObserver'\u043E\u043C.
+   \u0412\u044B\u0441\u043E\u0442\u0430 \u0444\u0443\u0442\u0435\u0440\u0430 \u0437\u0430\u0432\u0438\u0441\u0438\u0442 \u043E\u0442 env(safe-area-inset-bottom), \u043A\u043E\u0442\u043E\u0440\u044B\u0439 \u043D\u0430 \u0441\u0442\u0430\u0440\u0442\u0435
+   \u043E\u0442\u0434\u0430\u0451\u0442\u0441\u044F \u043D\u0435\u0432\u0435\u0440\u043D\u044B\u043C, \u2014 \u043F\u0430\u0434\u0434\u0438\u043D\u0433 \u043E\u043A\u0430\u0437\u044B\u0432\u0430\u043B\u0441\u044F \u043D\u0435 \u0442\u043E\u0442, \u0438 \u043D\u0438\u0437 \u043A\u043E\u043D\u0442\u0435\u043D\u0442\u0430 \u0441\u0442\u0430\u043D\u043E\u0432\u0438\u043B\u0441\u044F
+   \u043D\u0435\u0434\u043E\u0441\u0442\u0438\u0436\u0438\u043C. \u0412 \u043F\u043E\u0442\u043E\u043A\u0435 \u0441\u0447\u0438\u0442\u0430\u0442\u044C \u043D\u0435\u0447\u0435\u0433\u043E.
+   \u0420\u0430\u0437\u043C\u044B\u0442\u0438\u0435 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u043E, \u043D\u043E \u043F\u0435\u0440\u0435\u0435\u0445\u0430\u043B\u043E \u0432\u043D\u0443\u0442\u0440\u044C \u0433\u0440\u0430\u043D\u0438\u0446 \u0442\u0435\u043B\u0430: \u0441\u043A\u0440\u043E\u043B\u043B\u0435\u0440 \u043A\u043B\u0438\u043F\u0443\u0435\u0442 \u043F\u043E
+   \u0441\u0432\u043E\u0435\u0439 \u043A\u0440\u043E\u043C\u043A\u0435 \u0432\u0441\u0435\u0433\u0434\u0430 (\u043F\u0440\u0438 overflow-y:auto \u0432\u0442\u043E\u0440\u0430\u044F \u043E\u0441\u044C \u0442\u043E\u0436\u0435 \u043F\u0435\u0440\u0435\u0441\u0442\u0430\u0451\u0442 \u0431\u044B\u0442\u044C
+   visible), \u0442\u0430\u043A \u0447\u0442\u043E \u0440\u0430\u0437\u043C\u044B\u0432\u0430\u0442\u044C \u0441\u043D\u0430\u0440\u0443\u0436\u0438 \u043D\u0435\u0447\u0435\u0433\u043E. \u041F\u043E\u043B\u043E\u0441\u044B \u0432\u0438\u0441\u044F\u0442 \u043D\u0430 .sheet-mid,
+   \u0435\u0433\u043E \u0433\u0440\u0430\u043D\u0438\u0446\u044B \u0441\u043E\u0432\u043F\u0430\u0434\u0430\u044E\u0442 \u0441 \u0433\u0440\u0430\u043D\u0438\u0446\u0430\u043C\u0438 \u0442\u0435\u043B\u0430 \u0441\u0430\u043C\u0438 \u0441\u043E\u0431\u043E\u0439. */
+.sheet-top{position:relative;z-index:3;flex-shrink:0;
+  padding:8px 16px 8px;background:var(--bg)}
+.sheet-mid{position:relative;flex:1;min-height:0;display:flex;flex-direction:column}
 .sheet-body{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;
   overscroll-behavior:contain;scrollbar-width:none;
   display:flex;flex-direction:column;gap:16px;
-  padding:80px 16px calc(var(--footH,0px) + 20px)}
+  padding:24px 16px}
+.sheet-fade{position:absolute;left:0;right:0;height:24px;z-index:2;pointer-events:none}
+.sheet-fade.top{top:0;
+  background:linear-gradient(to bottom,var(--bg) 30%,var(--bgH) 65%,var(--bgT) 100%);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  -webkit-mask-image:linear-gradient(to bottom,#000 35%,rgba(0,0,0,.55) 70%,transparent 100%);
+  mask-image:linear-gradient(to bottom,#000 35%,rgba(0,0,0,.55) 70%,transparent 100%)}
+.sheet-fade.bot{bottom:0;
+  background:linear-gradient(to top,var(--bg) 30%,var(--bgH) 65%,var(--bgT) 100%);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  -webkit-mask-image:linear-gradient(to top,#000 35%,rgba(0,0,0,.55) 70%,transparent 100%);
+  mask-image:linear-gradient(to top,#000 35%,rgba(0,0,0,.55) 70%,transparent 100%)}
 .sheet-body::-webkit-scrollbar{display:none}
 .sheet-body>*{flex-shrink:0}
 /* \u0412 \u0448\u0442\u043E\u0440\u043A\u0435 .list-stage \u043D\u0435 \u0434\u043E\u043B\u0436\u0435\u043D \u0440\u0430\u0441\u0442\u044F\u0433\u0438\u0432\u0430\u0442\u044C\u0441\u044F. \u0421\u0432\u043E\u0431\u043E\u0434\u043D\u043E\u0433\u043E \u043C\u0435\u0441\u0442\u0430 \u0443 .sheet-body
@@ -3167,18 +3199,10 @@ main>.list,main>.list-stage,
 .sheet-body .board,.sheet-body .list,.sheet-body .controls{margin-bottom:0}
 .sheet.full{height:calc(100dvh - env(safe-area-inset-top) - 12px);max-height:none}
 .grab{width:40px;height:4px;border-radius:2px;background:var(--grab);margin:0 auto 8px;flex-shrink:0}
-.sheet-foot{position:absolute;left:0;right:0;bottom:0;z-index:3;
+.sheet-foot{position:relative;z-index:3;flex-shrink:0;
   display:flex;flex-direction:column;gap:8px;
-  padding:16px 16px calc(16px + env(safe-area-inset-bottom));
-  background:linear-gradient(to top,var(--bg) 38%,var(--bgH) 68%,var(--bgT) 97%)}
-.sheet-foot::before,.sheet-foot::after{content:'';position:absolute;inset:-8px 0 0;
-  z-index:-1;pointer-events:none}
-.sheet-foot::before{-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
-  -webkit-mask-image:linear-gradient(to top,#000 45%,rgba(0,0,0,.55) 72%,transparent 97%);
-  mask-image:linear-gradient(to top,#000 45%,rgba(0,0,0,.55) 72%,transparent 97%)}
-.sheet-foot::after{-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
-  -webkit-mask-image:linear-gradient(to top,#000 34%,transparent 70%);
-  mask-image:linear-gradient(to top,#000 34%,transparent 70%)}
+  padding:8px 16px calc(16px + env(safe-area-inset-bottom));
+  background:var(--bg)}
 .sheet-foot .btn{width:100%}
 .sheet-head{display:flex;justify-content:space-between;align-items:center}
 .sheet-head b{font-size:16px}
