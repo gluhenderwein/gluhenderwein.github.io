@@ -321,7 +321,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 </script>
 <script>
 const { useState, useEffect, useMemo, useRef } = React;
-const BUILD = { v: "1.7.21", date: "2026-07-31", note: "\u043E\u0432\u0435\u0440\u043B\u0435\u0439 \u0438 \u0442\u0430\u0431\u0431\u0430\u0440 \u043F\u0440\u0438\u0431\u0438\u0442\u044B \u043A \u043D\u0438\u0436\u043D\u0435\u043C\u0443 \u043A\u0440\u0430\u044E" };
+const BUILD = { v: "1.7.22", date: "2026-07-31", note: "\u043E\u0442\u043A\u0430\u0442 \u043F\u0440\u0430\u0432\u043E\u043A \u0432\u044C\u044E\u043F\u043E\u0440\u0442\u0430" };
 const uid = () => Math.random().toString(36).slice(2, 10);
 const num = (v) => {
   if (typeof v === "number") return v;
@@ -653,42 +653,6 @@ if (typeof document !== "undefined") {
   if (document.body) bootDiag();
   else document.addEventListener("DOMContentLoaded", bootDiag);
 }
-function viewportH() {
-  const ih = window.innerHeight;
-  const sh = window.screen && window.screen.height || 0;
-  const standalone = !!window.navigator.standalone || window.matchMedia && window.matchMedia("(display-mode: standalone)").matches;
-  if (standalone && sh > ih && sh - ih <= 120) return sh;
-  return ih;
-}
-function syncViewportVars() {
-  const e = readEnv();
-  if (!e || e.err) return;
-  const r = document.documentElement.style;
-  r.setProperty("--vh", viewportH() + "px");
-  r.setProperty("--sat", e.sat + "px");
-  r.setProperty("--sab", e.sab + "px");
-}
-if (typeof document !== "undefined") {
-  const startSync = () => {
-    syncViewportVars();
-    [100, 400, 1e3, 2e3, 3500, 6e3].forEach(
-      (ms) => setTimeout(syncViewportVars, ms)
-    );
-    ["resize", "orientationchange", "pageshow", "focus"].forEach(
-      (ev) => window.addEventListener(ev, syncViewportVars)
-    );
-    document.addEventListener("touchstart", syncViewportVars, { passive: true });
-    document.addEventListener("pointerdown", syncViewportVars, { passive: true });
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener("resize", syncViewportVars);
-    }
-    document.addEventListener("visibilitychange", () => {
-      if (!document.hidden) syncViewportVars();
-    });
-  };
-  if (document.body) startSync();
-  else document.addEventListener("DOMContentLoaded", startSync);
-}
 let openSheets = 0;
 let lockedY = 0;
 function lockDoc() {
@@ -769,9 +733,6 @@ function Sheet({ title, onClose, full, footer, children }) {
       s.padV = Math.round(parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom));
       s.gapV = Math.round((parseFloat(cs.rowGap) || 0) * Math.max(0, bd.children.length - 1));
       s.expected = sum + s.padV + s.gapV;
-      const rs = document.documentElement.style;
-      s.vars = rs.getPropertyValue("--vh") + "/" + rs.getPropertyValue("--sat") + "/" + rs.getPropertyValue("--sab");
-      s.vhSrc = viewportH() + " (inner " + window.innerHeight + ", screen " + (window.screen && window.screen.height || 0) + ")";
       const rect = (n) => {
         if (!n) return null;
         const r = n.getBoundingClientRect();
@@ -2695,7 +2656,7 @@ function App() {
         } else setSheet(null);
       }
     }
-  ), /* @__PURE__ */ React.createElement("div", { className: "ruler a", "aria-hidden": true }), /* @__PURE__ */ React.createElement("div", { className: "ruler b", "aria-hidden": true }), !draft && /* @__PURE__ */ React.createElement("div", { className: "tabbar-layer" }, /* @__PURE__ */ React.createElement("nav", { className: "tabbar" }, /* @__PURE__ */ React.createElement(
+  ), !draft && /* @__PURE__ */ React.createElement("nav", { className: "tabbar" }, /* @__PURE__ */ React.createElement(
     "button",
     {
       className: tab === "belly" ? "on" : "",
@@ -2760,7 +2721,7 @@ function App() {
       /* @__PURE__ */ React.createElement("path", { d: "M12 2.8v2.6M12 18.6v2.6M2.8 12h2.6M18.6 12h2.6M5.5 5.5l1.9 1.9M16.6 16.6l1.9 1.9M18.5 5.5l-1.9 1.9M7.4 16.6l-1.9 1.9" })
     ),
     /* @__PURE__ */ React.createElement("span", null, "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438")
-  ))), (sheet == null ? void 0 : sheet.mode) === "edit" && /* @__PURE__ */ React.createElement(
+  )), (sheet == null ? void 0 : sheet.mode) === "edit" && /* @__PURE__ */ React.createElement(
     IngSheet,
     {
       title: "\u041F\u0440\u043E\u0434\u0443\u043A\u0442",
@@ -2829,11 +2790,11 @@ html,body,#root{height:100%}
 body{overflow-x:hidden;overscroll-behavior-y:none}
 .app::before{content:'';position:fixed;inset:0;background:var(--bg);z-index:-1}
 .app{
-  min-height:var(--vh,100dvh);background:var(--bg);color:var(--ink);
+  min-height:100dvh;background:var(--bg);color:var(--ink);
   font-family:'Golos Text',system-ui,sans-serif;font-size:15px;
   max-width:520px;margin:0 auto;
   display:flex;flex-direction:column;
-  padding:var(--sat,0px) 14px calc(108px + var(--sab,0px));
+  padding:env(safe-area-inset-top) 14px calc(108px + env(safe-area-inset-bottom));
 }
 .mono{font-family:'JetBrains Mono',monospace}
 input{font-size:16px!important}
@@ -2841,14 +2802,8 @@ input::placeholder{color:var(--sub);opacity:.55}
 .loading{padding:48px;text-align:center;color:var(--sub)}
 
 /* ---- \u043D\u0438\u0436\u043D\u044F\u044F \u043D\u0430\u0432\u0438\u0433\u0430\u0446\u0438\u044F: \u0436\u0438\u0434\u043A\u043E\u0435 \u0441\u0442\u0435\u043A\u043B\u043E ---- */
-/* \u0421\u043B\u043E\u0439 \u0432\u043C\u0435\u0441\u0442\u043E bottom \u0443 \u0441\u0430\u043C\u043E\u0433\u043E \u0442\u0430\u0431\u0431\u0430\u0440\u0430: containing block \u0434\u043B\u044F fixed \u0432
-   standalone-PWA \u0437\u0430\u0441\u0442\u0440\u0435\u0432\u0430\u0435\u0442 \u043D\u0430 \u0441\u0442\u0430\u0440\u0442\u043E\u0432\u043E\u043C \u0432\u044C\u044E\u043F\u043E\u0440\u0442\u0435, \u0443\u0440\u0435\u0437\u0430\u043D\u043D\u043E\u043C \u043D\u0430 \u0441\u0442\u0430\u0442\u0443\u0441-\u0431\u0430\u0440,
-   \u0438 bottom \u043E\u0442\u0441\u0447\u0438\u0442\u044B\u0432\u0430\u0435\u0442\u0441\u044F \u043E\u0442 \u043D\u0435\u0433\u043E \u2014 \u043F\u0430\u043D\u0435\u043B\u044C \u0432\u0438\u0441\u0438\u0442 \u043D\u0430 62 px \u0432\u044B\u0448\u0435 \u0434\u043D\u0430. \u0423 \u0441\u043B\u043E\u044F
-   \u0432\u044B\u0441\u043E\u0442\u0430 \u0437\u0430\u0434\u0430\u043D\u0430 \u0447\u0435\u0440\u0435\u0437 100dvh, \u043A\u043E\u0442\u043E\u0440\u044B\u0439 \u043E\u0442\u0434\u0430\u0451\u0442 \u0432\u0435\u0440\u043D\u043E\u0435 \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u0435. */
-.tabbar-layer{position:fixed;bottom:0;left:0;right:0;height:var(--vh,100dvh);z-index:40;
-  pointer-events:none;display:flex;align-items:flex-end;justify-content:center;
-  padding-bottom:max(12px,var(--sab,0px))}
-.tabbar{position:relative;pointer-events:auto;
+.tabbar{position:fixed;left:50%;transform:translateX(-50%);
+  bottom:max(12px,env(safe-area-inset-bottom));z-index:40;
   display:flex;gap:4px;padding:5px;border-radius:999px;
   background:var(--glass);
   -webkit-backdrop-filter:blur(22px) saturate(170%);
@@ -2865,14 +2820,14 @@ input::placeholder{color:var(--sub);opacity:.55}
 
 /* ---- \u0441\u043D\u044D\u043A\u0431\u0430\u0440 \u0441 \u043E\u0442\u043C\u0435\u043D\u043E\u0439: \u043A\u043E\u043D\u0442\u0440\u0430\u0441\u0442\u043D\u044B\u0439, \u0431\u0435\u0437 \u0442\u0435\u043D\u0438/\u0431\u043B\u044E\u0440\u0430, \u0441 \u043F\u043E\u043B\u043E\u0441\u043E\u0439 \u043F\u0440\u043E\u0433\u0440\u0435\u0441\u0441\u0430 ---- */
 .toast{position:fixed;left:50%;transform:translateX(-50%);z-index:200;
-  bottom:calc(max(12px,var(--sab,0px)) + 73px);
+  bottom:calc(max(12px,env(safe-area-inset-bottom)) + 73px);
   width:calc(100% - 28px);max-width:492px;
   background:var(--pill);color:var(--pillT);border-radius:16px;
   overflow:hidden;animation:toastup .18s ease}
 .toast.raised{bottom:calc(var(--sheetFootH,0px) + 10px)}
 /* \u043F\u043E\u043A\u0430 \u0441\u043D\u044D\u043A \u0432\u0438\u0441\u0438\u0442, \u043E\u043D \u043F\u0435\u0440\u0435\u043A\u0440\u044B\u0432\u0430\u0435\u0442 \u043D\u0438\u0437 \u0441\u043F\u0438\u0441\u043A\u0430 \u2014 \u043E\u0441\u0432\u043E\u0431\u043E\u0436\u0434\u0430\u0435\u043C \u043C\u0435\u0441\u0442\u043E \u043F\u043E\u0434 \u043D\u0438\u043C,
    \u0438\u043D\u0430\u0447\u0435 \u0434\u043E \u043F\u043E\u0441\u043B\u0435\u0434\u043D\u0435\u0433\u043E \u043F\u0443\u043D\u043A\u0442\u0430 \u043D\u0435 \u0434\u043E\u0442\u044F\u043D\u0443\u0442\u044C\u0441\u044F. \u0423\u0431\u0438\u0440\u0430\u0435\u0442\u0441\u044F \u0432\u043C\u0435\u0441\u0442\u0435 \u0441\u043E \u0441\u043D\u044D\u043A\u043E\u043C */
-.app.toast-on{padding-bottom:calc(108px + 68px + var(--sab,0px))}
+.app.toast-on{padding-bottom:calc(108px + 68px + env(safe-area-inset-bottom))}
 .app.toast-on .sheet-body{padding-bottom:92px}
 .toast-row{display:flex;align-items:center;gap:16px;padding:15px 16px}
 .toast-msg{flex:1;font-size:15px;font-weight:500;line-height:1.35;
@@ -3215,19 +3170,12 @@ main>.list,main>.list-stage,
   color:var(--sub);display:flex;align-items:center;justify-content:center;cursor:pointer}
 
 /* ---- \u0448\u0442\u043E\u0440\u043A\u0430 ---- */
-/* \u041F\u0440\u0438\u0432\u044F\u0437\u043A\u0430 \u043A bottom, \u0430 \u043D\u0435 \u043A top. \u0412\u044B\u0441\u043E\u0442\u0430 \u0431\u0435\u0440\u0451\u0442\u0441\u044F \u0438\u0437 --vh, \u043D\u043E \u043D\u0430\u0447\u0430\u043B\u043E \u043A\u043E\u043E\u0440\u0434\u0438\u043D\u0430\u0442
-   fixed-\u0441\u043B\u043E\u044F \u0432 standalone-PWA \u043D\u0435\u043D\u0430\u0434\u0451\u0436\u043D\u043E: \u0434\u0432\u0438\u0436\u043E\u043A \u043C\u043E\u0436\u0435\u0442 \u0441\u0447\u0438\u0442\u0430\u0442\u044C, \u0447\u0442\u043E \u0432\u044C\u044E\u043F\u043E\u0440\u0442
-   \u043D\u0430\u0447\u0438\u043D\u0430\u0435\u0442\u0441\u044F \u043F\u043E\u0434 \u0441\u0442\u0430\u0442\u0443\u0441-\u0431\u0430\u0440\u043E\u043C, \u0438 \u0442\u043E\u0433\u0434\u0430 top:0 \u2014 \u044D\u0442\u043E \u0444\u0438\u0437\u0438\u0447\u0435\u0441\u043A\u0438\u0435 62, \u0430 \u043E\u0432\u0435\u0440\u043B\u0435\u0439
-   \u0432\u043C\u0435\u0441\u0442\u0435 \u0441\u043E \u0448\u0442\u043E\u0440\u043A\u043E\u0439 \u0441\u044A\u0435\u0437\u0436\u0430\u0435\u0442 \u0432\u043D\u0438\u0437 \u0440\u043E\u0432\u043D\u043E \u043D\u0430 \u0441\u0442\u043E\u043B\u044C\u043A\u043E \u0436\u0435. getBoundingClientRect
-   \u043F\u0440\u0438 \u044D\u0442\u043E\u043C \u0447\u0435\u0441\u0442\u043D\u043E \u0440\u0430\u043F\u043E\u0440\u0442\u0443\u0435\u0442 0..874 \u0432 \u0441\u0432\u043E\u0435\u0439 \u0441\u0438\u0441\u0442\u0435\u043C\u0435 \u043A\u043E\u043E\u0440\u0434\u0438\u043D\u0430\u0442, \u043F\u043E\u044D\u0442\u043E\u043C\u0443 \u043F\u043E \u043B\u043E\u0433\u0430\u043C
-   \u0441\u043C\u0435\u0449\u0435\u043D\u0438\u0435 \u043D\u0435 \u0432\u0438\u0434\u043D\u043E. bottom:0 \u043F\u0440\u0438\u0431\u0438\u0432\u0430\u0435\u0442 \u043A \u043D\u0438\u0436\u043D\u0435\u043C\u0443 \u043A\u0440\u0430\u044E, \u043A\u043E\u0442\u043E\u0440\u044B\u0439 \u0438 \u043D\u0443\u0436\u0435\u043D, \u0438
-   \u0432\u0435\u0440\u0435\u043D \u043F\u0440\u0438 \u043B\u044E\u0431\u043E\u043C \u043F\u043E\u043B\u043E\u0436\u0435\u043D\u0438\u0438 \u043D\u0430\u0447\u0430\u043B\u0430 \u043A\u043E\u043E\u0440\u0434\u0438\u043D\u0430\u0442. */
-.sheet-wrap{position:fixed;bottom:0;left:0;right:0;height:var(--vh,100dvh);background:rgba(20,26,22,.45);
+.sheet-wrap{position:fixed;inset:0;background:rgba(20,26,22,.45);
   display:flex;align-items:flex-end;justify-content:center;z-index:50;
   animation:fade .18s ease}
 .sheet{position:relative;width:100%;max-width:520px;background:var(--bg);
   border-radius:24px 24px 0 0;padding:0;
-  max-height:calc(var(--vh,100dvh) * .82);overflow:hidden;
+  max-height:82dvh;overflow:hidden;
   display:flex;flex-direction:column;
   animation:up .22s ease}
 /* \u0428\u0442\u043E\u0440\u043A\u0430 \u2014 \u043A\u043E\u043B\u043E\u043D\u043A\u0430 \u0438\u0437 \u0442\u0440\u0451\u0445 \u0431\u043B\u043E\u043A\u043E\u0432 \u0432 \u043F\u043E\u0442\u043E\u043A\u0435: \u0448\u0430\u043F\u043A\u0430, \u043E\u0431\u043B\u0430\u0441\u0442\u044C \u043F\u0440\u043E\u043A\u0440\u0443\u0442\u043A\u0438, \u0444\u0443\u0442\u0435\u0440.
@@ -3248,12 +3196,6 @@ main>.list,main>.list-stage,
   display:flex;flex-direction:column;gap:16px;
   padding:24px 16px}
 .sheet-fade{position:absolute;left:0;right:0;height:24px;z-index:2;pointer-events:none}
-/* \u041B\u0418\u041D\u0415\u0419\u041A\u0410 \xB7 \u0432\u0440\u0435\u043C\u0435\u043D\u043D\u043E. \u041A\u0440\u0430\u0441\u043D\u0430\u044F \u2014 bottom:0 \u0444\u0438\u043A\u0441\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u043E\u0433\u043E \u0441\u043B\u043E\u044F, \u0437\u0435\u043B\u0451\u043D\u0430\u044F \u2014 \u043D\u0438\u0437 \u043F\u043E
-   \u0432\u0435\u0440\u0441\u0438\u0438 --vh. \u041A\u0430\u043A\u0430\u044F \u043B\u0435\u0436\u0438\u0442 \u043D\u0430 \u0444\u0438\u0437\u0438\u0447\u0435\u0441\u043A\u043E\u043C \u0434\u043D\u0435 \u044D\u043A\u0440\u0430\u043D\u0430, \u0442\u0430 \u0441\u0438\u0441\u0442\u0435\u043C\u0430 \u043A\u043E\u043E\u0440\u0434\u0438\u043D\u0430\u0442 \u0438
-   \u0432\u0435\u0440\u043D\u0430. \u0421\u043D\u044F\u0442\u044C \u043F\u043E\u0441\u043B\u0435 \u0437\u0430\u043C\u0435\u0440\u0430. */
-.ruler{position:fixed;left:0;right:0;height:4px;z-index:9999;pointer-events:none}
-.ruler.a{bottom:0;background:#ff2d55}
-.ruler.b{top:calc(var(--vh,100dvh) - 4px);background:#32d74b}
 .sheet-fade.top{top:0;
   background:linear-gradient(to bottom,var(--bg) 30%,var(--bgH) 65%,var(--bgT) 100%);
   -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
@@ -3276,11 +3218,11 @@ main>.list,main>.list-stage,
    \u043F\u0443\u0441\u0442\u043E\u0435 \u0441\u043E\u0441\u0442\u043E\u044F\u043D\u0438\u0435 \u043F\u043E\u0434 \u0441\u0432\u0430\u0439\u043F. */
 .sheet-body>.list-stage,.sheet-body .list-live{flex:0 0 auto;min-height:auto}
 .sheet-body .board,.sheet-body .list,.sheet-body .controls{margin-bottom:0}
-.sheet.full{height:calc(var(--vh,100dvh) - var(--sat,0px) - 12px);max-height:none}
+.sheet.full{height:calc(100dvh - env(safe-area-inset-top) - 12px);max-height:none}
 .grab{width:40px;height:4px;border-radius:2px;background:var(--grab);margin:0 auto 8px;flex-shrink:0}
 .sheet-foot{position:relative;z-index:3;flex-shrink:0;
   display:flex;flex-direction:column;gap:8px;
-  padding:8px 16px calc(16px + var(--sab,0px));
+  padding:8px 16px calc(16px + env(safe-area-inset-bottom));
   background:var(--bg)}
 .sheet-foot .btn{width:100%}
 .sheet-head{display:flex;justify-content:space-between;align-items:center}
