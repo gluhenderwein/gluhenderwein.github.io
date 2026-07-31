@@ -321,7 +321,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 </script>
 <script>
 const { useState, useEffect, useMemo, useRef } = React;
-const BUILD = { v: "1.8.1", date: "2026-07-31", note: "\u0447\u0451\u0440\u043D\u044B\u0439 \u044D\u043A\u0440\u0430\u043D \u043F\u0440\u0438 \u0432\u044B\u0431\u043E\u0440\u0435 \u043F\u0440\u043E\u0434\u0443\u043A\u0442\u0430" };
+const BUILD = { v: "1.9.0", date: "2026-07-31", note: "\u043E\u0431\u043C\u0435\u043D \u0431\u043B\u044E\u0434\u0430\u043C\u0438 \u0438 \u043F\u0440\u043E\u0434\u0443\u043A\u0442\u0430\u043C\u0438 \u043A\u043E\u0434\u043E\u043C" };
 const uid = () => Math.random().toString(36).slice(2, 10);
 const num = (v) => {
   if (typeof v === "number") return v;
@@ -452,6 +452,107 @@ const queryScore = (name, q) => {
     total += best === Infinity ? 1e3 : best;
   }
   return total;
+};
+const SHARE_PREFIX = "KTL1:";
+const b64enc = (bytes) => {
+  let s = "";
+  for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
+  return btoa(s);
+};
+const b64dec = (str) => {
+  const s = atob(str);
+  const a = new Uint8Array(s.length);
+  for (let i = 0; i < s.length; i++) a[i] = s.charCodeAt(i);
+  return a;
+};
+async function packShare(payload) {
+  const bytes = new TextEncoder().encode(JSON.stringify(payload));
+  if (typeof CompressionStream === "function") {
+    try {
+      const st = new Blob([bytes]).stream().pipeThrough(new CompressionStream("deflate-raw"));
+      const buf = await new Response(st).arrayBuffer();
+      return SHARE_PREFIX + "z" + b64enc(new Uint8Array(buf));
+    } catch (e) {
+    }
+  }
+  return SHARE_PREFIX + "p" + b64enc(bytes);
+}
+async function unpackShare(text) {
+  const t = String(text || "");
+  const at = t.indexOf(SHARE_PREFIX);
+  if (at < 0) return null;
+  let body = t.slice(at + SHARE_PREFIX.length).split(/\s/)[0];
+  const mode = body[0];
+  body = body.slice(1);
+  if (mode !== "z" && mode !== "p") return null;
+  let bytes;
+  try {
+    bytes = b64dec(body);
+  } catch (e) {
+    return null;
+  }
+  if (mode === "z") {
+    if (typeof DecompressionStream !== "function") return null;
+    try {
+      const st = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+      bytes = new Uint8Array(await new Response(st).arrayBuffer());
+    } catch (e) {
+      return null;
+    }
+  }
+  try {
+    const obj = JSON.parse(new TextDecoder().decode(bytes));
+    if (!obj || obj.t !== "d" && obj.t !== "p") return null;
+    if (obj.t === "d" && !Array.isArray(obj.i)) return null;
+    return obj;
+  } catch (e) {
+    return null;
+  }
+}
+const prodKey = (v) => normS(v).replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+const keyWords = (key) => new Set(key.split(" ").filter((w) => w.length > 3).map((w) => w.slice(0, 5)));
+const sameNums = (a, b) => Math.abs(num(a.k) - num(b.k)) <= Math.max(3, num(a.k) * 0.02) && ["b", "z", "u"].every((x) => Math.abs(num(a[x]) - num(b[x])) <= 0.3);
+const findByName = (lib, name) => {
+  const key = prodKey(name);
+  return lib.find((x) => prodKey(x.name) === key) || null;
+};
+const similarProds = (lib, p) => {
+  const key = prodKey(p.name);
+  const ws = keyWords(key);
+  return lib.map((x) => {
+    const k2 = prodKey(x.name);
+    const w2 = keyWords(k2);
+    let s = 0;
+    if (k2 === key) s += 100;
+    let inter = 0;
+    ws.forEach((w) => {
+      if (w2.has(w)) inter++;
+    });
+    if (inter) s += 30 * inter / Math.max(1, Math.min(ws.size, w2.size));
+    if (sameNums(p, x)) s += 40;
+    return { x, s };
+  }).filter((c) => c.s >= 25).sort((a, b) => b.s - a.s).slice(0, 5).map((c) => c.x);
+};
+const similarDish = (dishes, name, itemNames) => {
+  const key = prodKey(name);
+  const set = new Set(itemNames.map(prodKey));
+  let best = null, bs = 0;
+  for (const d of dishes) {
+    let s = 0;
+    if (prodKey(d.name) === key) s += 100;
+    const s2 = new Set(d.items.map((it) => prodKey(it.name)));
+    let inter = 0;
+    set.forEach((n) => {
+      if (s2.has(n)) inter++;
+    });
+    const uni = (/* @__PURE__ */ new Set([...set, ...s2])).size || 1;
+    s += 60 * inter / uni;
+    if (s > bs) {
+      bs = s;
+      best = d;
+    }
+  }
+  return bs >= 45 ? best : null;
 };
 function SearchBox({ q, setQ, placeholder, onFocusChange, showBack }) {
   const blurT = useRef(null);
@@ -684,7 +785,7 @@ function unlockDoc() {
   h.style.overflow = "";
   window.scrollTo(0, lockedY);
 }
-function Sheet({ title, onClose, full, footer, children }) {
+function Sheet({ title, onClose, onShare, full, footer, children }) {
   const ref = useRef(null);
   const bodyRef = useRef(null);
   const footRef = useRef(null);
@@ -846,7 +947,22 @@ function Sheet({ title, onClose, full, footer, children }) {
       className: "sheet" + (full ? " full" : ""),
       onClick: (e) => e.stopPropagation()
     },
-    /* @__PURE__ */ React.createElement("div", { className: "sheet-top" }, /* @__PURE__ */ React.createElement("div", { className: "grab", "aria-hidden": true }), /* @__PURE__ */ React.createElement("div", { className: "sheet-head" }, /* @__PURE__ */ React.createElement("b", null, title), /* @__PURE__ */ React.createElement("button", { className: "x-plain", onClick: onClose, "aria-label": "\u0417\u0430\u043A\u0440\u044B\u0442\u044C" }, /* @__PURE__ */ React.createElement(
+    /* @__PURE__ */ React.createElement("div", { className: "sheet-top" }, /* @__PURE__ */ React.createElement("div", { className: "grab", "aria-hidden": true }), /* @__PURE__ */ React.createElement("div", { className: "sheet-head" + (onShare ? " has-share" : "") }, onShare && /* @__PURE__ */ React.createElement("button", { className: "x-plain x-share", onClick: onShare, "aria-label": "\u041F\u043E\u0434\u0435\u043B\u0438\u0442\u044C\u0441\u044F" }, /* @__PURE__ */ React.createElement(
+      "svg",
+      {
+        viewBox: "0 0 24 24",
+        width: "20",
+        height: "20",
+        fill: "none",
+        stroke: "currentColor",
+        strokeWidth: "1.8",
+        strokeLinecap: "round",
+        strokeLinejoin: "round"
+      },
+      /* @__PURE__ */ React.createElement("path", { d: "M12 15V3" }),
+      /* @__PURE__ */ React.createElement("path", { d: "m8 7 4-4 4 4" }),
+      /* @__PURE__ */ React.createElement("path", { d: "M4 13v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6" })
+    )), /* @__PURE__ */ React.createElement("b", null, title), /* @__PURE__ */ React.createElement("button", { className: "x-plain", onClick: onClose, "aria-label": "\u0417\u0430\u043A\u0440\u044B\u0442\u044C" }, /* @__PURE__ */ React.createElement(
       "svg",
       {
         viewBox: "0 0 24 24",
@@ -999,7 +1115,7 @@ function Wheel({ value, onChange, bare, max }) {
   };
   return /* @__PURE__ */ React.createElement("div", { ref: wrapRef, className: "wheel-wrap" + (bare ? " bare" : "") }, /* @__PURE__ */ React.createElement("div", { className: "wheel-scroll", ref, onScroll }, opts.map((g) => /* @__PURE__ */ React.createElement("div", { className: "wopt", key: g }, g, " \u0433"))), /* @__PURE__ */ React.createElement("div", { className: "wheel-line" }), /* @__PURE__ */ React.createElement("div", { className: "wheel-fade-t" }), /* @__PURE__ */ React.createElement("div", { className: "wheel-fade-b" }));
 }
-function IngSheet({ title, initial, cats, apiKey, onSave, onDelete, onClose }) {
+function IngSheet({ title, initial, cats, apiKey, onSave, onDelete, onClose, onShare }) {
   const [f, setF] = useState(
     initial || { name: "", k: "", b: "", z: "", u: "", dw: "", cat: "other", ready: false }
   );
@@ -1125,6 +1241,20 @@ function IngSheet({ title, initial, cats, apiKey, onSave, onDelete, onClose }) {
     setAiBusy(false);
   };
   const round1n = (n) => Math.round(n * 10) / 10;
+  const asData = () => {
+    const factor = mode === "whole" ? (num(f.dw) || 100) / 100 : 1;
+    return {
+      ...f,
+      name: f.name.trim(),
+      k: round1n(num(f.k) / factor),
+      b: round1n(num(f.b) / factor),
+      z: round1n(num(f.z) / factor),
+      u: round1n(num(f.u) / factor),
+      dw: num(f.dw) || 100,
+      cat: f.cat || "other",
+      ready: !!f.ready
+    };
+  };
   const submit = () => {
     if (!f.name.trim()) {
       focusName();
@@ -1149,6 +1279,7 @@ function IngSheet({ title, initial, cats, apiKey, onSave, onDelete, onClose }) {
       title,
       full: true,
       onClose,
+      onShare: onShare && f.name.trim() ? () => onShare(asData()) : null,
       footer: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", { className: "btn solid", onClick: submit }, "\u0421\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C"), /* @__PURE__ */ React.createElement("button", { className: "btn ghost", onClick: onClose }, "\u041E\u0442\u043C\u0435\u043D\u0430"))
     },
     /* @__PURE__ */ React.createElement(
@@ -1225,6 +1356,262 @@ function IngSheet({ title, initial, cats, apiKey, onSave, onDelete, onClose }) {
     )))),
     onDelete && /* @__PURE__ */ React.createElement("button", { className: "btn ghost danger", onClick: onDelete }, "\u0423\u0434\u0430\u043B\u0438\u0442\u044C ", title.toLowerCase())
   );
+}
+function Sig({ b, z, u }) {
+  const kb = num(b) * 4, kz = num(z) * 9, ku = num(u) * 4;
+  const s = kb + kz + ku || 1;
+  return /* @__PURE__ */ React.createElement("span", { className: "sig" }, /* @__PURE__ */ React.createElement("i", { style: { width: kb / s * 100 + "%", background: C.b } }), /* @__PURE__ */ React.createElement("i", { style: { width: kz / s * 100 + "%", background: C.z } }), /* @__PURE__ */ React.createElement("i", { style: { width: ku / s * 100 + "%", background: C.u } }));
+}
+function ShareSheet({ dish, prod, onClose }) {
+  const total = dish ? Math.round(totalsOf(dish.items).w) : 0;
+  const [g, setG] = useState(total || 100);
+  const [code, setCode] = useState("");
+  const [copied, setCopied] = useState("");
+  const f = dish && total > 0 ? g / total : 1;
+  const items = dish ? dish.items.map((it) => ({ ...it, grams: num(it.grams) * f })) : [];
+  const T = dish ? totalsOf(items) : null;
+  const pg = dish ? 1 : (num(prod.dw) || 100) / 100;
+  useEffect(() => {
+    let dead = false;
+    const payload = dish ? {
+      v: 1,
+      t: "d",
+      n: dish.name,
+      i: items.map((it) => [
+        it.name,
+        num(it.per100.k),
+        num(it.per100.b),
+        num(it.per100.z),
+        num(it.per100.u),
+        Math.round(num(it.grams) * 10) / 10
+      ])
+    } : {
+      v: 1,
+      t: "p",
+      n: prod.name,
+      k: num(prod.k),
+      b: num(prod.b),
+      z: num(prod.z),
+      u: num(prod.u),
+      w: num(prod.dw) || 100,
+      c: prod.catL || "",
+      r: !!prod.ready
+    };
+    packShare(payload).then((s) => {
+      if (!dead) setCode(s);
+    });
+    return () => {
+      dead = true;
+    };
+  }, [g]);
+  const canShare = typeof navigator !== "undefined" && !!navigator.share;
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied("ok");
+    } catch (e) {
+      setCopied("err");
+    }
+    setTimeout(() => setCopied(""), 2200);
+  };
+  const send = async () => {
+    try {
+      await navigator.share({ text: code });
+      onClose();
+    } catch (e) {
+    }
+  };
+  const k = dish ? T.k : num(prod.k) * pg;
+  const b = dish ? T.b : num(prod.b) * pg;
+  const z = dish ? T.z : num(prod.z) * pg;
+  const u = dish ? T.u : num(prod.u) * pg;
+  return /* @__PURE__ */ React.createElement(
+    Sheet,
+    {
+      title: "\u041F\u043E\u0434\u0435\u043B\u0438\u0442\u044C\u0441\u044F",
+      onClose,
+      footer: /* @__PURE__ */ React.createElement(React.Fragment, null, canShare && /* @__PURE__ */ React.createElement("button", { className: "btn solid", onClick: send, disabled: !code }, "\u041E\u0442\u043F\u0440\u0430\u0432\u0438\u0442\u044C"), /* @__PURE__ */ React.createElement("button", { className: canShare ? "btn ghost" : "btn solid", onClick: copy, disabled: !code }, copied === "ok" ? "\u0421\u043A\u043E\u043F\u0438\u0440\u043E\u0432\u0430\u043D\u043E" : copied === "err" ? "\u041D\u0435 \u0441\u043A\u043E\u043F\u0438\u0440\u043E\u0432\u0430\u043B\u043E\u0441\u044C" : "\u0421\u043A\u043E\u043F\u0438\u0440\u043E\u0432\u0430\u0442\u044C"))
+    },
+    /* @__PURE__ */ React.createElement("div", { className: "row" }, /* @__PURE__ */ React.createElement(Sig, { b, z, u }), /* @__PURE__ */ React.createElement("div", { className: "row-main" }, /* @__PURE__ */ React.createElement("span", { className: "row-name" }, dish ? dish.name : prod.name), /* @__PURE__ */ React.createElement("span", { className: "row-sub mono" }, fmt(k, 0), " \u043A\u043A\u0430\u043B \xB7 \u0411 ", fmt(b), " \xB7 \u0416 ", fmt(z), " \xB7 \u0423 ", fmt(u)))),
+    dish && total >= W_MIN + W_STEP && /* @__PURE__ */ React.createElement("div", { className: "sharewheel" }, /* @__PURE__ */ React.createElement(Wheel, { bare: true, value: g, onChange: setG, max: total })),
+    /* @__PURE__ */ React.createElement("div", { className: "sharecode mono" }, code),
+    /* @__PURE__ */ React.createElement("p", { className: "hint" }, "\u041E\u0442\u043F\u0440\u0430\u0432\u044C\u0442\u0435 \u044D\u0442\u043E\u0442 \u043A\u043E\u0434 \u0447\u0435\u043B\u043E\u0432\u0435\u043A\u0443, \u0441\xA0\u043A\u043E\u0442\u043E\u0440\u044B\u043C \u0445\u043E\u0442\u0438\u0442\u0435 \u043F\u043E\u0434\u0435\u043B\u0438\u0442\u044C\u0441\u044F. \u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0435\u0433\u043E \u0432\xA0\u0447\u0443\u0436\u043E\u0439 \u043A\u043E\u0442\u0451\u043B \u043C\u043E\u0436\u043D\u043E \u0447\u0435\u0440\u0435\u0437 \u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 \u2192 \u041E\u0431\u043C\u0435\u043D")
+  );
+}
+function ImportProdSheet({ data, lib, cats, onSave, onReplace, onClose }) {
+  const cands = useMemo(() => similarProds(lib, { name: data.n, k: data.k, b: data.b, z: data.z, u: data.u }), [lib, data]);
+  const exact = useMemo(
+    () => lib.find(
+      (x) => prodKey(x.name) === prodKey(data.n) && ["k", "b", "z", "u"].every((f) => num(x[f]) === num(data[f]))
+    ) || null,
+    [lib, data]
+  );
+  const [sel, setSel] = useState(null);
+  const catId = useMemo(() => {
+    const l = prodKey(data.c || "");
+    const hit = l ? (cats || CATS).find((c) => prodKey(c.l) === l) : null;
+    return hit ? hit.id : "other";
+  }, [cats, data]);
+  const mk = () => ({
+    name: data.n,
+    k: num(data.k),
+    b: num(data.b),
+    z: num(data.z),
+    u: num(data.u),
+    dw: num(data.w) || 100,
+    cat: catId,
+    ready: !!data.r
+  });
+  const g = (num(data.w) || 100) / 100;
+  const row = (x) => {
+    const gg = (num(x.dw) || 100) / 100;
+    return /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        className: "row lib-row" + (sel && sel.id === x.id ? " picked" : ""),
+        key: x.id,
+        onClick: () => setSel(sel && sel.id === x.id ? null : x)
+      },
+      /* @__PURE__ */ React.createElement(Sig, { b: num(x.b) * gg, z: num(x.z) * gg, u: num(x.u) * gg }),
+      /* @__PURE__ */ React.createElement("div", { className: "row-main" }, /* @__PURE__ */ React.createElement("span", { className: "row-name" }, x.name), /* @__PURE__ */ React.createElement("span", { className: "row-sub mono" }, fmt(num(x.k) * gg, 0), " \u043A\u043A\u0430\u043B \xB7 \u0411 ", fmt(num(x.b) * gg), " \xB7 \u0416 ", fmt(num(x.z) * gg), " \xB7 \u0423", " ", fmt(num(x.u) * gg)))
+    );
+  };
+  return /* @__PURE__ */ React.createElement(
+    Sheet,
+    {
+      title: "\u041D\u043E\u0432\u044B\u0439 \u043F\u0440\u043E\u0434\u0443\u043A\u0442",
+      full: true,
+      onClose,
+      footer: exact ? /* @__PURE__ */ React.createElement("button", { className: "btn solid", onClick: onClose }, "\u041E\u0442\u043C\u0435\u043D\u0430") : sel ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", { className: "btn solid", onClick: () => onReplace(sel, mk()) }, "\u041E\u0431\u043D\u043E\u0432\u0438\u0442\u044C \xAB", sel.name, "\xBB"), /* @__PURE__ */ React.createElement("button", { className: "btn ghost", onClick: () => onSave(mk()) }, "\u0421\u043E\u0437\u0434\u0430\u0442\u044C \u043D\u043E\u0432\u044B\u0439")) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", { className: "btn solid", onClick: () => onSave(mk()) }, "\u0421\u043E\u0437\u0434\u0430\u0442\u044C \u043D\u043E\u0432\u044B\u0439"), /* @__PURE__ */ React.createElement("button", { className: "btn ghost", onClick: onClose }, "\u041E\u0442\u043C\u0435\u043D\u0430"))
+    },
+    /* @__PURE__ */ React.createElement("div", { className: "row" }, /* @__PURE__ */ React.createElement(Sig, { b: num(data.b) * g, z: num(data.z) * g, u: num(data.u) * g }), /* @__PURE__ */ React.createElement("div", { className: "row-main" }, /* @__PURE__ */ React.createElement("span", { className: "row-name" }, data.n), /* @__PURE__ */ React.createElement("span", { className: "row-sub mono" }, fmt(num(data.k) * g, 0), " \u043A\u043A\u0430\u043B \xB7 \u0411 ", fmt(num(data.b) * g), " \xB7 \u0416 ", fmt(num(data.z) * g), " \xB7 \u0423", " ", fmt(num(data.u) * g)))),
+    exact ? /* @__PURE__ */ React.createElement("p", { className: "imp-note" }, "\u0422\u0430\u043A\u043E\u0439 \u043F\u0440\u043E\u0434\u0443\u043A\u0442 \u0443\u0436\u0435 \u0435\u0441\u0442\u044C \u0432\xA0\u043A\u043B\u0430\u0434\u043E\u0432\u043E\u0439") : cands.length > 0 && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("p", { className: "imp-note" }, "\u041F\u043E\u0445\u043E\u0436\u0438\u0439 \u043F\u0440\u043E\u0434\u0443\u043A\u0442 \u0443\u0436\u0435 \u0435\u0441\u0442\u044C \u0432\xA0\u043A\u043B\u0430\u0434\u043E\u0432\u043E\u0439. \u041E\u0431\u043D\u043E\u0432\u0438\u0442\u044C \u0438\u043B\u0438 \u0441\u043E\u0437\u0434\u0430\u0442\u044C \u043D\u043E\u0432\u044B\u0439?"), /* @__PURE__ */ React.createElement("section", { className: "list" }, cands.map(row)))
+  );
+}
+function ImportDishSheet({ data, lib, dishes, onSave, onReplace, onAddIng, onClose }) {
+  const [items, setItems] = useState(
+    () => data.i.map((a) => {
+      const hit = findByName(lib, a[0]);
+      return {
+        id: uid(),
+        pid: hit ? hit.id : null,
+        name: hit ? hit.name : a[0],
+        per100: { k: num(a[1]), b: num(a[2]), z: num(a[3]), u: num(a[4]) },
+        grams: num(a[5])
+      };
+    })
+  );
+  const [name, setName] = useState(data.n);
+  const [ask, setAsk] = useState(null);
+  const [pickQ, setPickQ] = useState(null);
+  const target = useMemo(
+    () => similarDish(dishes, data.n, data.i.map((a) => a[0])),
+    [dishes, data]
+  );
+  const T = totalsOf(items);
+  const rows = useMemo(() => {
+    if (!target) return items.map((it) => ({ it, kind: "" }));
+    const old = new Map(target.items.map((o) => [prodKey(o.name), o]));
+    const seen = /* @__PURE__ */ new Set();
+    const out = items.map((it) => {
+      const k = prodKey(it.name);
+      const o = old.get(k);
+      if (!o) return { it, kind: "add" };
+      seen.add(k);
+      return Math.round(num(o.grams)) === Math.round(num(it.grams)) ? { it, kind: "" } : { it, kind: "chg", was: num(o.grams) };
+    });
+    target.items.forEach((o) => {
+      if (!seen.has(prodKey(o.name))) out.push({ it: o, kind: "del" });
+    });
+    return out;
+  }, [items, target]);
+  const identical = !!target && rows.every((r) => !r.kind) && prodKey(data.n) === prodKey(target.name);
+  const addToLib = () => {
+    const ing = {
+      id: uid(),
+      name: ask.name,
+      k: ask.per100.k,
+      b: ask.per100.b,
+      z: ask.per100.z,
+      u: ask.per100.u,
+      dw: Math.round(num(ask.grams)) || 100,
+      cat: "other",
+      ready: false
+    };
+    onAddIng(ing);
+    setItems((l) => l.map((x) => x.id === ask.id ? { ...x, pid: ing.id } : x));
+    setAsk(null);
+  };
+  const pickExisting = (x) => {
+    setItems(
+      (l) => l.map(
+        (it) => it.id === ask.id ? {
+          ...it,
+          pid: x.id,
+          name: x.name,
+          per100: { k: num(x.k), b: num(x.b), z: num(x.z), u: num(x.u) }
+        } : it
+      )
+    );
+    setAsk(null);
+    setPickQ(null);
+  };
+  const pickList = useMemo(() => {
+    if (!ask) return [];
+    if (pickQ) {
+      return lib.filter((x) => matchesQuery(x.name, pickQ)).sort((a, b) => queryScore(a.name, pickQ) - queryScore(b.name, pickQ)).slice(0, 40);
+    }
+    const near = similarProds(lib, { name: ask.name, ...ask.per100 });
+    const ids = new Set(near.map((x) => x.id));
+    const rest = lib.filter((x) => !ids.has(x.id)).sort((a, b) => a.name.localeCompare(b.name, "ru"));
+    return [...near, ...rest].slice(0, 40);
+  }, [ask, pickQ, lib]);
+  const bodyRow = ({ it, kind, was }) => {
+    const g = num(it.grams);
+    const r = g / 100;
+    const miss = kind !== "del" && !it.pid;
+    return /* @__PURE__ */ React.createElement(
+      "div",
+      {
+        className: "row imp-row" + (kind ? " imp-" + kind : "") + (miss ? " imp-miss" : ""),
+        key: it.id,
+        onClick: miss ? () => setAsk(it) : void 0
+      },
+      /* @__PURE__ */ React.createElement(Sig, { b: it.per100.b * r, z: it.per100.z * r, u: it.per100.u * r }),
+      /* @__PURE__ */ React.createElement("div", { className: "row-main" }, /* @__PURE__ */ React.createElement("span", { className: "row-name" }, it.name), /* @__PURE__ */ React.createElement("span", { className: "row-sub mono" }, fmt(it.per100.k * g / 100, 0), " \u043A\u043A\u0430\u043B \xB7 \u0411 ", fmt(it.per100.b * g / 100), " \xB7 \u0416", " ", fmt(it.per100.z * g / 100), " \xB7 \u0423 ", fmt(it.per100.u * g / 100))),
+      /* @__PURE__ */ React.createElement("span", { className: "imp-g mono" }, kind === "chg" ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("s", null, fmt(was, 0)), " \u2192 ", /* @__PURE__ */ React.createElement("b", null, fmt(g, 0), " \u0433")) : fmt(g, 0) + " \u0433")
+    );
+  };
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(
+    Sheet,
+    {
+      title: target ? target.name : "\u041D\u043E\u0432\u043E\u0435 \u0431\u043B\u044E\u0434\u043E",
+      full: true,
+      onClose,
+      footer: identical ? /* @__PURE__ */ React.createElement("button", { className: "btn solid", onClick: onClose }, "\u041E\u0442\u043C\u0435\u043D\u0430") : target ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", { className: "btn solid", onClick: () => onReplace(target, { name: data.n, items }) }, "\u041E\u0431\u043D\u043E\u0432\u0438\u0442\u044C"), /* @__PURE__ */ React.createElement("button", { className: "btn ghost", onClick: () => onSave({ name: data.n, items }) }, "\u0421\u043E\u0437\u0434\u0430\u0442\u044C \u043D\u043E\u0432\u043E\u0435")) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", { className: "btn solid", onClick: () => onSave({ name: name.trim() || data.n, items }) }, "\u0421\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C"), /* @__PURE__ */ React.createElement("button", { className: "btn ghost", onClick: onClose }, "\u041E\u0442\u043C\u0435\u043D\u0430"))
+    },
+    /* @__PURE__ */ React.createElement("section", { className: "board board-sum" }, /* @__PURE__ */ React.createElement("div", { className: "board-top" }, /* @__PURE__ */ React.createElement("span", { className: "eyebrow" }, "\u0438\u0442\u043E\u0433\u043E \u0432 \u043A\u043E\u0442\u043B\u0435"), /* @__PURE__ */ React.createElement("span", { className: "weight mono" }, fmt(T.w, 0), " ", /* @__PURE__ */ React.createElement("i", null, "\u0433"))), /* @__PURE__ */ React.createElement("div", { className: "kcal" }, /* @__PURE__ */ React.createElement("span", { className: "kcal-n" }, fmt(T.k, 0)), /* @__PURE__ */ React.createElement("span", { className: "kcal-u" }, "\u043A\u043A\u0430\u043B")), /* @__PURE__ */ React.createElement("div", { className: "bar", "aria-hidden": true }, (() => {
+      const kb = T.b * 4, kz = T.z * 9, ku = T.u * 4;
+      const s = kb + kz + ku || 1;
+      return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("i", { style: { width: kb / s * 100 + "%", background: C.b } }), /* @__PURE__ */ React.createElement("i", { style: { width: kz / s * 100 + "%", background: C.z } }), /* @__PURE__ */ React.createElement("i", { style: { width: ku / s * 100 + "%", background: C.u } }));
+    })()), /* @__PURE__ */ React.createElement("div", { className: "chips tri" }, /* @__PURE__ */ React.createElement("span", { className: "chip" }, /* @__PURE__ */ React.createElement("span", { className: "ct", style: { color: C.b } }, "\u0411\u0435\u043B\u043A\u0438"), /* @__PURE__ */ React.createElement("b", { className: "mono" }, fmt(T.b), " \u0433"), /* @__PURE__ */ React.createElement("em", { className: "mono kc" }, fmt(T.b * 4, 0))), /* @__PURE__ */ React.createElement("span", { className: "chip" }, /* @__PURE__ */ React.createElement("span", { className: "ct", style: { color: C.z } }, "\u0416\u0438\u0440\u044B"), /* @__PURE__ */ React.createElement("b", { className: "mono" }, fmt(T.z), " \u0433"), /* @__PURE__ */ React.createElement("em", { className: "mono kc" }, fmt(T.z * 9, 0))), /* @__PURE__ */ React.createElement("span", { className: "chip" }, /* @__PURE__ */ React.createElement("span", { className: "ct", style: { color: C.u } }, "\u0423\u0433\u043B\u0435\u0432\u043E\u0434\u044B"), /* @__PURE__ */ React.createElement("b", { className: "mono" }, fmt(T.u), " \u0433"), /* @__PURE__ */ React.createElement("em", { className: "mono kc" }, fmt(T.u * 4, 0)))), T.w > 0 && /* @__PURE__ */ React.createElement("div", { className: "per100 mono" }, "\u043D\u0430 100 \u0433: ", fmt(per100Of(T).k, 0), " \u043A\u043A\u0430\u043B \xB7 \u0411 ", fmt(per100Of(T).b), " \xB7 \u0416", " ", fmt(per100Of(T).z), " \xB7 \u0423 ", fmt(per100Of(T).u))),
+    identical ? /* @__PURE__ */ React.createElement("p", { className: "imp-note" }, "\u042D\u0442\u043E \u0431\u043B\u044E\u0434\u043E \u0443\u0436\u0435 \u0435\u0441\u0442\u044C \u0432\xA0\u043A\u043B\u0430\u0434\u043E\u0432\u043E\u0439") : target ? /* @__PURE__ */ React.createElement("p", { className: "imp-note" }, "\u041F\u043E\u0445\u043E\u0436\u0435\u0435 \u0431\u043B\u044E\u0434\u043E \u0443\u0436\u0435 \u0435\u0441\u0442\u044C \u0432\xA0\u043A\u043B\u0430\u0434\u043E\u0432\u043E\u0439: \xAB", target.name, "\xBB. \u041E\u0431\u043D\u043E\u0432\u0438\u0442\u044C \u0435\u0433\u043E \u0438\u043B\u0438 \u0441\u043E\u0437\u0434\u0430\u0442\u044C \u043D\u043E\u0432\u043E\u0435?") : /* @__PURE__ */ React.createElement(Field, { label: "\u041D\u0430\u0437\u0432\u0430\u043D\u0438\u0435", value: name, onChange: setName, type: "text", placeholder: "\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u043D\u0430\u0437\u0432\u0430\u043D\u0438\u0435" }),
+    /* @__PURE__ */ React.createElement("section", { className: "list" }, rows.map(bodyRow))
+  ), ask && /* @__PURE__ */ React.createElement(
+    Sheet,
+    {
+      title: ask.name,
+      onClose: () => {
+        setAsk(null);
+        setPickQ(null);
+      },
+      footer: pickQ === null ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", { className: "btn solid", onClick: addToLib }, "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0432 \u043A\u043B\u0430\u0434\u043E\u0432\u0443\u044E"), /* @__PURE__ */ React.createElement("button", { className: "btn ghost", onClick: () => setPickQ("") }, "\u0417\u0430\u043C\u0435\u043D\u0438\u0442\u044C \u043D\u0430 \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u0443\u044E\u0449\u0438\u0439"), /* @__PURE__ */ React.createElement("button", { className: "btn ghost", onClick: () => setAsk(null) }, "\u041E\u0441\u0442\u0430\u0432\u0438\u0442\u044C \u0442\u0430\u043A")) : null
+    },
+    pickQ === null ? /* @__PURE__ */ React.createElement("p", { className: "hint imp-mid" }, "\u0422\u0430\u043A\u043E\u0433\u043E \u043F\u0440\u043E\u0434\u0443\u043A\u0442\u0430 \u043D\u0435\u0442 \u0432\xA0\u043A\u043B\u0430\u0434\u043E\u0432\u043E\u0439") : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(SearchBox, { q: pickQ, setQ: setPickQ, placeholder: "\u041D\u0430\u0439\u0442\u0438 \u043F\u0440\u043E\u0434\u0443\u043A\u0442" }), /* @__PURE__ */ React.createElement("section", { className: "list" }, pickList.map((x) => {
+      const gg = (num(x.dw) || 100) / 100;
+      return /* @__PURE__ */ React.createElement("button", { className: "row lib-row", key: x.id, onClick: () => pickExisting(x) }, /* @__PURE__ */ React.createElement(Sig, { b: num(x.b) * gg, z: num(x.z) * gg, u: num(x.u) * gg }), /* @__PURE__ */ React.createElement("div", { className: "row-main" }, /* @__PURE__ */ React.createElement("span", { className: "row-name" }, x.name), /* @__PURE__ */ React.createElement("span", { className: "row-sub mono" }, fmt(num(x.k) * gg, 0), " \u043A\u043A\u0430\u043B \xB7 \u0411 ", fmt(num(x.b) * gg), " \xB7 \u0416", " ", fmt(num(x.z) * gg), " \xB7 \u0423 ", fmt(num(x.u) * gg))));
+    })))
+  ));
 }
 const SEED_DATA = { "lib": [{ "id": "56bjfp5b", "name": "\u0427\u0438\u043F\u0441\u044B \u043C\u044F\u0441\u043D\u044B\u0435 \u0421\u0443\u0445\u0438\u043D\u0438\u0447\u0438 \u0438\u0437 \u0441\u0432\u0438\u043D\u0438\u043D\u044B", "k": 257, "b": 53, "z": 5, "u": 0, "dw": 40, "cat": "protein", "ready": false, "uses": 1 }, { "id": "jf8aga9p", "name": "\u0427\u0438\u043F\u0441\u044B \u043C\u044F\u0441\u043D\u044B\u0435 \u0421\u0443\u0445\u0438\u043D\u0438\u0447\u0438 \u0438\u0437 \u043A\u0443\u0440\u0438\u0446\u044B", "k": 256, "b": 55, "z": 4, "u": 0, "dw": 40, "cat": "protein", "ready": false, "uses": 1 }, { "id": "jybgkhup", "name": "\u041F\u0438\u0432\u043E Skydragon \u0417\u0435\u043B\u0451\u043D\u043E\u0435", "k": 17, "b": 0, "z": 0, "u": 4.2, "dw": 1e3, "cat": "7tzc81d3", "ready": false, "uses": 1 }, { "id": "zxotmk0e", "name": "\u041F\u0438\u0432\u043E Skydragon \u041A\u0440\u0430\u0441\u043D\u043E\u0435", "k": 13.4, "b": 0, "z": 0, "u": 3.3, "dw": 1e3, "cat": "7tzc81d3", "ready": false }, { "id": "ib8yxlbx", "name": "Bombbar \u0422\u0438\u0440\u0430\u043C\u0438\u0441\u0443", "k": 308, "b": 33, "z": 8.8, "u": 7, "dw": 60, "cat": "protein", "ready": false, "uses": 1 }, { "id": "aay3xewz", "name": "\u0420\u0438\u0441 \u0441 \u043A\u0443\u0440\u0438\u043D\u043E\u0439 \u0431\u0440\u0438\u0437\u043E\u043B\u044C\u044E", "k": 198.5, "b": 12.4, "z": 8.5, "u": 18.1, "dw": 200, "cat": "other", "ready": true, "uses": 1 }, { "id": "ugypa2ss", "name": "\u0424\u043E\u0440\u0435\u043B\u044C \u0436\u0438\u0440\u043D\u0430\u044F", "k": 152, "b": 20, "z": 8, "u": 0, "dw": 55, "cat": "protein", "ready": false }, { "id": "d32yatsp", "name": "\u0425\u043B\u0435\u0431 \u0437\u0435\u0440\u043D\u043E\u0432\u043E\u0439 \u0412\u0412", "k": 230.4, "b": 8.3, "z": 4.4, "u": 39.4, "dw": 40, "cat": "other", "ready": false }, { "id": "uv8yt2j3", "name": "\u0422\u0432\u043E\u0440\u043E\u0433 \u0442\u044B+\u043F\u0440\u043E\u0442\u0435\u0438\u043D", "k": 70, "b": 10, "z": 2, "u": 3, "dw": 30, "cat": "other", "ready": false, "uses": 1 }, { "id": "astnos08", "name": "\u0424\u0430\u0440\u0448 \u0433\u043E\u0432\u044F\u0436\u0438\u0439 \u041C\u0438\u0440\u0430\u0442\u043E\u0440\u0433", "k": 360, "b": 12, "z": 35, "u": 0, "dw": 400, "cat": "other", "ready": false }, { "id": "hxjrk5pq", "name": "\u0424\u0430\u0440\u0448 \u0434\u043E\u043C\u0430\u0448\u043D\u0438\u0439 \u041C\u0438\u0440\u0430\u0442\u043E\u0440\u0433", "k": 285, "b": 15, "z": 25, "u": 0, "dw": 500, "cat": "other", "ready": false }, { "id": "t7nr481m", "name": "\u0422\u0435\u0441\u0442\u043E \u0434\u043B\u044F \u043F\u0435\u043B\u044C\u043C\u0435\u043D\u0435\u0439 \u0422\u0435\u0441\u0442\u043E\u0432 360\u0433", "k": 245, "b": 7, "z": 1.5, "u": 51, "dw": 720, "cat": "other", "ready": false, "uses": 1 }, { "id": "e14wtdd0", "name": "\u041A\u0443\u0440\u0438\u0446\u0430 \u0441\u0443\u0432\u0438\u0434 \u0412\u0412", "k": 102.8, "b": 22.1, "z": 1.6, "u": 0, "dw": 110, "cat": "protein", "ready": false }, { "id": "ztoe0kzi", "name": "Bombbar Pistachio Ice Cream", "k": 314, "b": 33, "z": 11, "u": 8, "dw": 60, "cat": "protein", "ready": false, "uses": 1 }, { "id": "1wvhp6gz", "name": "\u0421\u0430\u043B\u0430\u0442 \xAB\u0412\u0438\u0442\u0430\u043C\u0438\u043D\u043D\u044B\u0439\xBB \u0441 \u043B\u0438\u043C\u043E\u043D\u043D\u043E\u0439 \u0437\u0430\u043F\u0440\u0430\u0432\u043A\u043E\u0439", "k": 97.2, "b": 1.2, "z": 5.2, "u": 11.4, "dw": 80, "cat": "grain", "ready": false, "uses": 1 }, { "id": "bzr7ff0x", "name": "\u041A\u0430\u043B\u044C\u043C\u0430\u0440 \u043D\u0430\u0442\u0443\u0440\u0430\u043B", "k": 105, "b": 20, "z": 2, "u": 1.8, "dw": 86, "cat": "protein", "ready": false }, { "id": "ttdjmnmc", "name": "\u0424\u0440\u0438\u043A\u0430\u0434\u0435\u043B\u044C\u043A\u0438 \u0438\u0437 \u0438\u043D\u0434\u0435\u0439\u043A\u0438 \u0441 \u043F\u044E\u0440\u0435", "k": 192.8, "b": 9.2, "z": 13.2, "u": 10, "dw": 250, "cat": "other", "ready": false, "uses": 1 }, { "id": "va19q9pn", "name": "\u0411\u0430\u043C\u0431\u043B", "k": 23, "b": 0.1, "z": 0.1, "u": 5.5, "dw": 650, "cat": "7tzc81d3", "ready": false, "uses": 1 }, { "id": "318vmb1y", "name": "\u0421\u043A\u0438\u0440 Isey Skyr \u0427\u0435\u0440\u043D\u0438\u043A\u0430-\u041C\u0430\u043B\u0438\u043D\u0430", "k": 91, "b": 9.3, "z": 1.2, "u": 10.7, "dw": 150, "cat": "dairy", "ready": false, "uses": 2 }, { "id": "5l2zxqql", "name": "\u0411\u0430\u0442\u043E\u043D\u0447\u0438\u043A \u0432\u0430\u0444\u0435\u043B\u044C\u043D\u044B\u0439 Snaqfer", "k": 381, "b": 7, "z": 27, "u": 16, "dw": 50, "cat": "other", "ready": false, "uses": 1 }, { "id": "ham7167s", "name": "\u041F\u0438\u0432\u043E \u041A\u0440\u043E\u043D \u0411\u043B\u0430\u043D\u0448 \u043F\u0435\u0440\u0441\u0438\u043A", "k": 50, "b": 0, "z": 0, "u": 5, "dw": 450, "cat": "7tzc81d3", "ready": false, "uses": 1 }, { "id": "16h1xweh", "name": "\u041A\u043E\u043B\u044C\u0446\u0430 \u043A\u0430\u043B\u044C\u043C\u0430\u0440\u0430", "k": 260, "b": 25, "z": 0.2, "u": 39, "dw": 70, "cat": "other", "ready": false, "uses": 1 }, { "id": "tctyunr7", "name": "\u0421\u044B\u0440 \u043A\u043E\u043F\u0447\u0451\u043D\u044B\u0439 \xAB\u0421\u044B\u0440\u0446\u0435\u0435\u0434\u044B\xBB", "k": 400, "b": 46, "z": 24, "u": 0, "dw": 50, "cat": "other", "ready": false, "uses": 1 }, { "id": "mat9bxhs", "name": "\u041C\u043E\u0440\u043E\u0436\u0435\u043D\u043E\u0435 \u043F\u043B\u043E\u043C\u0431\u0438\u0440 \xAB\u041A\u043E\u0440\u043E\u0432\u043A\u0430 \u0438\u0437 \u041A\u043E\u0440\u0435\u043D\u043E\u0432\u043A\u0438\xBB", "k": 250, "b": 3.5, "z": 15, "u": 25, "dw": 100, "cat": "other", "uses": 1 }, { "id": "dh01ztfc", "name": "Bombbar Coconut", "k": 293, "b": 33, "z": 8, "u": 5.2, "dw": 60, "cat": "protein", "uses": 2, "ready": false }, { "id": "rq94d1dl", "name": "\u0419\u043E\u0433\u0443\u0440\u0442 Exponenta", "k": 62, "b": 12.5, "z": 0, "u": 3, "dw": 160, "cat": "dairy", "uses": 2, "ready": false }, { "id": "e3kos23k", "name": "\u041C\u043E\u0440\u043A\u043E\u0432\u044C \u043F\u043E-\u043A\u043E\u0440\u0435\u0439\u0441\u043A\u0438 \u0422\u0440\u0430\u0434\u0438\u0446\u0438\u0438 \u0412\u043A\u0443\u0441\u0430", "k": 57.7, "b": 1, "z": 3.4, "u": 5.3, "dw": 100, "cat": "grain", "uses": 3 }, { "id": "5jjydlhb", "name": "\u0427\u0430\u0439 \u0441 \u0433\u0440\u0435\u0439\u043F\u0444\u0440\u0443\u0442\u043E\u043C", "k": 33, "b": 0, "z": 0, "u": 8, "dw": 100, "cat": "7tzc81d3", "uses": 2 }, { "id": "7sb8r3v2", "name": "\u041D\u0435\u043A\u0442\u0430\u0440\u0438\u043D", "k": 44, "b": 1.1, "z": 0.3, "u": 10.6, "dw": 90, "cat": "fruit", "uses": 5, "ready": false }, { "id": "aj9ld96m", "name": "\u041E\u0432\u0441\u044F\u043D\u044B\u0435 \u0445\u043B\u043E\u043F\u044C\u044F", "k": 342, "b": 12, "z": 6, "u": 60, "dw": 70, "cat": "grain", "uses": 2 }, { "id": "v1jds80x", "name": "\u041A\u0430\u043F\u0443\u0441\u0442\u0430 \u043F\u043E \u043A\u043E\u0440\u0435\u0439\u0441\u043A\u0438 \u0441 \u043C\u043E\u0440\u043A\u043E\u0432\u044C\u044E", "k": 89.5, "b": 1.6, "z": 6.7, "u": 5.4, "dw": 80, "cat": "grain", "uses": 3 }, { "id": "bbh45f2l", "name": "\u0421\u043E\u043A J7 \u0430\u043F\u0435\u043B\u044C\u0441\u0438\u043D", "k": 35, "b": 0, "z": 0, "u": 9, "dw": 650, "cat": "7tzc81d3", "uses": 4 }, { "id": "scpr1i9g", "name": "\u042F\u0439\u0446\u043E \u0441 \u0436\u0435\u043B\u0442\u043A\u0430\u043C\u0438", "k": 155, "b": 13, "z": 11, "u": 1.1, "dw": 120, "cat": "protein", "uses": 11 }, { "id": "mlgavjif", "name": "\u042F\u0438\u0447\u043D\u044B\u0439 \u0431\u0435\u043B\u043E\u043A", "k": 52, "b": 13, "z": 0, "u": 1, "dw": 160, "cat": "protein", "uses": 12 }, { "id": "7skkme9j", "name": "\u0411\u0430\u0442\u043E\u043D\u0447\u0438\u043A Snaq Fabriq Coco Chocolate", "k": 399, "b": 8, "z": 28, "u": 8.8, "dw": 20, "cat": "other", "uses": 2 }, { "id": "xyc1eve3", "name": "\u0425\u043B\u0435\u0431 \xAB\u0420\u0436\u0430\u043D\u043E\u0439 \u043A\u0440\u0430\u0439\xBB \u0437\u0435\u0440\u043D\u043E\u0432\u043E\u0439", "k": 320, "b": 10, "z": 12, "u": 43, "dw": 60, "cat": "other" }, { "id": "r8y114um", "name": "\u0422\u0443\u043D\u0435\u0446 \u0432 \u0441\u043E\u0431\u0441\u0442\u0432\u0435\u043D\u043D\u043E\u043C \u0441\u043E\u043A\u0443", "k": 104, "b": 24.1, "z": 0.8, "u": 0.3, "dw": 130, "cat": "protein", "uses": 4, "ready": false }, { "id": "eo3gh33r", "name": "\u041A\u0443\u043A\u0443\u0440\u0443\u0437\u0430 \u043A\u043E\u043D\u0441\u0435\u0440\u0432\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F", "k": 80, "b": 2.6, "z": 1, "u": 15.2, "dw": 140, "cat": "qqkk8f4f" }, { "id": "2eepxiax", "name": "\u041F\u0440\u0438\u043D\u0433\u043B\u0441", "k": 517, "b": 6.3, "z": 29, "u": 56, "dw": 80, "cat": "other" }, { "id": "2rib47o3", "name": "\u041F\u0438\u0432\u043E Corona", "k": 42, "b": 0.3, "z": 0, "u": 4, "dw": 350, "cat": "7tzc81d3", "uses": 2 }, { "id": "4rdan6uk", "name": "\u041B\u0430\u0432\u0430\u0448", "k": 350, "b": 10, "z": 3.5, "u": 70, "dw": 20, "cat": "other" }, { "id": "yavkspoa", "name": "\u0422\u0432\u043E\u0440\u043E\u0433 \u043C\u044F\u0433\u043A\u0438\u0439 9%", "k": 160, "b": 16, "z": 9, "u": 3, "dw": 180, "cat": "dairy" }, { "id": "d7e7rjz7", "name": "\u0421\u043A\u0438\u0440 Isey Skyr \u042F\u0431\u043B\u043E\u043A\u043E", "k": 96, "b": 9.3, "z": 1.2, "u": 11.9, "dw": 150, "cat": "dairy", "ready": false }, { "id": "9790sokx", "name": "\u041F\u0443\u0434\u0438\u043D\u0433 Hyper High Protein 1.5%", "k": 80, "b": 10, "z": 1.5, "u": 6, "dw": 200, "cat": "protein", "uses": 7 }, { "id": "fl5sr2iw", "name": "\u041E\u0433\u0443\u0440\u0446\u044B", "k": 12.5, "b": 0.2, "z": 0, "u": 3.4, "dw": 80, "cat": "qqkk8f4f", "uses": 4 }, { "id": "qnlbks78", "name": "\u0427\u0435\u0440\u0440\u0438", "k": 15, "b": 0.8, "z": 0.1, "u": 2.8, "dw": 80, "cat": "qqkk8f4f", "uses": 4 }, { "id": "3z3iipvg", "name": "\u0411\u0430\u0442\u043E\u043D\u0447\u0438\u043A Snaq Fabriq Coconut", "k": 405, "b": 7, "z": 30, "u": 7.3, "dw": 20, "cat": "other", "uses": 2 }, { "id": "okaiqkn4", "name": "\u041C\u043E\u0440\u043A\u043E\u0432\u044C \u043F\u043E \u043A\u043E\u0440\u0435\u0439\u0441\u043A\u0438", "k": 93, "b": 1.5, "z": 3, "u": 15, "dw": 80, "cat": "grain", "uses": 1 }, { "id": "v5dbljl5", "name": "\u0410\u0432\u043E\u043A\u0430\u0434\u043E", "k": 160, "b": 2, "z": 15, "u": 9, "dw": 80, "cat": "qqkk8f4f" }, { "id": "ls4tyft4", "name": "\u041F\u0438\u0432\u043E \u041C\u0438\u043B\u043B\u0435\u0440", "k": 40, "b": 0, "z": 0, "u": 3.1, "dw": 450, "cat": "7tzc81d3" }, { "id": "k2u87dkk", "name": "\u0413\u0440\u0435\u0447\u0435\u0441\u043A\u0438\u0439 \u0439\u043E\u0433\u0443\u0440\u0442", "k": 66.8, "b": 8, "z": 2, "u": 4.2, "dw": 40, "cat": "dairy", "uses": 10 }, { "id": "x6rkhjqw", "name": "\u041F\u0430\u0440\u043C\u0435\u0437\u0430\u043D", "k": 356.5, "b": 31.3, "z": 25.7, "u": 0, "dw": 7, "cat": "dairy" }, { "id": "83aelxez", "name": "\u041A\u0443\u0440\u0438\u0446\u0430 \u0441\u0443\u0432\u0438\u0434", "k": 114.4, "b": 24.1, "z": 2, "u": 0, "dw": 80, "cat": "protein" }, { "id": "n49l6dsr", "name": "\u0422\u043E\u0440\u0442\u0438\u043B\u044C\u044F", "k": 290, "b": 7, "z": 7, "u": 48, "dw": 67, "cat": "other" }, { "id": "8ea3tave", "name": "\u041F\u0440\u043E\u0442\u0435\u0438\u043D", "k": 331, "b": 75, "z": 0.5, "u": 7, "dw": 30, "cat": "protein", "uses": 3 }, { "id": "5hpc80vg", "name": "\u041A\u0430\u043F\u0443\u0441\u0442\u0430 \u0446\u0432\u0435\u0442\u043D\u0430\u044F \u0437\u0430\u043C\u043E\u0440\u043E\u0436\u0435\u043D\u043D\u0430\u044F", "k": 28, "b": 2.11, "z": 0.1, "u": 4.57, "dw": 60, "cat": "qqkk8f4f", "uses": 1 }, { "id": "t0hkya1z", "name": "\u0425\u043B\u0435\u0431", "k": 196, "b": 6.6, "z": 0.9, "u": 40.5, "dw": 40, "cat": "other" }, { "id": "bm4x6tbx", "name": "\u0424\u043E\u0440\u0435\u043B\u044C", "k": 110, "b": 17.3, "z": 4.7, "u": 0, "dw": 60, "cat": "protein", "uses": 1, "ready": false }, { "id": "g0jw6mih", "name": "\u0412\u0438\u0448\u043D\u044F \u0437\u0430\u043C\u043E\u0440\u043E\u0436\u0435\u043D\u043D\u0430\u044F", "k": 31, "b": 0.8, "z": 0.5, "u": 7, "dw": 20, "cat": "fruit", "uses": 4 }, { "id": "2w3bjih0", "name": "\u041A\u043B\u0443\u0431\u043D\u0438\u043A\u0430 \u0437\u0430\u043C\u043E\u0440\u043E\u0436\u0435\u043D\u043D\u0430\u044F", "k": 40, "b": 1, "z": 0.4, "u": 7.5, "dw": 100, "cat": "fruit", "uses": 12 }, { "id": "83kacks3", "name": "\u041C\u0430\u043B\u0438\u043D\u0430 \u0437\u0430\u043C\u043E\u0440\u043E\u0436\u0435\u043D\u043D\u0430\u044F", "k": 31, "b": 0.8, "z": 0.5, "u": 7, "dw": 20, "cat": "fruit", "uses": 8 }, { "id": "7m1w5lmf", "name": "\u041C\u043E\u043B\u043E\u043A\u043E \u0431\u0435\u0437\u043B\u0430\u043A\u0442\u043E\u0437\u043D\u043E\u0435", "k": 45, "b": 2.9, "z": 1.5, "u": 5, "dw": 40, "cat": "dairy", "uses": 15 }, { "id": "o4nfwkcu", "name": "\u0411\u0430\u043D\u0430\u043D \u0441\u043F\u0435\u043B\u044B\u0439", "k": 89, "b": 1.1, "z": 0.3, "u": 23, "dw": 110, "cat": "fruit", "uses": 11 }, { "id": "80qr9vt4", "name": "\u0422\u0432\u043E\u0440\u043E\u0433 2%", "k": 99, "b": 17, "z": 2, "u": 3.3, "dw": 300, "cat": "dairy", "uses": 3 }, { "id": "c0e5220o", "name": "\u041C\u0430\u0441\u043B\u043E \u0441\u043B\u0438\u0432\u043E\u0447\u043D\u043E\u0435", "k": 748, "b": 0.6, "z": 82.5, "u": 0.8, "dw": 10, "cat": "dairy", "uses": 2 }, { "id": "3rhdu3jv", "name": "\u041B\u0430\u0442\u0442\u0435 \u043F\u0440\u043E\u0442\u0435\u0438\u043D\u043E\u0432\u044B\u0439 \u0414\u0440\u0438\u043D\u043A\u0438\u0442", "k": 62.3, "b": 8, "z": 1.5, "u": 3.7, "dw": 350, "cat": "other", "uses": 1, "ready": true }, { "id": "wycm8bya", "name": "\u0424\u043E\u043A\u0430\u0447\u0447\u0430 \u0441 \u0438\u043D\u0434\u0435\u0439\u043A\u043E\u0439 \u0438 \u0448\u043F\u0438\u043D\u0430\u0442\u043E\u043C \u0414\u0440\u0438\u043D\u043A\u0438\u0442", "k": 208, "b": 10.8, "z": 8.4, "u": 22.4, "dw": 240, "cat": "other", "uses": 1, "ready": true }, { "id": "hu00ha4w", "name": "\u0424\u0443\u0437\u0438\u043B\u043B\u0438 \u0441 \u0446\u044B\u043F\u043B\u0451\u043D\u043A\u043E\u043C \u0442\u043E\u043C \u044F\u043C", "k": 220, "b": 11, "z": 10, "u": 21, "dw": 230, "cat": "other", "uses": 2, "ready": true }, { "id": "r3s676n8", "name": "\u0411\u043B\u0438\u043D\u044B \u0441 \u0442\u0432\u043E\u0440\u043E\u0433\u043E\u043C \u0441\u0438\u0431\u0438\u0440\u0441\u043A\u0430\u044F \u043A\u043E\u043B\u043B\u0435\u043A\u0446\u0438\u044F", "k": 230, "b": 7, "z": 8.5, "u": 32, "dw": 240, "cat": "other", "uses": 3, "ready": true }, { "id": "vjqeos7g", "name": "\u0411\u043B\u0438\u043D\u044B \u0441 \u043C\u044F\u0441\u043E\u043C \u0441\u0438\u0431\u0438\u0440\u0441\u043A\u0430\u044F \u043A\u043E\u043B\u043B\u0435\u043A\u0446\u0438\u044F", "k": 270, "b": 10, "z": 13, "u": 28, "dw": 240, "cat": "other", "uses": 2, "ready": true }, { "id": "x3m31nh7", "name": "\u0413\u0440\u0443\u0434\u043A\u0430 \u0441 \u0431\u0443\u043B\u0433\u0443\u0440\u043E\u043C", "k": 174.8, "b": 14.4, "z": 7.6, "u": 12.2, "dw": 220, "cat": "other", "uses": 11, "ready": true }], "dishes": [{ "id": "u13ahy5p", "name": "\u041E\u043C\u043B\u0435\u0442 \u0441 \u0431\u0440\u043E\u043A\u043A\u043E\u043B\u0438", "items": [{ "id": "h8i9pynt", "pid": "scpr1i9g", "name": "\u042F\u0439\u0446\u043E \u0441 \u0436\u0435\u043B\u0442\u043A\u0430\u043C\u0438", "per100": { "k": 155, "b": 13, "z": 11, "u": 1.1 }, "grams": 120 }, { "id": "6rl4nc9y", "pid": "mlgavjif", "name": "\u042F\u0438\u0447\u043D\u044B\u0439 \u0431\u0435\u043B\u043E\u043A", "per100": { "k": 52, "b": 13, "z": 0, "u": 1 }, "grams": 160 }, { "id": "6lyz21u5", "pid": "7m1w5lmf", "name": "\u041C\u043E\u043B\u043E\u043A\u043E \u0431\u0435\u0437\u043B\u0430\u043A\u0442\u043E\u0437\u043D\u043E\u0435", "per100": { "k": 45, "b": 2.9, "z": 1.5, "u": 5 }, "grams": 40 }, { "id": "xfan237b", "pid": "5hpc80vg", "name": "\u041A\u0430\u043F\u0443\u0441\u0442\u0430 \u0446\u0432\u0435\u0442\u043D\u0430\u044F \u0437\u0430\u043C\u043E\u0440\u043E\u0436\u0435\u043D\u043D\u0430\u044F", "per100": { "k": 28, "b": 2.11, "z": 0.1, "u": 4.57 }, "grams": 60 }], "uses": 2 }, { "id": "cf70cglz", "name": "\u041F\u0435\u043B\u044C\u043C\u0435\u043D\u0438 \u0434\u043E\u043C\u0430\u0448\u043D\u0438\u0435", "items": [{ "id": "l4gxpp3p", "pid": "astnos08", "name": "\u0424\u0430\u0440\u0448 \u0433\u043E\u0432\u044F\u0436\u0438\u0439 \u041C\u0438\u0440\u0430\u0442\u043E\u0440\u0433", "per100": { "k": 360, "b": 12, "z": 35, "u": 0 }, "grams": 400 }, { "id": "q5wcrvy2", "pid": "hxjrk5pq", "name": "\u0424\u0430\u0440\u0448 \u0434\u043E\u043C\u0430\u0448\u043D\u0438\u0439 \u041C\u0438\u0440\u0430\u0442\u043E\u0440\u0433", "per100": { "k": 285, "b": 15, "z": 25, "u": 0 }, "grams": 500 }, { "id": "pcfxe1gp", "pid": "t7nr481m", "name": "\u0422\u0435\u0441\u0442\u043E \u0434\u043B\u044F \u043F\u0435\u043B\u044C\u043C\u0435\u043D\u0435\u0439 \u0422\u0435\u0441\u0442\u043E\u0432 360\u0433", "per100": { "k": 245, "b": 7, "z": 1.5, "u": 51 }, "grams": 720 }] }, { "id": "m77roz8g", "name": "\u0411\u0435\u043B\u043A\u043E\u0432\u044B\u0439 \u043E\u043C\u043B\u0435\u0442", "items": [{ "id": "rffztb44", "pid": "scpr1i9g", "name": "\u042F\u0439\u0446\u043E \u0441 \u0436\u0435\u043B\u0442\u043A\u0430\u043C\u0438", "per100": { "k": 155, "b": 13, "z": 11, "u": 1.1 }, "grams": 120 }, { "id": "kdo51225", "pid": "mlgavjif", "name": "\u042F\u0438\u0447\u043D\u044B\u0439 \u0431\u0435\u043B\u043E\u043A", "per100": { "k": 52, "b": 13, "z": 0, "u": 1 }, "grams": 160 }, { "id": "z2zp4hpa", "pid": "7m1w5lmf", "name": "\u041C\u043E\u043B\u043E\u043A\u043E \u0431\u0435\u0437\u043B\u0430\u043A\u0442\u043E\u0437\u043D\u043E\u0435", "per100": { "k": 45, "b": 2.9, "z": 1.5, "u": 5 }, "grams": 80 }, { "id": "am5uct4l", "pid": "e14wtdd0", "name": "\u041A\u0443\u0440\u0438\u0446\u0430 \u0441\u0443\u0432\u0438\u0434 \u0412\u0412", "per100": { "k": 102.8, "b": 22.1, "z": 1.6, "u": 0 }, "grams": 110 }, { "id": "bhul4rxy", "pid": "c0e5220o", "name": "\u041C\u0430\u0441\u043B\u043E \u0441\u043B\u0438\u0432\u043E\u0447\u043D\u043E\u0435", "per100": { "k": 748, "b": 0.6, "z": 82.5, "u": 0.8 }, "grams": 10 }, { "id": "y8bfujvm", "pid": "qnlbks78", "name": "\u0427\u0435\u0440\u0440\u0438", "per100": { "k": 15, "b": 0.8, "z": 0.1, "u": 2.8 }, "grams": 80 }], "uses": 1 }, { "id": "8cm7l4gv", "name": "\u0422\u0432\u043E\u0440\u043E\u0433 + \u0441\u043A\u0438\u0440 + \u043F\u0440\u043E\u0442\u0435\u0438\u043D", "items": [{ "id": "2vbwxrob", "pid": "318vmb1y", "name": "\u0421\u043A\u0438\u0440 Isey Skyr \u0427\u0435\u0440\u043D\u0438\u043A\u0430-\u041C\u0430\u043B\u0438\u043D\u0430", "per100": { "k": 91, "b": 9.3, "z": 1.2, "u": 10.7 }, "grams": 150 }, { "id": "o9f2iae2", "pid": "80qr9vt4", "name": "\u0422\u0432\u043E\u0440\u043E\u0433 2%", "per100": { "k": 99, "b": 17, "z": 2, "u": 3.3 }, "grams": 200 }, { "id": "2ddzhaw1", "pid": "8ea3tave", "name": "\u041F\u0440\u043E\u0442\u0435\u0438\u043D", "per100": { "k": 331, "b": 75, "z": 0.5, "u": 7 }, "grams": 30 }] }, { "id": "bcwpmvwh", "name": "\u041E\u0432\u0441\u044F\u043D\u043A\u0430 \u0441 \u043C\u043E\u043B\u043E\u043A\u043E\u043C", "items": [{ "id": "r1u15sgi", "pid": "aj9ld96m", "name": "\u041E\u0432\u0441\u044F\u043D\u044B\u0435 \u0445\u043B\u043E\u043F\u044C\u044F", "per100": { "k": 342, "b": 12, "z": 6, "u": 60 }, "grams": 70 }, { "id": "fk52thc9", "pid": "7m1w5lmf", "name": "\u041C\u043E\u043B\u043E\u043A\u043E \u0431\u0435\u0437\u043B\u0430\u043A\u0442\u043E\u0437\u043D\u043E\u0435", "per100": { "k": 45, "b": 2.9, "z": 1.5, "u": 5 }, "grams": 160 }, { "id": "2ivd8k7s", "pid": "g0jw6mih", "name": "\u0412\u0438\u0448\u043D\u044F \u0437\u0430\u043C\u043E\u0440\u043E\u0436\u0435\u043D\u043D\u0430\u044F", "per100": { "k": 31, "b": 0.8, "z": 0.5, "u": 7 }, "grams": 20 }, { "id": "jxslomgc", "pid": "83kacks3", "name": "\u041C\u0430\u043B\u0438\u043D\u0430 \u0437\u0430\u043C\u043E\u0440\u043E\u0436\u0435\u043D\u043D\u0430\u044F", "per100": { "k": 31, "b": 0.8, "z": 0.5, "u": 7 }, "grams": 10 }, { "id": "j04v8rgb", "pid": "c0e5220o", "name": "\u041C\u0430\u0441\u043B\u043E \u0441\u043B\u0438\u0432\u043E\u0447\u043D\u043E\u0435", "per100": { "k": 748, "b": 0.6, "z": 82.5, "u": 0.8 }, "grams": 10 }, { "id": "sf7hm6jt", "pid": "o4nfwkcu", "name": "\u0411\u0430\u043D\u0430\u043D \u0441\u043F\u0435\u043B\u044B\u0439", "per100": { "k": 89, "b": 1.1, "z": 0.3, "u": 23 }, "grams": 50 }], "uses": 1 }, { "id": "9f9chv8j", "name": "\u041E\u043C\u043B\u0435\u0442 \u0441 \u0431\u0435\u043B\u043A\u0430\u043C\u0438", "items": [{ "id": "n6u1dt11", "pid": "scpr1i9g", "name": "\u042F\u0439\u0446\u043E \u0441 \u0436\u0435\u043B\u0442\u043A\u0430\u043C\u0438", "per100": { "k": 155, "b": 13, "z": 11, "u": 1.1 }, "grams": 60 }, { "id": "1umkvuo5", "pid": "mlgavjif", "name": "\u042F\u0438\u0447\u043D\u044B\u0439 \u0431\u0435\u043B\u043E\u043A", "per100": { "k": 52, "b": 13, "z": 0, "u": 1 }, "grams": 150 }, { "id": "xyt01v6w", "pid": "7m1w5lmf", "name": "\u041C\u043E\u043B\u043E\u043A\u043E \u0431\u0435\u0437\u043B\u0430\u043A\u0442\u043E\u0437\u043D\u043E\u0435", "per100": { "k": 45, "b": 2.9, "z": 1.5, "u": 5 }, "grams": 100 }, { "id": "eywvkn9k", "pid": "c0e5220o", "name": "\u041C\u0430\u0441\u043B\u043E \u0441\u043B\u0438\u0432\u043E\u0447\u043D\u043E\u0435", "per100": { "k": 748, "b": 0.6, "z": 82.5, "u": 0.8 }, "grams": 10 }], "uses": 1 }, { "id": "bdelauxs", "name": "\u041E\u0432\u0441\u044F\u043D\u043A\u0430 \u0441 \u0441\u043E\u043B\u044C\u044E", "items": [{ "id": "0po260bi", "pid": "aj9ld96m", "name": "\u041E\u0432\u0441\u044F\u043D\u044B\u0435 \u0445\u043B\u043E\u043F\u044C\u044F", "per100": { "k": 342, "b": 12, "z": 6, "u": 60 }, "grams": 80 }, { "id": "vzhoae8w", "pid": "7m1w5lmf", "name": "\u041C\u043E\u043B\u043E\u043A\u043E \u0431\u0435\u0437\u043B\u0430\u043A\u0442\u043E\u0437\u043D\u043E\u0435", "per100": { "k": 45, "b": 2.9, "z": 1.5, "u": 5 }, "grams": 50 }, { "id": "lp7cv4bs", "pid": "c0e5220o", "name": "\u041C\u0430\u0441\u043B\u043E \u0441\u043B\u0438\u0432\u043E\u0447\u043D\u043E\u0435", "per100": { "k": 748, "b": 0.6, "z": 82.5, "u": 0.8 }, "grams": 10 }], "uses": 1 }, { "id": "zk1zjsc0", "name": "\u041F\u0440\u043E\u0442\u0435\u0438\u043D\u043E\u0432\u044B\u0439 \u0441\u043C\u0443\u0437\u0438", "items": [{ "id": "zionrhie", "pid": "8ea3tave", "name": "\u041F\u0440\u043E\u0442\u0435\u0438\u043D", "per100": { "k": 331, "b": 75, "z": 0.5, "u": 7 }, "grams": 50 }, { "id": "aj7zj812", "pid": "7m1w5lmf", "name": "\u041C\u043E\u043B\u043E\u043A\u043E \u0431\u0435\u0437\u043B\u0430\u043A\u0442\u043E\u0437\u043D\u043E\u0435", "per100": { "k": 45, "b": 2.9, "z": 1.5, "u": 5 }, "grams": 200 }, { "id": "pfnc3c74", "pid": "2w3bjih0", "name": "\u041A\u043B\u0443\u0431\u043D\u0438\u043A\u0430 \u0437\u0430\u043C\u043E\u0440\u043E\u0436\u0435\u043D\u043D\u0430\u044F", "per100": { "k": 40, "b": 1, "z": 0.4, "u": 7.5 }, "grams": 100 }, { "id": "aqar6xmh", "pid": "o4nfwkcu", "name": "\u0411\u0430\u043D\u0430\u043D \u0441\u043F\u0435\u043B\u044B\u0439", "per100": { "k": 89, "b": 1.1, "z": 0.3, "u": 23 }, "grams": 110 }, { "id": "vmh2o54p", "pid": "83kacks3", "name": "\u041C\u0430\u043B\u0438\u043D\u0430 \u0437\u0430\u043C\u043E\u0440\u043E\u0436\u0435\u043D\u043D\u0430\u044F", "per100": { "k": 31, "b": 0.8, "z": 0.5, "u": 7 }, "grams": 20 }], "uses": 1 }, { "id": "q0uco99i", "name": "\u042F\u0438\u0447\u043D\u0438\u0446\u0430 \u0441 \u0442\u0432\u043E\u0440\u043E\u0433\u043E\u043C \u0438 \u0431\u0435\u043B\u043A\u0430\u043C\u0438", "items": [{ "id": "jbn2ftwx", "pid": "scpr1i9g", "name": "\u042F\u0439\u0446\u043E \u0441 \u0436\u0435\u043B\u0442\u043A\u0430\u043C\u0438", "per100": { "k": 155, "b": 13, "z": 11, "u": 1.1 }, "grams": 120 }, { "id": "o6430pw9", "pid": "80qr9vt4", "name": "\u0422\u0432\u043E\u0440\u043E\u0433 2%", "per100": { "k": 99, "b": 17, "z": 2, "u": 3.3 }, "grams": 300 }, { "id": "51b3me3b", "pid": "mlgavjif", "name": "\u042F\u0438\u0447\u043D\u044B\u0439 \u0431\u0435\u043B\u043E\u043A", "per100": { "k": 52, "b": 13, "z": 0, "u": 1 }, "grams": 100 }], "uses": 1 }, { "id": "7bc37krz", "name": "\u0421\u0430\u043B\u0430\u0442 \u0441 \u0442\u0443\u043D\u0446\u043E\u043C", "items": [{ "id": "wilc298k", "pid": "fl5sr2iw", "name": "\u041E\u0433\u0443\u0440\u0446\u044B", "per100": { "k": 12.5, "b": 0.2, "z": 0, "u": 3.4 }, "grams": 120 }, { "id": "dgz4lyyi", "pid": "eo3gh33r", "name": "\u041A\u0443\u043A\u0443\u0440\u0443\u0437\u0430 \u043A\u043E\u043D\u0441\u0435\u0440\u0432\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F", "per100": { "k": 80, "b": 2.6, "z": 1, "u": 15.2 }, "grams": 140 }, { "id": "v009bnv2", "pid": "r8y114um", "name": "\u0422\u0443\u043D\u0435\u0446 \u0432 \u0441\u043E\u0431\u0441\u0442\u0432\u0435\u043D\u043D\u043E\u043C \u0441\u043E\u043A\u0443", "per100": { "k": 104, "b": 24.1, "z": 0.75, "u": 0.29 }, "grams": 270 }, { "id": "dmrz2lmc", "pid": "scpr1i9g", "name": "\u042F\u0439\u0446\u043E \u0441 \u0436\u0435\u043B\u0442\u043A\u0430\u043C\u0438", "per100": { "k": 155, "b": 13, "z": 11, "u": 1.1 }, "grams": 200 }, { "id": "4wtuw8zw", "pid": "k2u87dkk", "name": "\u0413\u0440\u0435\u0447\u0435\u0441\u043A\u0438\u0439 \u0439\u043E\u0433\u0443\u0440\u0442", "per100": { "k": 66.8, "b": 8, "z": 2, "u": 4.2 }, "grams": 100 }], "uses": 3 }, { "id": "sg5he2x4", "name": "\u041A\u043E\u043D\u0432\u0435\u0440\u0442\u0438\u043A\u0438 \u0441 \u0441\u044B\u0440\u043E\u043C", "items": [{ "id": "u86spcky", "pid": "4rdan6uk", "name": "\u041B\u0430\u0432\u0430\u0448", "per100": { "k": 350, "b": 10, "z": 3.5, "u": 70 }, "grams": 20 }, { "id": "y0oimt4p", "pid": "onmzlmah", "name": "\u0421\u044B\u0440 2 \u0441\u044B\u0440\u0430 \u0441\u0430\u043C\u043E\u043A\u0430\u0442", "per100": { "k": 337, "b": 26.6, "z": 25.7, "u": 0 }, "grams": 60 }, { "id": "oz5cphrn", "pid": "yavkspoa", "name": "\u0422\u0432\u043E\u0440\u043E\u0433 \u043C\u044F\u0433\u043A\u0438\u0439 9%", "per100": { "k": 160, "b": 16, "z": 9, "u": 3 }, "grams": 180 }] }, { "id": "cpvftmct", "name": "\u0422\u0432\u043E\u0440\u043E\u0436\u043D\u044B\u0439 \u0441\u043C\u0443\u0437\u0438", "items": [{ "id": "02km05xh", "pid": "80qr9vt4", "name": "\u0422\u0432\u043E\u0440\u043E\u0433 2%", "per100": { "k": 99, "b": 17, "z": 2, "u": 3.3 }, "grams": 200 }, { "id": "ixa5jt9d", "pid": "o4nfwkcu", "name": "\u0411\u0430\u043D\u0430\u043D \u0441\u043F\u0435\u043B\u044B\u0439", "per100": { "k": 89, "b": 1.1, "z": 0.3, "u": 23 }, "grams": 100 }, { "id": "8wruehnv", "pid": "2w3bjih0", "name": "\u041A\u043B\u0443\u0431\u043D\u0438\u043A\u0430 \u0437\u0430\u043C\u043E\u0440\u043E\u0436\u0435\u043D\u043D\u0430\u044F", "per100": { "k": 40, "b": 1, "z": 0.4, "u": 7.5 }, "grams": 80 }, { "id": "7kp39id3", "pid": "g0jw6mih", "name": "\u0412\u0438\u0448\u043D\u044F \u0437\u0430\u043C\u043E\u0440\u043E\u0436\u0435\u043D\u043D\u0430\u044F", "per100": { "k": 31, "b": 0.8, "z": 0.5, "u": 7 }, "grams": 30 }, { "id": "fqxbx46j", "pid": "8ea3tave", "name": "\u041F\u0440\u043E\u0442\u0435\u0438\u043D", "per100": { "k": 331, "b": 75, "z": 0.5, "u": 7 }, "grams": 30 }, { "id": "xqb4mvzo", "pid": "7m1w5lmf", "name": "\u041C\u043E\u043B\u043E\u043A\u043E \u0431\u0435\u0437\u043B\u0430\u043A\u0442\u043E\u0437\u043D\u043E\u0435", "per100": { "k": 45, "b": 2.9, "z": 1.5, "u": 5 }, "grams": 150 }, { "id": "xgf5j97z", "pid": "83kacks3", "name": "\u041C\u0430\u043B\u0438\u043D\u0430 \u0437\u0430\u043C\u043E\u0440\u043E\u0436\u0435\u043D\u043D\u0430\u044F", "per100": { "k": 31, "b": 0.8, "z": 0.5, "u": 7 }, "grams": 40 }], "uses": 2 }, { "id": "23jp42xf", "name": "\u042F\u0438\u0447\u043D\u0438\u0446\u0430 \u0441 \u0442\u0432\u043E\u0440\u043E\u0433\u043E\u043C (3)", "items": [{ "id": "0qcf12ah", "pid": "scpr1i9g", "name": "\u042F\u0439\u0446\u043E \u0441 \u0436\u0435\u043B\u0442\u043A\u0430\u043C\u0438", "per100": { "k": 155, "b": 13, "z": 11, "u": 1.1 }, "grams": 60 }, { "id": "6rpdyh5u", "pid": "80qr9vt4", "name": "\u0422\u0432\u043E\u0440\u043E\u0433 2%", "per100": { "k": 99, "b": 17, "z": 2, "u": 3.3 }, "grams": 200 }, { "id": "ew09s3ni", "pid": "mlgavjif", "name": "\u042F\u0438\u0447\u043D\u044B\u0439 \u0431\u0435\u043B\u043E\u043A", "per100": { "k": 52, "b": 13, "z": 0, "u": 1 }, "grams": 150 }], "uses": 1 }, { "id": "vfpfq15x", "name": "\u0422\u043E\u0440\u0442\u0438\u043B\u044C\u044F \u0441 \u043A\u0443\u0440\u0438\u0446\u0435\u0439", "items": [{ "id": "xcf5bp4r", "pid": "k2u87dkk", "name": "\u0413\u0440\u0435\u0447\u0435\u0441\u043A\u0438\u0439 \u0439\u043E\u0433\u0443\u0440\u0442", "per100": { "k": 66.8, "b": 8, "z": 2, "u": 4.2 }, "grams": 50 }, { "id": "bwa9mxob", "pid": "x6rkhjqw", "name": "\u041F\u0430\u0440\u043C\u0435\u0437\u0430\u043D", "per100": { "k": 356.5, "b": 31.3, "z": 25.7, "u": 0 }, "grams": 7 }, { "id": "k7ihrln4", "pid": "83aelxez", "name": "\u041A\u0443\u0440\u0438\u0446\u0430 \u0441\u0443\u0432\u0438\u0434", "per100": { "k": 114.4, "b": 24.1, "z": 2, "u": 0 }, "grams": 80 }, { "id": "89g5ckop", "pid": "n49l6dsr", "name": "\u0422\u043E\u0440\u0442\u0438\u043B\u044C\u044F", "per100": { "k": 290, "b": 7, "z": 7, "u": 48 }, "grams": 67 }] }, { "id": "q1gjtuzs", "name": "\u0411\u0443\u0442\u0435\u0440\u0431\u0440\u043E\u0434 \u0441 \u0444\u043E\u0440\u0435\u043B\u044C\u044E", "items": [{ "id": "fkteenop", "pid": "uv8yt2j3", "name": "\u0422\u0432\u043E\u0440\u043E\u0433 \u0442\u044B+\u043F\u0440\u043E\u0442\u0435\u0438\u043D", "per100": { "k": 70, "b": 10, "z": 2, "u": 3 }, "grams": 30 }, { "id": "oxy9qyvx", "pid": "d32yatsp", "name": "\u0425\u043B\u0435\u0431 \u0437\u0435\u0440\u043D\u043E\u0432\u043E\u0439 \u0412\u0412", "per100": { "k": 230.4, "b": 8.3, "z": 4.4, "u": 39.4 }, "grams": 40 }, { "id": "7nk2q5to", "pid": "ugypa2ss", "name": "\u0424\u043E\u0440\u0435\u043B\u044C \u0436\u0438\u0440\u043D\u0430\u044F", "per100": { "k": 152, "b": 20, "z": 8, "u": 0 }, "grams": 55 }], "uses": 1 }, { "id": "qxkk5mo7", "name": "\u042F\u0438\u0447\u043D\u0438\u0446\u0430 \u0441 \u0446\u0432\u0435\u0442\u043D\u043E\u0439 \u043A\u0430\u043F\u0443\u0441\u0442\u043E\u0439", "items": [{ "id": "89m3b8l0", "pid": "5hpc80vg", "name": "\u041A\u0430\u043F\u0443\u0441\u0442\u0430 \u0446\u0432\u0435\u0442\u043D\u0430\u044F \u0437\u0430\u043C\u043E\u0440\u043E\u0436\u0435\u043D\u043D\u0430\u044F", "per100": { "k": 28, "b": 2.11, "z": 0.1, "u": 4.57 }, "grams": 110 }, { "id": "83sw0chi", "pid": "c0e5220o", "name": "\u041C\u0430\u0441\u043B\u043E \u0441\u043B\u0438\u0432\u043E\u0447\u043D\u043E\u0435", "per100": { "k": 720, "b": 0.6, "z": 80, "u": 0.8 }, "grams": 10 }, { "id": "2w3cyz95", "pid": "scpr1i9g", "name": "\u042F\u0439\u0446\u043E \u0441 \u0436\u0435\u043B\u0442\u043A\u0430\u043C\u0438", "per100": { "k": 155, "b": 13, "z": 11, "u": 1.1 }, "grams": 200 }] }, { "id": "vbqn98jn", "name": "\u0427\u0430\u0439 \u0441 \u043C\u043E\u043B\u043E\u043A\u043E\u043C", "items": [{ "id": "gfld2ijm", "pid": "7m1w5lmf", "name": "\u041C\u043E\u043B\u043E\u043A\u043E \u0431\u0435\u0437\u043B\u0430\u043A\u0442\u043E\u0437\u043D\u043E\u0435", "per100": { "k": 45, "b": 2.9, "z": 1.5, "u": 5 }, "grams": 100 }], "uses": 19 }], "cats": [{ "id": "dairy", "l": "\u041C\u043E\u043B\u043E\u0447\u043A\u0430" }, { "id": "7tzc81d3", "l": "\u041D\u0430\u043F\u0438\u0442\u043A\u0438" }, { "id": "protein", "l": "\u0411\u0435\u043B\u043E\u043A" }, { "id": "grain", "l": "\u0413\u0430\u0440\u043D\u0438\u0440\u044B" }, { "id": "fruit", "l": "\u0424\u0440\u0443\u043A\u0442\u044B \u0438\xA0\u044F\u0433\u043E\u0434\u044B" }, { "id": "qqkk8f4f", "l": "\u041E\u0432\u043E\u0449\u0438" }, { "id": "other", "l": "\u041F\u0440\u043E\u0447\u0435\u0435" }], "days": {}, "goals": { "k": "", "b": "", "z": "", "u": "" }, "theme": "auto" };
 if (SEED_DATA.foods) {
@@ -1509,6 +1896,10 @@ function App() {
   const boardRef = useRef(null);
   const [draft, setDraft] = useState(null);
   const [sheet, setSheet] = useState(null);
+  const [share, setShare] = useState(null);
+  const [imp, setImp] = useState(null);
+  const [shareMsg, setShareMsg] = useState("");
+  const [pasteBox, setPasteBox] = useState(null);
   const [q, setQ] = useState("");
   const closeAddFood = () => {
     setQ("");
@@ -1524,6 +1915,34 @@ function App() {
   const latest = useRef(null);
   const [toast, setToast] = useState(null);
   const toastTimer = useRef(null);
+  const catLabel = (id) => (cats.find((c) => c.id === id) || {}).l || "";
+  const pasteShare = async () => {
+    setShareMsg("");
+    let txt = "";
+    try {
+      txt = await navigator.clipboard.readText();
+    } catch (e) {
+      setShareMsg("\u0411\u0443\u0444\u0435\u0440 \u043D\u0435\u0434\u043E\u0441\u0442\u0443\u043F\u0435\u043D. \u0412\u0441\u0442\u0430\u0432\u044C \u043A\u043E\u0434 \u0432 \u043F\u043E\u043B\u0435 \u043D\u0438\u0436\u0435");
+      setPasteBox("");
+      return;
+    }
+    const data = await unpackShare(txt);
+    if (!data) {
+      setShareMsg("\u0412 \u0431\u0443\u0444\u0435\u0440\u0435 \u043D\u0435\u0442 \u043A\u043E\u0434\u0430 \u041A\u043E\u0442\u043B\u0430. \u0412\u0441\u0442\u0430\u0432\u044C \u043A\u043E\u0434 \u0432 \u043F\u043E\u043B\u0435 \u043D\u0438\u0436\u0435");
+      setPasteBox("");
+      return;
+    }
+    setImp(data);
+  };
+  const takeShare = async (v) => {
+    setPasteBox(v);
+    if (!v.trim()) return;
+    const data = await unpackShare(v);
+    if (!data) return;
+    setShareMsg("");
+    setPasteBox(null);
+    setImp(data);
+  };
   const notify = (msg, undo, scope) => {
     clearTimeout(toastTimer.current);
     setToast({ msg, undo, scope });
@@ -2139,7 +2558,16 @@ function App() {
       addLabel: PANTRY_ADD[seg][0],
       onAdd: PANTRY_ADD[seg][1]
     }
-  )), !draft && tab === "settings" && /* @__PURE__ */ React.createElement("main", { className: "form" }, /* @__PURE__ */ React.createElement("div", { className: "set-card" }, /* @__PURE__ */ React.createElement("span", { className: "sec-l" }, "\u0426\u0435\u043B\u0438 \u0434\u043D\u044F"), /* @__PURE__ */ React.createElement("div", { className: "goals" }, [
+  )), !draft && tab === "settings" && /* @__PURE__ */ React.createElement("main", { className: "form" }, /* @__PURE__ */ React.createElement("div", { className: "set-card" }, /* @__PURE__ */ React.createElement("span", { className: "sec-l" }, "\u041E\u0431\u043C\u0435\u043D"), /* @__PURE__ */ React.createElement("button", { className: "btn solid wide", onClick: pasteShare }, "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0431\u043B\u044E\u0434\u043E \u0438\u043B\u0438 \u043F\u0440\u043E\u0434\u0443\u043A\u0442"), shareMsg && /* @__PURE__ */ React.createElement("p", { className: "hint", style: { color: "var(--accent)" } }, shareMsg), pasteBox !== null && /* @__PURE__ */ React.createElement("div", { className: "paste-fld" }, /* @__PURE__ */ React.createElement(
+    Field,
+    {
+      label: "\u041A\u043E\u0434",
+      value: pasteBox,
+      onChange: takeShare,
+      type: "text",
+      placeholder: "KTL1:\u2026"
+    }
+  ))), /* @__PURE__ */ React.createElement("div", { className: "set-card" }, /* @__PURE__ */ React.createElement("span", { className: "sec-l" }, "\u0426\u0435\u043B\u0438 \u0434\u043D\u044F"), /* @__PURE__ */ React.createElement("div", { className: "goals" }, [
     ["k", "\u041A\u0430\u043B\u043E\u0440\u0438\u0438", "\u043A\u043A\u0430\u043B", null],
     ["b", "\u0411\u0435\u043B\u043A\u0438", "\u0433", C.b],
     ["z", "\u0416\u0438\u0440\u044B", "\u0433", C.z],
@@ -2354,6 +2782,7 @@ function App() {
       title: draft.id ? "\u0411\u043B\u044E\u0434\u043E" : "\u041D\u043E\u0432\u043E\u0435 \u0431\u043B\u044E\u0434\u043E",
       full: true,
       onClose: closeDraft,
+      onShare: draft.name.trim() && draft.items.length ? () => setShare({ dish: { name: draft.name.trim(), items: draft.items } }) : null,
       footer: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(
         "button",
         {
@@ -2729,6 +3158,7 @@ function App() {
       apiKey,
       cats,
       onClose: () => setSheet(null),
+      onShare: (d) => setShare({ prod: { ...d, catL: catLabel(d.cat) } }),
       onSave: (data) => {
         setLib((l) => l.map((x) => x.id === sheet.ing.id ? { ...x, ...data } : x));
         setSheet(null);
@@ -2738,6 +3168,47 @@ function App() {
         setLib((l) => l.filter((x) => x.id !== ing.id));
         setSheet(null);
         notify(`\xAB${ing.name}\xBB \u0443\u0434\u0430\u043B\u0435\u043D\u043E`, () => setLib((l) => [ing, ...l]));
+      }
+    }
+  ), share && /* @__PURE__ */ React.createElement(ShareSheet, { dish: share.dish, prod: share.prod, onClose: () => setShare(null) }), imp && imp.t === "p" && /* @__PURE__ */ React.createElement(
+    ImportProdSheet,
+    {
+      data: imp,
+      lib,
+      cats,
+      onClose: () => setImp(null),
+      onSave: (d) => {
+        const ing = { id: uid(), ...d };
+        setLib((l) => [ing, ...l]);
+        setImp(null);
+        notify(`\xAB${ing.name}\xBB \u0432 \u043A\u043B\u0430\u0434\u043E\u0432\u043E\u0439`);
+      },
+      onReplace: (x, d) => {
+        setLib((l) => l.map((y) => y.id === x.id ? { ...y, ...d } : y));
+        setImp(null);
+        notify(`\xAB${x.name}\xBB \u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D\u043E`);
+      }
+    }
+  ), imp && imp.t === "d" && /* @__PURE__ */ React.createElement(
+    ImportDishSheet,
+    {
+      data: imp,
+      lib,
+      dishes,
+      onClose: () => setImp(null),
+      onAddIng: (ing) => setLib((l) => [ing, ...l]),
+      onSave: (d) => {
+        const dish = { id: uid(), name: d.name, items: d.items };
+        setDishes((x) => [dish, ...x]);
+        setImp(null);
+        notify(`\xAB${dish.name}\xBB \u0432 \u043A\u043B\u0430\u0434\u043E\u0432\u043E\u0439`);
+      },
+      onReplace: (t, d) => {
+        setDishes(
+          (x) => x.map((y) => y.id === t.id ? { ...y, name: d.name, items: d.items } : y)
+        );
+        setImp(null);
+        notify(`\xAB${t.name}\xBB \u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D\u043E`);
       }
     }
   ), /* @__PURE__ */ React.createElement(
@@ -2952,6 +3423,34 @@ input::placeholder{color:var(--sub);opacity:.55}
 .sig{display:flex;width:46px;height:8px;border-radius:4px;overflow:hidden;flex-shrink:0}
 .sig i{display:block}
 .lib-row{cursor:pointer;font:inherit;text-align:left}
+/* \u043E\u0431\u043C\u0435\u043D: \u043A\u043E\u0434, \u0437\u0430\u0433\u043E\u043B\u043E\u0432\u043E\u043A \u0441\u043F\u0438\u0441\u043A\u0430 \u043A\u0430\u043D\u0434\u0438\u0434\u0430\u0442\u043E\u0432, \u043F\u043E\u043C\u0435\u0442\u043A\u0438 \u0440\u0430\u0437\u0431\u043E\u0440\u0430 \u0441\u043E\u0441\u0442\u0430\u0432\u0430 */
+/* \u0434\u043B\u0438\u043D\u0430 \u043A\u043E\u0434\u0430 \u0437\u0430\u0432\u0438\u0441\u0438\u0442 \u043E\u0442 \u0432\u0435\u0441\u0430: \u043F\u0440\u0438 \u043A\u0440\u0443\u0447\u0435\u043D\u0438\u0438 \u0431\u0430\u0440\u0430\u0431\u0430\u043D\u0430 \u0431\u043B\u043E\u043A \u043D\u0435\u043B\u044C\u0437\u044F \u043F\u0443\u0441\u043A\u0430\u0442\u044C
+   \u0442\u044F\u043D\u0443\u0442\u044C\u0441\u044F \u043F\u043E \u043A\u043E\u043D\u0442\u0435\u043D\u0442\u0443, \u0438\u043D\u0430\u0447\u0435 \u0432\u0441\u0451 \u043F\u043E\u0434 \u043D\u0438\u043C \u0441\u043A\u0430\u0447\u0435\u0442. \u0412\u044B\u0441\u043E\u0442\u0430 \u0444\u0438\u043A\u0441\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u2014
+   \u0440\u043E\u0432\u043D\u043E \u0447\u0435\u0442\u044B\u0440\u0435 \u0441\u0442\u0440\u043E\u043A\u0438. */
+.sharecode{background:var(--fieldbg);border:.5px solid var(--line);border-radius:14px;
+  padding:12px 14px;font-size:11px;color:var(--sub);word-break:break-all;
+  line-height:18px;height:96px;overflow:hidden}
+.imp-l{font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--sub);font-weight:600;display:block;margin-bottom:-8px}
+.imp-mid{text-align:center}
+.paste-fld{margin-top:12px}
+/* \u0438\u0441\u0445\u043E\u0434 \u0440\u0430\u0437\u0431\u043E\u0440\u0430 \u2014 \u043D\u0435 \u0441\u043D\u043E\u0441\u043A\u0430, \u0430 \u043F\u0435\u0440\u0432\u043E\u0435, \u0447\u0442\u043E \u043D\u0430\u0434\u043E \u043F\u0440\u043E\u0447\u0438\u0442\u0430\u0442\u044C: \u043A\u0430\u0440\u0442\u043E\u0447\u043A\u0430
+   \u0441 \u0430\u043A\u0446\u0435\u043D\u0442\u043D\u043E\u0439 \u0440\u0430\u043C\u043A\u043E\u0439, \u043A\u0430\u043A \u0443 \u0432\u044B\u0431\u0440\u0430\u043D\u043D\u043E\u0433\u043E \u044D\u043B\u0435\u043C\u0435\u043D\u0442\u0430 */
+.imp-note{background:var(--picked);border:.5px solid var(--accent);
+  border-radius:var(--r);padding:14px 16px;font-size:14px;line-height:1.45}
+/* \u0431\u0430\u0440\u0430\u0431\u0430\u043D \u043E\u0442\u043F\u0440\u0430\u0432\u043A\u0438 \u0436\u0438\u0432\u0451\u0442 \u0432 \u043E\u0431\u0451\u0440\u0442\u043A\u0435: \u043F\u0440\u0430\u0432\u0438\u043B\u043E .sheet-body>.wheel-wrap.bare
+   \u0440\u0430\u0441\u0442\u044F\u0433\u0438\u0432\u0430\u0435\u0442 \u0431\u0430\u0440\u0430\u0431\u0430\u043D \u043F\u043E \u043E\u0441\u0442\u0430\u0442\u043A\u0443 \u0432\u044B\u0441\u043E\u0442\u044B, \u0430 \u0432 \u044D\u0442\u043E\u0439 \u0448\u0442\u043E\u0440\u043A\u0435 \u043E\u0441\u0442\u0430\u0442\u043A\u0430 \u043D\u0435\u0442 \u2014
+   \u043E\u043D \u0432\u044B\u0440\u0430\u0441\u0442\u0430\u043B \u043F\u043E \u043A\u043E\u043D\u0442\u0435\u043D\u0442\u0443 \u0438 \u043F\u0435\u0440\u0435\u0441\u0442\u0430\u0432\u0430\u043B \u043F\u0440\u043E\u043A\u0440\u0443\u0447\u0438\u0432\u0430\u0442\u044C\u0441\u044F */
+.sharewheel{display:flex}
+.sharewheel .wheel-wrap{flex:1}
+.imp-g{font-size:14px;color:var(--sub);flex-shrink:0}
+.imp-g b{color:var(--ink);font-weight:700}
+.imp-g s{opacity:.55}
+.imp-add{border-color:rgba(75,155,94,.45);background:rgba(75,155,94,.09)}
+.imp-del{border-color:var(--dangerB);background:var(--picked);opacity:.8}
+.imp-del .row-name{color:var(--sub);text-decoration:line-through}
+.imp-miss{border-style:dashed;border-color:var(--grab);background:transparent;
+  cursor:pointer}
 .empty{padding:22px 16px;text-align:center;color:var(--sub);
   background:var(--emptybg);border-radius:var(--r);font-size:14px}
 /* \u0432\u0435\u0441 \u0438\u043D\u0433\u0440\u0435\u0434\u0438\u0435\u043D\u0442\u0430 \u2014 \u044D\u0442\u043E \u043F\u043E\u043B\u0435 \u0432\u0432\u043E\u0434\u0430, \u0430 \u043D\u0435 \u043F\u043E\u0434\u043F\u0438\u0441\u044C: \u0442\u0435 \u0436\u0435 \u0444\u043E\u043D, \u0440\u0430\u043C\u043A\u0430 \u0438 \u0441\u043A\u0440\u0443\u0433\u043B\u0435\u043D\u0438\u0435,
@@ -3227,6 +3726,10 @@ main>.list,main>.list-stage,
 .sheet-foot .btn{width:100%}
 .sheet-head{display:flex;justify-content:space-between;align-items:center}
 .sheet-head b{font-size:16px}
+/* \u0441 \u043A\u043D\u043E\u043F\u043A\u043E\u0439 \u043E\u0442\u043F\u0440\u0430\u0432\u043A\u0438 \u0437\u0430\u0433\u043E\u043B\u043E\u0432\u043E\u043A \u0432\u0441\u0442\u0430\u0451\u0442 \u043F\u043E \u0446\u0435\u043D\u0442\u0440\u0443 \u043C\u0435\u0436\u0434\u0443 \u0434\u0432\u0443\u043C\u044F \u043E\u0434\u0438\u043D\u0430\u043A\u043E\u0432\u044B\u043C\u0438 \u043A\u043D\u043E\u043F\u043A\u0430\u043C\u0438 */
+.sheet-head.has-share b{flex:1;text-align:center;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.x-share{margin:-5px 0 -5px -12px}
 .x-plain{border:0;background:transparent;color:var(--sub);width:44px;height:44px;
   margin:-5px -12px -5px 0;font-size:22px;line-height:1;cursor:pointer;
   display:flex;align-items:center;justify-content:center;flex-shrink:0}
