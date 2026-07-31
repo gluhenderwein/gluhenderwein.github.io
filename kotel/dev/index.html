@@ -321,7 +321,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 </script>
 <script>
 const { useState, useEffect, useMemo, useRef } = React;
-const BUILD = { v: "1.7.19", date: "2026-07-31", note: "\u0432 \u043B\u043E\u0433 \u0434\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u044B \u043F\u043E\u0437\u0438\u0446\u0438\u0438 \u0431\u043B\u043E\u043A\u043E\u0432" };
+const BUILD = { v: "1.7.21", date: "2026-07-31", note: "\u043E\u0432\u0435\u0440\u043B\u0435\u0439 \u0438 \u0442\u0430\u0431\u0431\u0430\u0440 \u043F\u0440\u0438\u0431\u0438\u0442\u044B \u043A \u043D\u0438\u0436\u043D\u0435\u043C\u0443 \u043A\u0440\u0430\u044E" };
 const uid = () => Math.random().toString(36).slice(2, 10);
 const num = (v) => {
   if (typeof v === "number") return v;
@@ -823,11 +823,18 @@ function Sheet({ title, onClose, full, footer, children }) {
     };
   }, [footer]);
   const drag = useRef({ y0: 0, dy: 0, on: false });
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const scrolled = () => bodyRef.current ? bodyRef.current.scrollTop : 0;
+    const park = () => {
+      el.style.transition = "transform .22s ease";
+      el.style.transform = "";
+    };
     const start = (e) => {
+      if (!drag.current.on && el.style.transform) park();
       if (e.target.closest(".wheel-scroll,input[type=range],.drag-h,.swipe,.catbar")) return;
       if (scrolled() > 0) return;
       drag.current = { y0: e.touches[0].clientY, dy: 0, on: true };
@@ -840,29 +847,38 @@ function Sheet({ title, onClose, full, footer, children }) {
         drag.current.dy = dy;
         el.style.transition = "none";
         el.style.transform = `translateY(${dy}px)`;
+      } else if (drag.current.dy) {
+        drag.current.dy = 0;
+        el.style.transform = "";
       }
     };
     const end = () => {
       if (!drag.current.on) return;
       const dy = drag.current.dy;
       drag.current.on = false;
-      el.style.transition = "transform .22s ease";
       if (dy > 110) {
+        el.style.transition = "transform .22s ease";
         el.style.transform = "translateY(105%)";
-        setTimeout(onClose, 200);
-      } else {
-        el.style.transform = "";
-      }
+        setTimeout(() => closeRef.current(), 200);
+      } else park();
+    };
+    const cancel = () => {
+      if (!drag.current.on) return;
+      drag.current.on = false;
+      drag.current.dy = 0;
+      park();
     };
     el.addEventListener("touchstart", start, { passive: true });
     el.addEventListener("touchmove", move, { passive: false });
     el.addEventListener("touchend", end);
+    el.addEventListener("touchcancel", cancel);
     return () => {
       el.removeEventListener("touchstart", start);
       el.removeEventListener("touchmove", move);
       el.removeEventListener("touchend", end);
+      el.removeEventListener("touchcancel", cancel);
     };
-  }, [onClose]);
+  }, []);
   return /* @__PURE__ */ React.createElement("div", { className: "sheet-wrap", onClick: onClose }, /* @__PURE__ */ React.createElement(
     "div",
     {
@@ -2679,7 +2695,7 @@ function App() {
         } else setSheet(null);
       }
     }
-  ), !draft && /* @__PURE__ */ React.createElement("div", { className: "tabbar-layer" }, /* @__PURE__ */ React.createElement("nav", { className: "tabbar" }, /* @__PURE__ */ React.createElement(
+  ), /* @__PURE__ */ React.createElement("div", { className: "ruler a", "aria-hidden": true }), /* @__PURE__ */ React.createElement("div", { className: "ruler b", "aria-hidden": true }), !draft && /* @__PURE__ */ React.createElement("div", { className: "tabbar-layer" }, /* @__PURE__ */ React.createElement("nav", { className: "tabbar" }, /* @__PURE__ */ React.createElement(
     "button",
     {
       className: tab === "belly" ? "on" : "",
@@ -2829,7 +2845,7 @@ input::placeholder{color:var(--sub);opacity:.55}
    standalone-PWA \u0437\u0430\u0441\u0442\u0440\u0435\u0432\u0430\u0435\u0442 \u043D\u0430 \u0441\u0442\u0430\u0440\u0442\u043E\u0432\u043E\u043C \u0432\u044C\u044E\u043F\u043E\u0440\u0442\u0435, \u0443\u0440\u0435\u0437\u0430\u043D\u043D\u043E\u043C \u043D\u0430 \u0441\u0442\u0430\u0442\u0443\u0441-\u0431\u0430\u0440,
    \u0438 bottom \u043E\u0442\u0441\u0447\u0438\u0442\u044B\u0432\u0430\u0435\u0442\u0441\u044F \u043E\u0442 \u043D\u0435\u0433\u043E \u2014 \u043F\u0430\u043D\u0435\u043B\u044C \u0432\u0438\u0441\u0438\u0442 \u043D\u0430 62 px \u0432\u044B\u0448\u0435 \u0434\u043D\u0430. \u0423 \u0441\u043B\u043E\u044F
    \u0432\u044B\u0441\u043E\u0442\u0430 \u0437\u0430\u0434\u0430\u043D\u0430 \u0447\u0435\u0440\u0435\u0437 100dvh, \u043A\u043E\u0442\u043E\u0440\u044B\u0439 \u043E\u0442\u0434\u0430\u0451\u0442 \u0432\u0435\u0440\u043D\u043E\u0435 \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u0435. */
-.tabbar-layer{position:fixed;top:0;left:0;right:0;height:var(--vh,100dvh);z-index:40;
+.tabbar-layer{position:fixed;bottom:0;left:0;right:0;height:var(--vh,100dvh);z-index:40;
   pointer-events:none;display:flex;align-items:flex-end;justify-content:center;
   padding-bottom:max(12px,var(--sab,0px))}
 .tabbar{position:relative;pointer-events:auto;
@@ -3199,11 +3215,14 @@ main>.list,main>.list-stage,
   color:var(--sub);display:flex;align-items:center;justify-content:center;cursor:pointer}
 
 /* ---- \u0448\u0442\u043E\u0440\u043A\u0430 ---- */
-/* height:100dvh, \u0430 \u043D\u0435 inset:0: \u0432 standalone-PWA containing block \u0434\u043B\u044F fixed
-   \u0437\u0430\u0441\u0442\u0440\u0435\u0432\u0430\u0435\u0442 \u043D\u0430 \u0441\u0442\u0430\u0440\u0442\u043E\u0432\u043E\u043C \u0432\u044C\u044E\u043F\u043E\u0440\u0442\u0435, \u0443\u0440\u0435\u0437\u0430\u043D\u043D\u043E\u043C \u043D\u0430 \u0441\u0442\u0430\u0442\u0443\u0441-\u0431\u0430\u0440, \u0438 \u043D\u0435 \u043E\u0431\u043D\u043E\u0432\u043B\u044F\u0435\u0442\u0441\u044F
-   \u043F\u043E\u0441\u043B\u0435 \u0432\u043A\u043B\u044E\u0447\u0435\u043D\u0438\u044F viewport-fit=cover. \u0417\u0430\u043C\u0435\u0440 \u043D\u0430 \u0443\u0441\u0442\u0440\u043E\u0439\u0441\u0442\u0432\u0435: inset:0 \u0434\u0430\u0451\u0442 894 \u043F\u0440\u0438
-   \u044D\u043A\u0440\u0430\u043D\u0435 956, \u0430 100dvh \u043D\u0430 \u0442\u043E\u043C \u0436\u0435 fixed-\u044D\u043B\u0435\u043C\u0435\u043D\u0442\u0435 \u2014 \u0447\u0435\u0441\u0442\u043D\u044B\u0435 956. */
-.sheet-wrap{position:fixed;top:0;left:0;right:0;height:var(--vh,100dvh);background:rgba(20,26,22,.45);
+/* \u041F\u0440\u0438\u0432\u044F\u0437\u043A\u0430 \u043A bottom, \u0430 \u043D\u0435 \u043A top. \u0412\u044B\u0441\u043E\u0442\u0430 \u0431\u0435\u0440\u0451\u0442\u0441\u044F \u0438\u0437 --vh, \u043D\u043E \u043D\u0430\u0447\u0430\u043B\u043E \u043A\u043E\u043E\u0440\u0434\u0438\u043D\u0430\u0442
+   fixed-\u0441\u043B\u043E\u044F \u0432 standalone-PWA \u043D\u0435\u043D\u0430\u0434\u0451\u0436\u043D\u043E: \u0434\u0432\u0438\u0436\u043E\u043A \u043C\u043E\u0436\u0435\u0442 \u0441\u0447\u0438\u0442\u0430\u0442\u044C, \u0447\u0442\u043E \u0432\u044C\u044E\u043F\u043E\u0440\u0442
+   \u043D\u0430\u0447\u0438\u043D\u0430\u0435\u0442\u0441\u044F \u043F\u043E\u0434 \u0441\u0442\u0430\u0442\u0443\u0441-\u0431\u0430\u0440\u043E\u043C, \u0438 \u0442\u043E\u0433\u0434\u0430 top:0 \u2014 \u044D\u0442\u043E \u0444\u0438\u0437\u0438\u0447\u0435\u0441\u043A\u0438\u0435 62, \u0430 \u043E\u0432\u0435\u0440\u043B\u0435\u0439
+   \u0432\u043C\u0435\u0441\u0442\u0435 \u0441\u043E \u0448\u0442\u043E\u0440\u043A\u043E\u0439 \u0441\u044A\u0435\u0437\u0436\u0430\u0435\u0442 \u0432\u043D\u0438\u0437 \u0440\u043E\u0432\u043D\u043E \u043D\u0430 \u0441\u0442\u043E\u043B\u044C\u043A\u043E \u0436\u0435. getBoundingClientRect
+   \u043F\u0440\u0438 \u044D\u0442\u043E\u043C \u0447\u0435\u0441\u0442\u043D\u043E \u0440\u0430\u043F\u043E\u0440\u0442\u0443\u0435\u0442 0..874 \u0432 \u0441\u0432\u043E\u0435\u0439 \u0441\u0438\u0441\u0442\u0435\u043C\u0435 \u043A\u043E\u043E\u0440\u0434\u0438\u043D\u0430\u0442, \u043F\u043E\u044D\u0442\u043E\u043C\u0443 \u043F\u043E \u043B\u043E\u0433\u0430\u043C
+   \u0441\u043C\u0435\u0449\u0435\u043D\u0438\u0435 \u043D\u0435 \u0432\u0438\u0434\u043D\u043E. bottom:0 \u043F\u0440\u0438\u0431\u0438\u0432\u0430\u0435\u0442 \u043A \u043D\u0438\u0436\u043D\u0435\u043C\u0443 \u043A\u0440\u0430\u044E, \u043A\u043E\u0442\u043E\u0440\u044B\u0439 \u0438 \u043D\u0443\u0436\u0435\u043D, \u0438
+   \u0432\u0435\u0440\u0435\u043D \u043F\u0440\u0438 \u043B\u044E\u0431\u043E\u043C \u043F\u043E\u043B\u043E\u0436\u0435\u043D\u0438\u0438 \u043D\u0430\u0447\u0430\u043B\u0430 \u043A\u043E\u043E\u0440\u0434\u0438\u043D\u0430\u0442. */
+.sheet-wrap{position:fixed;bottom:0;left:0;right:0;height:var(--vh,100dvh);background:rgba(20,26,22,.45);
   display:flex;align-items:flex-end;justify-content:center;z-index:50;
   animation:fade .18s ease}
 .sheet{position:relative;width:100%;max-width:520px;background:var(--bg);
@@ -3229,6 +3248,12 @@ main>.list,main>.list-stage,
   display:flex;flex-direction:column;gap:16px;
   padding:24px 16px}
 .sheet-fade{position:absolute;left:0;right:0;height:24px;z-index:2;pointer-events:none}
+/* \u041B\u0418\u041D\u0415\u0419\u041A\u0410 \xB7 \u0432\u0440\u0435\u043C\u0435\u043D\u043D\u043E. \u041A\u0440\u0430\u0441\u043D\u0430\u044F \u2014 bottom:0 \u0444\u0438\u043A\u0441\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u043E\u0433\u043E \u0441\u043B\u043E\u044F, \u0437\u0435\u043B\u0451\u043D\u0430\u044F \u2014 \u043D\u0438\u0437 \u043F\u043E
+   \u0432\u0435\u0440\u0441\u0438\u0438 --vh. \u041A\u0430\u043A\u0430\u044F \u043B\u0435\u0436\u0438\u0442 \u043D\u0430 \u0444\u0438\u0437\u0438\u0447\u0435\u0441\u043A\u043E\u043C \u0434\u043D\u0435 \u044D\u043A\u0440\u0430\u043D\u0430, \u0442\u0430 \u0441\u0438\u0441\u0442\u0435\u043C\u0430 \u043A\u043E\u043E\u0440\u0434\u0438\u043D\u0430\u0442 \u0438
+   \u0432\u0435\u0440\u043D\u0430. \u0421\u043D\u044F\u0442\u044C \u043F\u043E\u0441\u043B\u0435 \u0437\u0430\u043C\u0435\u0440\u0430. */
+.ruler{position:fixed;left:0;right:0;height:4px;z-index:9999;pointer-events:none}
+.ruler.a{bottom:0;background:#ff2d55}
+.ruler.b{top:calc(var(--vh,100dvh) - 4px);background:#32d74b}
 .sheet-fade.top{top:0;
   background:linear-gradient(to bottom,var(--bg) 30%,var(--bgH) 65%,var(--bgT) 100%);
   -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
