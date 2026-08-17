@@ -9,7 +9,7 @@
     border-radius: 0px 0px 6vw 6vw;
     -webkit-border-radius: 0px 0px 6vw 6vw;
     -moz-border-radius: 0px 0px 6vw 6vw;
-    padding: 200px 6vw 6vw 6vw;
+    padding: 200px var(--content-gutter) 6vw;
     margin-bottom: 24px;
     border: 0;
     --spotlight-color: rgba(255, 255, 255, 0.508);
@@ -32,7 +32,7 @@
     gap: 120px;
     color: var(--text-primary);
     width: 100%;
-    max-width: 1360px;
+    max-width: var(--content-inner);
     margin: auto auto 0 auto;
     z-index: 100;
 }
@@ -77,7 +77,7 @@
     border-radius: 24px;
     -webkit-border-radius: 24px;
     -moz-border-radius: 24px;
-    margin-top: -5px;
+    margin-top: -8px;
     margin-left: -6px;
     transition: ease-out 100ms;
     -webkit-transition: ease-out 100ms;
@@ -182,13 +182,14 @@
         border-radius: 0 0 120px 120px;
         -webkit-border-radius: 0 0 120px 120px;
         -moz-border-radius: 0 0 120px 120px;
-        padding: 200px 120px 80px;
+        padding: 200px var(--content-gutter) 80px;
     }
 
     .case-illustration {
         position: absolute;
         top: 0;
-        right: 240px;
+        /* правый край общей колонки, а не произвольный отступ от вьюпорта */
+        right: calc(50% - var(--content-inner) / 2);
         height: 100%;
     }
 }
@@ -211,7 +212,7 @@
         border-radius: 0px 0px 10vw 10vw;
         -webkit-border-radius: 0px 0px 10vw 10vw;
         -moz-border-radius: 0px 0px 10vw 10vw;
-        padding: 48px 6vw 6vw 6vw;
+        padding: 48px var(--content-gutter) 6vw;
     }
 
     .head-content {

@@ -4,7 +4,10 @@
 :root[data-theme='dark'] {
   --bg-primary: #0B0C0E;
   --bg-secondary: rgba(199, 202, 209, 0.08);
-  --bg-card: rgba(122, 122, 122, 0.08);
+  /* Было rgba (122, 122, 122, 0.08) — с пробелом, значение не подставлялось
+     и фона у карточек фактически не было. Пробел убран, прозрачность
+     приглушена до 0.06, чтобы карточки не выбивались. */
+  --bg-card: rgba(122, 122, 122, 0.06);
   --bg-accent: #CCB7B2;
   --text-primary: #EBEDEE;
   --text-secondary: #AAAAA7;
@@ -35,6 +38,14 @@
   --navbtn: #ffffff;
 }
 
+/* Общая колонка контента. Всё, что должно вставать по одной сетке,
+   считается от этих трёх значений, а не от собственных vw-паддингов. */
+:root {
+  --content-width: 1400px;
+  --content-gutter: 64px;
+  --content-inner: calc(var(--content-width) - var(--content-gutter) * 2);
+}
+
 html {
   background-color: var(--bg-primary);
   scroll-margin-top: 100px;
@@ -58,11 +69,11 @@ section {
   width: 100%;
   /*overflow: hidden;*/
   height: auto;
-  padding: 56px 64px;
+  padding: 56px var(--content-gutter);
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  max-width: 1400px;
+  max-width: var(--content-width);
   margin-left: auto;
   margin-right: auto;
   scroll-margin-top: 100px;
@@ -383,9 +394,9 @@ p {
 
 @media (max-width: 1079px) {
 
-  section {
-    padding: 56px 48px;
-    max-width: 850px;
+  :root {
+    --content-width: 850px;
+    --content-gutter: 48px;
   }
 
   .grid {
@@ -404,9 +415,13 @@ p {
 
 @media (max-width: 599px) {
 
+  :root {
+    --content-gutter: 24px;
+  }
+
   section {
     height: auto;
-    padding: 6vw 24px;
+    padding: 6vw var(--content-gutter);
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
