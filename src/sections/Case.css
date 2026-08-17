@@ -9,7 +9,15 @@
     border-radius: 0px 0px 6vw 6vw;
     -webkit-border-radius: 0px 0px 6vw 6vw;
     -moz-border-radius: 0px 0px 6vw 6vw;
-    padding: 200px var(--content-gutter) 6vw;
+    padding: 200px var(--content-gutter) var(--content-gutter);
+    /* блок, а не флекс, съедал margin-top: auto у .head-content,
+       и контент вставал под верхним паддингом вместо низа */
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: end;
+    -ms-flex-align: end;
+    align-items: flex-end;
     margin-bottom: 24px;
     border: 0;
     --spotlight-color: rgba(255, 255, 255, 0.508);
@@ -182,7 +190,7 @@
         border-radius: 0 0 120px 120px;
         -webkit-border-radius: 0 0 120px 120px;
         -moz-border-radius: 0 0 120px 120px;
-        padding: 200px var(--content-gutter) 80px;
+        padding: 200px var(--content-gutter) var(--content-gutter);
     }
 
     .case-illustration {
