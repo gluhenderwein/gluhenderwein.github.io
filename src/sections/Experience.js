@@ -75,7 +75,7 @@ export default function Experience() {
         cardRef={cardRefs[0]}
         left={
           <div className='exp-company'>
-            <img className='com-avatar' src='./assets/hh.jpg' alt='' />
+            <img className='com-avatar' src='./assets/hh.jpg' alt='' loading='lazy' decoding='async' />
             <div className='c-name'>
               <h3>headhunter</h3>
               <p className='p2' style={{ color: 'var(--text-tertiary)' }}>июль 2024 — март 2025</p>
@@ -96,7 +96,7 @@ export default function Experience() {
         cardRef={cardRefs[1]}
         left={
           <div className='exp-company'>
-            <img className='com-avatar' src='./assets/vk.jpg' alt='' />
+            <img className='com-avatar' src='./assets/vk.jpg' alt='' loading='lazy' decoding='async' />
             <div className='c-name'>
               <h3>vk реклама</h3>
               <p className='p2' style={{ color: 'var(--text-tertiary)' }}>май 2021 — июнь 2024</p>
@@ -120,7 +120,7 @@ export default function Experience() {
         cardRef={cardRefs[2]}
         left={
           <div className='exp-company'>
-            <img className='com-avatar' src='./assets/mg.jpg' alt='' />
+            <img className='com-avatar' src='./assets/mg.jpg' alt='' loading='lazy' decoding='async' />
             <div className='c-name'>
               <h3>it megastar</h3>
               <p className='p2' style={{ color: 'var(--text-tertiary)' }}>ноябрь 2019 — май 2021</p>

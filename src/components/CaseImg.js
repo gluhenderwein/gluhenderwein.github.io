@@ -15,6 +15,8 @@ const CaseImg = forwardRef(
           className="case-img__img"
           src={src}
           alt={alt}
+          loading="lazy"
+          decoding="async"
           onClick={handleClick}
           style={{ cursor: 'pointer' }}
         />
