@@ -1,4 +1,12 @@
 /*!
+ *  decimal.js v10.6.0
+ *  An arbitrary-precision Decimal type for JavaScript.
+ *  https://github.com/MikeMcl/decimal.js
+ *  Copyright (c) 2025 Michael Mclaughlin <M8ch88l@gmail.com>
+ *  MIT Licence
+ */
+
+/*!
  * GSAP 3.13.0
  * https://gsap.com
  *
