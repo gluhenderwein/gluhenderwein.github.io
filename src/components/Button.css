@@ -39,7 +39,7 @@
 
 .button-label {
     font-family: Unbounded;
-    font-size: 18px;
+    font-size: var(--fs-button);
     text-decoration: none;
     letter-spacing: 0.5px;
     font-weight: 400;
@@ -76,7 +76,4 @@
 }
 
 @media (max-width: 599px) {
-  .button-label {
-    font-size: 14px;
-  }
 }

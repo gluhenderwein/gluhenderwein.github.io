@@ -10,7 +10,6 @@
     padding-bottom: 9vw;
 }
 
-
 .pro-card {
     grid-column: 7 / span 6;
 }
@@ -27,7 +26,7 @@
 }
 
 .footer-header {
-    font-size: 64px;
+    font-size: var(--fs-footer-header);
     line-height: 120%;
 }
 
@@ -147,10 +146,6 @@
 
 @media (max-width: 599px) {
 
-    .footer-header {
-        font-size: 10vw;
-    }
-
     .con-footer {
         gap: 0px;
     }
@@ -160,6 +155,5 @@
         -ms-transform: scale(0.8);
         transform: scale(0.8);
     }
-
 
 }

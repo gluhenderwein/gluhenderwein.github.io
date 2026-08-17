@@ -18,7 +18,7 @@ import "yet-another-react-lightbox/plugins/captions.css";
 const CaseH2 = ({ children }) => <h2 className='s-24'>{children}</h2>;
 
 const CaseP = ({ children, style }) => (
-    <p className='p-2' style={style}>
+    <p className='p-case' style={style}>
         {children}
     </p>
 );

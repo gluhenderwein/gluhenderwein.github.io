@@ -6,7 +6,7 @@
 }
 
 .case-img__caption {
-  font-size: 18px;
+  font-size: var(--fs-caption);
   line-height: 140%;
   color: var(--text-tertiary);
   margin-top: 12px;
@@ -14,7 +14,6 @@
 
 @media (max-width: 599px) {
   .case-img__caption {
-    font-size: min(4vw, 18px);
     margin-top: 8px;
   }
 }

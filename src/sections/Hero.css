@@ -35,7 +35,7 @@
     -ms-flex-direction: column;
     flex-direction: column;
     gap: 24px;
-    font-size: 24px;
+    font-size: var(--fs-hero-position);
 }
 
 .hero-text {
@@ -62,7 +62,6 @@
     flex-direction: column;
     gap: 24px;
 }
-
 
 @media (max-width: 1079px) {
     .hero {
@@ -116,7 +115,6 @@
     }
 
     .hero-position {
-        font-size: 18px;
         gap: 16px;
     }
 

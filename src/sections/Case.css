@@ -175,7 +175,7 @@
 }
 
 .case-par p {
-    font-size: 22px;
+    font-size: var(--fs-case-par);
 }
 
 .case-img {
@@ -335,7 +335,4 @@
         margin-bottom: 32px;
     }
 
-    .case-par p {
-        font-size: min(5vw, 22px);
-    }
 }
