@@ -75,6 +75,11 @@ function App() {
           
           <div>
 
+            {/* Границы раздельные не для красоты: в общей границе React
+                держит поддерево скрытым, пока не приедут ОБА чанка, а когда
+                уже показанное поддерево подвешивается снова — прячет его
+                через display: none. DotGrid в этот момент меряет себя в ноль
+                и записывает канвасу width: 0px. Своя граница у каждого. */}
             <Suspense fallback={null}>
               <DotGrid style={{ position: 'fixed', width: '100vw', height: '100dvh', zIndex:'0' }}
                         dotSize={2}
@@ -87,6 +92,8 @@ function App() {
                         resistance={1650}
                         returnDuration={3.5}
                     />
+            </Suspense>
+            <Suspense fallback={null}>
               <Lanyard position={[0, 0, 30]} gravity={[0, -40, 0]} />
             </Suspense>
             <Navbar />

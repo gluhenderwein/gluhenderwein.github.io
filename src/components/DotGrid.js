@@ -74,6 +74,11 @@ const DotGrid = ({
     if (!wrap || !canvas) return;
 
     const { width, height } = wrap.getBoundingClientRect();
+    // Скрытый контейнер (display: none) меряется в ноль. Без этой проверки
+    // канвасу проставится инлайновый width: 0px, который перебьёт CSS,
+    // а массив точек обнулится — сетка исчезнет и сама не вернётся.
+    if (!width || !height) return;
+
     const dpr = window.devicePixelRatio || 1;
 
     canvas.width = width * dpr;
