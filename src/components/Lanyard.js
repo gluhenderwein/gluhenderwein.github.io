@@ -14,6 +14,7 @@ import lanyardDark from '../assets/lanyard-dark.png';
 
 import * as THREE from 'three';
 import '../components/Lanyard.css';
+import { getTheme, subscribe } from '../theme';
 
 extend({ MeshLineGeometry, MeshLineMaterial });
 
@@ -63,7 +64,7 @@ function Band({ maxSpeed = 50, minSpeed = 0 }) {
     const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 0);
 
     const [textureSrc, setTextureSrc] = useState(() =>
-        localStorage.getItem('theme') === 'dark' ? lanyardDark : lanyardLight
+        getTheme() === 'dark' ? lanyardDark : lanyardLight
     );
     const texture = useTexture(textureSrc);
 
@@ -73,19 +74,9 @@ function Band({ maxSpeed = 50, minSpeed = 0 }) {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    useEffect(() => {
-        const observer = new MutationObserver(() => {
-            const updatedTheme = localStorage.getItem('theme');
-            setTextureSrc(updatedTheme === 'dark' ? lanyardDark : lanyardLight);
-        });
-
-        observer.observe(document.documentElement, {
-            attributes: true,
-            attributeFilter: ['style'],
-        });
-
-        return () => observer.disconnect();
-    }, []);
+    useEffect(() => subscribe(() => {
+        setTextureSrc(getTheme() === 'dark' ? lanyardDark : lanyardLight);
+    }), []);
 
     let offsetX = 0;
     if (windowWidth >= 1080 && windowWidth < 1600) {

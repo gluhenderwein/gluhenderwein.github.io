@@ -1,44 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 import './ThemeToggle.css';
+import { getTheme, setTheme, subscribe } from '../theme';
 
 const ThemeToggle = () => {
-  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
-
-  useEffect(() => {
-    applyTheme(theme);
-  }, [theme]);
+  // Тумблер отрендерен в нескольких местах сразу (навбар + страницы кейсов),
+  // поэтому стейт общий, а не свой у каждой копии.
+  const theme = useSyncExternalStore(subscribe, getTheme, getTheme);
 
   const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-  };
-
-  const applyTheme = (mode) => {
-    const root = document.documentElement;
-    const prefix = mode === 'dark' ? '--dark--' : '--light--';
-
-    const cssVars = [
-      'bg-primary',
-      'bg-secondary',
-      'bg-card',
-      'bg-accent',
-      'text-primary',
-      'text-secondary',
-      'text-tertiary',
-      'navlink',
-      'icon-primary',
-      'icon-secondary',
-      'icon-tertiary',
-      'stroke',
-      'navbtn',
-      'navbar'
-    ];
-
-    cssVars.forEach((key) => {
-      const value = getComputedStyle(root).getPropertyValue(`${prefix}${key}`);
-      root.style.setProperty(`--${key}`, value);
-    });
+    setTheme(theme === 'dark' ? 'light' : 'dark');
   };
 
   return (

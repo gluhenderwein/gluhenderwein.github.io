@@ -5,6 +5,18 @@
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
+
+    <!-- Тема проставляется до первой отрисовки: JS-бандл грузится с defer,
+         и без этого страница успевает мигнуть нестилизованными цветами. -->
+    <script>
+      (function () {
+        var theme = 'dark';
+        try {
+          if (localStorage.getItem('theme') === 'light') theme = 'light';
+        } catch (e) {}
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
     <meta
       name="Иван Воробьёв ✦ Senior Product Designer"
       content="Больше 7 лет участвую в редизайнах крупных продуктов и проектирую их с нуля, развиваю дизайн-системы, стандартизирую паттерны и подходы к проектированию.
