@@ -6,7 +6,7 @@ import { ArrowLeft02Icon, ArrowRight02Icon, Cancel01Icon, FigmaIcon } from '@hug
 import ThemeToggle from '../components/ThemeToggle'
 import EmblaCarousel from '../components/EmblaCarousel';
 import Contacts from './Contacts';
-import Button from '../components/Button';
+import ButtonSecondary from '../components/ButtonSecondary';
 import { useInViewClass } from '../components/useInView';
 import Lightbox from "yet-another-react-lightbox";
 import Captions from "yet-another-react-lightbox/plugins/captions";
@@ -115,7 +115,7 @@ export default function Case() {
 
           <div ref={footerRef} className='case-footer fade-in'>
             <h3>больше макетов по задаче можно посмотреть в фигме</h3>
-            <Button href='/' icon={FigmaIcon} />
+            <ButtonSecondary href='/' icon={FigmaIcon} />
           </div>
 
           

@@ -7,9 +7,9 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import { ArrowLeft02Icon, ArrowRight02Icon, ArrowRight04Icon, Cancel01Icon, FigmaIcon } from '@hugeicons/core-free-icons';
 import ThemeToggle from '../components/ThemeToggle'
 import CaseImg from '../components/CaseImg';
-import SpotlightCard from '../components/SpotlightCard';
+import CaseHeader from './CaseHeader';
 import Contacts from './Contacts';
-import Button from '../components/Button';
+import ButtonSecondary from '../components/ButtonSecondary';
 import { useInViewClass } from '../components/useInView';
 import Lightbox from "yet-another-react-lightbox";
 import Captions from "yet-another-react-lightbox/plugins/captions";
@@ -89,12 +89,13 @@ export default function Case2() {
             </section>
 
             <div className='case-overflow'>
-                <SpotlightCard className="case-head fade-in" ref={headerRef}>
-                    <div className='head-content'>
-                        <img className='case-head-img' src='./assets/hh.jpg' alt='' />
-                        <h1>массовое продвижение вакансий</h1>
-                    </div>
-                </SpotlightCard>
+                <CaseHeader
+                    logoIndex={0}
+                    mainIndex={1}
+                    bgIndex={0}
+                    title="массовое продвижение вакансий"
+                    refProp={headerRef}
+                />
 
                 <section className='grid'>
                     <div ref={content1Ref} className='case-content fade-in'>
@@ -260,7 +261,7 @@ export default function Case2() {
 
                     <div ref={footerRef} className='case-footer fade-in'>
                         <h3>больше макетов по задаче можно посмотреть в фигме</h3>
-                        <Button target='_blanc' href='https://www.figma.com/design/26dZtMoQWiJuTOf8Rmz0go/Ivan-Vorobyev?node-id=2028-128036&p=f&t=cJPKj1O6CmT5s1of-11' icon={FigmaIcon} />
+                        <ButtonSecondary target='_blanc' href='https://www.figma.com/design/26dZtMoQWiJuTOf8Rmz0go/Ivan-Vorobyev?node-id=2028-128036&p=f&t=cJPKj1O6CmT5s1of-11' icon={FigmaIcon} />
                     </div>
 
                 </section>

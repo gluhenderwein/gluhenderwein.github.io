@@ -21,10 +21,10 @@ const cardsData = [
     overlayContent: <p className="tilted-card-demo-text"> массовое <br></br>продвижение </p>
   },
   {
-    linkTo: '/case-3',
-    imageSrc: "./assets/cover-3.jpg",
-    avatarSrc: "./assets/h-cover-3.png",
-    overlayContent: <p className="tilted-card-demo-text"> центр <br></br>коммерции </p>
+    linkTo: '/shots',
+    imageSrc: "./assets/cover-6.jpg",
+    avatarSrc: "./assets/h-cover-6.png",
+    overlayContent: <p className="tilted-card-demo-text"> шоты из разных проектов </p>
   },
   {
     linkTo: '/case-4',
@@ -39,11 +39,12 @@ const cardsData = [
     overlayContent: <p className="tilted-card-demo-text"> конструктор <br></br>опросов </p>
   },
   {
-    linkTo: '/shots',
-    imageSrc: "./assets/cover-6.jpg",
-    avatarSrc: "./assets/h-cover-6.png",
-    overlayContent: <p className="tilted-card-demo-text"> шоты из разных проектов </p>
+    linkTo: '/case-3',
+    imageSrc: "./assets/cover-3.jpg",
+    avatarSrc: "./assets/h-cover-3.png",
+    overlayContent: <p className="tilted-card-demo-text"> центр <br></br>коммерции </p>
   }
+
 ];
 
 export default function Portfolio() {

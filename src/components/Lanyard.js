@@ -89,9 +89,9 @@ function Band({ maxSpeed = 50, minSpeed = 0 }) {
 
     let offsetX = 0;
     if (windowWidth >= 1080 && windowWidth < 1600) {
-        offsetX = viewport.width * 0.30;
+        offsetX = viewport.width * 0.305;
     } else if (windowWidth >= 1600) {
-        offsetX = viewport.width * 0.29 * (1600 / windowWidth);
+        offsetX = viewport.width * 0.28 * (1600 / windowWidth);
     }
     const band = useRef(), fixed = useRef(), j1 = useRef(), j2 = useRef(), j3 = useRef(), card = useRef();
     const vec = new THREE.Vector3(), ang = new THREE.Vector3(), rot = new THREE.Vector3(), dir = new THREE.Vector3();

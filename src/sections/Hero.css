@@ -1,53 +1,99 @@
 .hero {
-    height: 780px;
-    padding: 0px 6vw 68px;
+    padding: 296px 64px 68px;
 }
 
 .hero-grid {
     height: 100%;
     align-content: flex-end;
+    row-gap: 48px;
 }
 
-.hero-content {
+.hero-title {
     z-index: 100;
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
     flex-direction: column;
-    gap: 40px;
+    justify-content: space-between;
+    grid-column: span 7;
+    height: 430px;
 }
 
-.h3-par-wrap {
+.hero-svg {
+    max-width: 730px;
+}
+
+.hero-position {
+    display: -ms-flexbox;
+    display: -webkit-box;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    gap: 24px;
+    font-size: 24px;
+}
+
+.hero-text {
     display: flex;
     flex-direction: column;
     gap: 24px;
+    grid-column: span 6;
+    color: var(--text-tertiary);
+}
+
+.card-about {
+    grid-column: span 4;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    gap: 24px;
+    padding: 32px;
+}
+
+.text-about {
     grid-column: 5 / span 8;
-    padding-top: 6vw;
+    margin-top: 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
 }
 
-.h-3-par {
-    line-height: 180%;
-    font-weight: 350;
-    letter-spacing: 0.5px;
-}
-
-@media (min-width: 1600px) {
-    .hero {
-        padding: 0px 120px 68px;
-    }
-
-    .h3-par-wrap {
-        padding-top: 80px;
-    }
-}
 
 @media (max-width: 1079px) {
     .hero {
         height: auto;
-        padding: 730px 6vw 68px;
+        padding: 768px 48px 24px;
     }
 
-    .h3-par-wrap {
+    .hero-title {
+        grid-column: span 8;
+        height: auto;
+        gap: 48px;
+    }
+
+    .hero-svg {
+        max-width: none;
+    }
+
+    .hero-text {
         grid-column: span 8;
     }
+
+    .card-about {
+        grid-column: span 8;
+        flex-direction: row;
+    }
+
+    .text-about {
+        grid-column: 1 / span 8;
+        margin-top: 64px;
+    }
+
 }
 
 @media (max-width: 599px) {
@@ -56,16 +102,39 @@
         padding: 540px 6vw 6vw;
     }
 
-
-    .hero-content {
+    .hero-title {
+        grid-column: span 4;
         z-index: 100;
+        display: -webkit-box;
+        display: -ms-flexbox;
         display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
         flex-direction: column;
-        gap: 6vw;
+        gap: 40px;
     }
 
-    .h3-par-wrap {
+    .hero-position {
+        font-size: 18px;
+        gap: 16px;
+    }
+
+    .hero-text {
         grid-column: span 4;
+        gap: 16px;
+    }
+
+    .card-about {
+        grid-column: span 4;
+        flex-direction: column;
+        padding: 24px;
+    }
+
+    .text-about {
+        grid-column: 1 / span 4;
+        margin-top: 32px;
+        gap: 16px;
     }
 
 }

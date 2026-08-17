@@ -15,51 +15,51 @@ const About = () => {
     return (
         <section>
             <div className='grid'>
-                <SpotlightCard className="fade-in card" ref={cardRef1}>
+                <SpotlightCard className="fade-in card card-about" ref={cardRef1}>
                     <HugeiconsIcon className='icon'
                         icon={ChartBreakoutSquareIcon}
                         size={64}
-                        color="var(--icon-secondary)"
+                        color="var(--icon-tertiary)"
                         strokeWidth={1.5}
                     />
-                    <p className='p-2'>
+                    <p className='p2'>
                         Продакты ценят работу со мной за скорость, глубокое понимание задач и продуманные, масштабируемые решения, которые избавляют их от лишней суеты
                     </p>
                 </SpotlightCard>
-                <SpotlightCard className="fade-in card" ref={cardRef2}>
+                <SpotlightCard className="fade-in card card-about" ref={cardRef2}>
                     <HugeiconsIcon className='icon'
                         icon={SourceCodeSquareIcon}
                         size={64}
-                        color="var(--icon-secondary)"
+                        color="var(--icon-tertiary)"
                         strokeWidth={1.5}
                     />
-                    <p className='p-2'>
+                    <p className='p2'>
                         Фронтендеры любят мои интерфейсы за проработанную логику, учёт тонкостей вёрстки и проработку всех состояний, потому что их легко и быстро внедрять
                     </p>
                 </SpotlightCard>
-                <SpotlightCard className="fade-in card" ref={cardRef3}>
+                <SpotlightCard className="fade-in card card-about" ref={cardRef3}>
                     <HugeiconsIcon className='icon'
                         icon={UserIdVerificationIcon}
                         size={64}
-                        color="var(--icon-secondary)"
+                        color="var(--icon-tertiary)"
                         strokeWidth={1.5}
                     />
-                    <p className='p-2'>
-                        Пользователи об этом не догадываются, но могли бы тоже любить мои интерфейсы, потому что я всегда стараюсь найти компромисс между ними и интересами бизнеса
+                    <p className='p2'>
+                        Пользователи об этом не догадываются, но могли бы тоже любить мои интерфейсы, потому что я всегда стараюсь найти компромисс между ними и бизнесом
                     </p>
                 </SpotlightCard>
                 
 
                 <div
-                    className='h3-par-wrap fade-in'
+                    className='text-about fade-in'
                     ref={parRef}
                 >
-                    <h3 className='h-3-par'>
-                        мой опыт связан, в основном, с b2b продуктами: рекламными платформами, большими и сложными интерфейсами
-                    </h3>
-                    <h3 className='h-3-par'>
-                        но я открыт и к смене направления, и к перспективам роста в позицию дизайн-лида
-                    </h3>
+                    <p className='p0'>
+                        Я запускал с нуля сложные коммерческие продукты, оптимизировал сценарии и проводил редизайны, которые кратно растили метрики и выручку
+                    </p>
+                    <p className='p0'>
+                        Создавал и развивал дизайн-системы, участвовал в найме и наставлял дизайнеров, делал гайды и выстраивал дизайн-процессы в команде
+                    </p>
                 </div>
             </div>
         </section>

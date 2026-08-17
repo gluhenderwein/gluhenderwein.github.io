@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import './Button.css'
 import { HugeiconsIcon } from '@hugeicons/react';
 
-export default class Button extends Component {
+export default class ButtonPrimary extends Component {
   constructor(props) {
     super(props);
     this.buttonRef = React.createRef();
@@ -41,13 +41,18 @@ export default class Button extends Component {
     return (
       <div className="container">
         {this.props.href ? (
-          <a href={this.props.href} target="_blank" rel="noopener noreferrer">
-            <button ref={this.buttonRef} className="button-creative">
+          <a
+            href={this.props.href}
+            target={this.props.target || "_blank"}
+            rel="noopener noreferrer"
+            download={this.props.download}
+          >
+            <button ref={this.buttonRef} className="button-primary" onClick={this.props.onClick}>
               {buttonContent}
             </button>
           </a>
         ) : (
-          <button ref={this.buttonRef} className="button-creative">
+          <button ref={this.buttonRef} className="button-primary" onClick={this.props.onClick}>
             {buttonContent}
           </button>
         )}

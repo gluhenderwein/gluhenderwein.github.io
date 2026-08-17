@@ -34,7 +34,7 @@ export default function Contacts() {
                             />
                         </a>
 
-                        <a className='link-circle' href='' target='_blanc' style={{display:'none'}}>
+                        <a className='link-circle' href='https://www.linkedin.com/in/ivan-vorobyev/' target='_blanc'>
                             <svg
                                 className="link-c-image"
                                 viewBox="0 0 64 64"

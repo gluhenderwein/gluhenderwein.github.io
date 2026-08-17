@@ -46,6 +46,7 @@
     position: relative;
     object-fit: cover;
     border-radius: 32px;
+    border: 1px solid rgba(219, 213, 213, 0.16);
     will-change: transform;
     transform: translateZ(0);
     transition: all ease-out 0.5s;

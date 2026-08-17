@@ -64,6 +64,7 @@ function App() {
           element={
           
           <div>
+
             <DotGrid style={{ position: 'fixed', width: '100vw', height: '100dvh', zIndex:'0' }}
                         dotSize={2}
                         gap={32}

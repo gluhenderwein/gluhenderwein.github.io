@@ -8,8 +8,8 @@ import { ArrowLeft02Icon, ArrowRight02Icon, ArrowRight04Icon, Cancel01Icon, Figm
 import ThemeToggle from '../components/ThemeToggle'
 import CaseImg from '../components/CaseImg';
 import Contacts from './Contacts';
-import Button from '../components/Button';
-import SpotlightCard from '../components/SpotlightCard';
+import ButtonSecondary from '../components/ButtonSecondary';
+import CaseHeader from './CaseHeader';
 import { useInViewClass } from '../components/useInView';
 import Lightbox from "yet-another-react-lightbox";
 import Captions from "yet-another-react-lightbox/plugins/captions";
@@ -89,12 +89,13 @@ export default function Case5() {
                 <ThemeToggle />
             </section>
 
-            <SpotlightCard className="case-head fade-in" ref={headerRef}>
-                <div className='head-content'>
-                    <img className='case-head-img' src='./assets/vk.jpg' alt='' />
-                    <h1>конструктор<br></br>опросов</h1>
-                </div>
-            </SpotlightCard>
+            <CaseHeader
+                logoIndex={1}
+                mainIndex={3}
+                bgIndex={1}
+                title="конструктор опросов"
+                refProp={headerRef}
+            />
 
             <div className='case-overflow'>
                 <section className='grid case'>
@@ -310,7 +311,7 @@ export default function Case5() {
 
                     <div ref={footerRef} className='case-footer fade-in'>
                         <h3>больше макетов по задаче можно посмотреть в фигме</h3>
-                        <Button target='_blanc' href='https://www.figma.com/design/26dZtMoQWiJuTOf8Rmz0go/Ivan-Vorobyev?node-id=1-3&p=f&t=cJPKj1O6CmT5s1of-11' icon={FigmaIcon} />
+                        <ButtonSecondary target='_blanc' href='https://www.figma.com/design/26dZtMoQWiJuTOf8Rmz0go/Ivan-Vorobyev?node-id=1-3&p=f&t=cJPKj1O6CmT5s1of-11' icon={FigmaIcon} />
                     </div>
 
                 </section>

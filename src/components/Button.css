@@ -1,5 +1,19 @@
-.button-creative {
-  position: relative;
+.button-primary {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px 24px;
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  cursor: pointer;
+  overflow: hidden;
+  transition: color 0.3s;
+  border-radius: 16px;
+}
+
+.button-secondary {
   display: inline-flex;
   flex-shrink: 0;
   align-items: center;
@@ -9,11 +23,12 @@
   background: var(--navbtn);
   color: var(--text-primary);
   border: 0.5px solid var(--stroke);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   cursor: pointer;
   overflow: hidden;
   transition: color 0.3s;
   border-radius: 16px;
-  z-index: 1;
 }
 
 .icon-btn {
@@ -22,14 +37,15 @@
 
 .button-label {
     font-family: Unbounded;
-  font-size: 18px;
+    font-size: 18px;
     text-decoration: none;
     letter-spacing: 0.5px;
     font-weight: 400;
+    flex-shrink: 0;
 
 }
 
-.button-creative::before {
+.button-secondary::before {
   content: '';
   position: absolute;
   left: var(--x, 50%);
@@ -45,10 +61,20 @@
   z-index: 0;
 }
 
-.button-creative:hover::before {
+.button-secondary:hover::before {
   transform: translate(-50%, -50%) scale(1.2);
 }
 
-.button-creative:hover {
+.button-primary:hover {
+  background: var(--text-secondary);
+}
+
+.button-secondary:hover {
   color: var(--text-primary);
+}
+
+@media (max-width: 599px) {
+  .button-label {
+    font-size: 14px;
+  }
 }

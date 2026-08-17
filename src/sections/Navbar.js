@@ -3,6 +3,7 @@ import './Navbar.css'
 import { HugeiconsIcon } from '@hugeicons/react';
 import { UserCircle02Icon, MenuSquareIcon, Calendar04Icon, FavouriteIcon, SentIcon } from '@hugeicons/core-free-icons';
 import ThemeToggle from '../components/ThemeToggle';
+import GradualBlurMemo from '../components/GradualBlur';
 
 const aboutRef = React.createRef();
 const portfolioRef = React.createRef();
@@ -89,11 +90,29 @@ function Navbar() {
   useEffect(() => {
     const handleScroll = () => {
       if (!navbarRef.current) return;
+
+      const navigation = navbarRef.current.closest('.navigation');
+      if (!navigation) return;
+
       const isSmallScreen = window.innerWidth < 1079;
 
-      if (isSmallScreen) {
-        navbarRef.current.classList.add("blurred");
-      } else if (window.scrollY > 250) {
+      const start = 80;
+      const end = 280;
+
+      const y = window.scrollY;
+      const progress = Math.min(
+        Math.max((y - start) / (end - start), 0),
+        1
+      );
+
+      const shouldBlur = isSmallScreen || y > 250;
+
+      navigation.style.setProperty(
+        '--blur-progress',
+        shouldBlur ? progress : 0
+      );
+
+      if (shouldBlur) {
         navbarRef.current.classList.add("blurred");
       } else {
         navbarRef.current.classList.remove("blurred");
@@ -153,6 +172,7 @@ function Navbar() {
 
   return (
     <section className='navigation'>
+      <GradualBlurMemo />
       <nav ref={navbarRef} className="navbar">
         <div className="menu-mask-wrapper">
           <div className="menu-wrapper">
@@ -165,7 +185,7 @@ function Navbar() {
               className={`nav-link ${activeSection === key ? "active" : ""}`}
             >
               <HugeiconsIcon className='icon' icon={icons[key]} size={24} strokeWidth={2} />
-              <p className='label-text'>{labels[key]}</p>
+              <p className='text-label-18'>{labels[key]}</p>
             </a>
           ))}
 

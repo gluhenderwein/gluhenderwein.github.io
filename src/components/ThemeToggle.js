@@ -29,6 +29,7 @@ const ThemeToggle = () => {
       'navlink',
       'icon-primary',
       'icon-secondary',
+      'icon-tertiary',
       'stroke',
       'navbtn',
       'navbar'

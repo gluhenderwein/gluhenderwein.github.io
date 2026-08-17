@@ -2,7 +2,7 @@ import React from "react";
 import { useRef } from "react";
 import "./SpotlightCard.css";
 
-const SpotlightCard = ({ children, className = "", spotlightColor = "" }, ref) => {
+const SpotlightCard = ({ children, className = "", spotlightColor = "", bgColor = "" }, ref) => {
   const divRef = useRef(null);
 
   const handleMouseMove = (e) => {
@@ -27,6 +27,7 @@ const SpotlightCard = ({ children, className = "", spotlightColor = "" }, ref) =
       }}
       onMouseMove={handleMouseMove}
       className={`card-spotlight ${className}`}
+      style={{ backgroundColor: bgColor }}
     >
       {children}
     </div>

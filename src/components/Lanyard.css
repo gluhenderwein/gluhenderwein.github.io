@@ -20,19 +20,6 @@
   transform-origin: center;
 }
 
-/*@media (min-width: 1600px) {
-  .lanyard-position {
-   
-  
-}
-
-  .lanyard-wrapper {
-    transform: translateX(50%);
-    width: 2500px;
-    height: 100%;
-  }
-}*/
-
 @media (max-width: 1079px) {
   .lanyard-wrapper {
     width: 100%;
