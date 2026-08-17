@@ -2,7 +2,6 @@ import React from 'react'
 import { Link } from 'react-router-dom';
 import '../App.css'
 import './Case.css'
-import '../components/EmblaCarousel.css'
 import { HugeiconsIcon } from '@hugeicons/react';
 import { ArrowLeft02Icon, ArrowRight02Icon, ArrowRight04Icon, Cancel01Icon, FigmaIcon } from '@hugeicons/core-free-icons';
 import ThemeToggle from '../components/ThemeToggle';

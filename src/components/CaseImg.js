@@ -1,5 +1,6 @@
 import React, { forwardRef } from 'react';
 import PropTypes from 'prop-types';
+import './CaseImg.css';
 
 const CaseImg = forwardRef(
   ({ src, caption, alt = '', index, onClick, className = '' }, ref) => {
@@ -11,13 +12,13 @@ const CaseImg = forwardRef(
     return (
       <div className={`case-img ${className}`} ref={ref}>
         <img
-          className="embla__slide__img"
+          className="case-img__img"
           src={src}
           alt={alt}
           onClick={handleClick}
           style={{ cursor: 'pointer' }}
         />
-        {caption && <div className="embla__slide__caption">{caption}</div>}
+        {caption && <div className="case-img__caption">{caption}</div>}
       </div>
     );
   }
