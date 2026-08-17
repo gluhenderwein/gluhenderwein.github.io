@@ -10,12 +10,7 @@
 
 .hero-title {
     z-index: 100;
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    -ms-flex-direction: column;
     flex-direction: column;
     justify-content: space-between;
     grid-column: span 7;
@@ -27,12 +22,7 @@
 }
 
 .hero-position {
-    display: -ms-flexbox;
-    display: -webkit-box;
     display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    -ms-flex-direction: column;
     flex-direction: column;
     gap: 24px;
     font-size: var(--fs-hero-position);
@@ -104,12 +94,7 @@
     .hero-title {
         grid-column: span 4;
         z-index: 100;
-        display: -webkit-box;
-        display: -ms-flexbox;
         display: flex;
-        -webkit-box-orient: vertical;
-        -webkit-box-direction: normal;
-        -ms-flex-direction: column;
         flex-direction: column;
         gap: 40px;
     }

@@ -36,8 +36,6 @@ body {
 .switch {
   margin: auto;
   position: relative;
-  -webkit-user-select: none;
-  -moz-user-select: none;
   user-select: none;
   cursor: pointer;
 }
@@ -102,7 +100,6 @@ body {
   outline: transparent;
   width: 76px;
   height: 40px;
-  -webkit-appearance: none;
   appearance: none;
   transition: background-color var(--trans-dur), box-shadow var(--trans-dur);
 }

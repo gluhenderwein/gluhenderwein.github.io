@@ -15,7 +15,7 @@ export default function Feedback() {
 
   return (
     <section id='feedback' ref={feedbackRef}>
-      <div className='tltle s-40 fade-in' ref={titleRef}>
+      <div className='title s-40 fade-in' ref={titleRef}>
         <h2>коллеги о работе со мной</h2>
       </div>
       <div className='grid' >

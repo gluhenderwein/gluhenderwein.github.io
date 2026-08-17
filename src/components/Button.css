@@ -26,7 +26,6 @@
   color: var(--text-primary);
   border: 0.5px solid var(--stroke);
   backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
   cursor: pointer;
   overflow: hidden;
   transition: color 0.3s;

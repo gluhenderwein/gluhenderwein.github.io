@@ -16,16 +16,10 @@
     border: 0.5px solid var(--stroke);
     background-color: var(--bg-card);
     backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
     box-sizing: border-box;
     position: relative;
     overflow: hidden;
-    -webkit-border-radius: 40px;
-    -moz-border-radius: 40px;
     border-radius: 40px;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
     margin-bottom: 2vw;
 }
 
@@ -49,13 +43,8 @@
     grid-column: 1 / span 4;
     margin-right: -2vw;
     padding: 32px;
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
     gap: 24px;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    -ms-flex-direction: column;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -65,22 +54,12 @@
 .exp-content {
     grid-column: 5 / span 8;
     padding: 32px;
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    -ms-flex-direction: column;
     flex-direction: column;
     position: relative;
     background-color: var(--bg-card);
     backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    -webkit-border-radius: 40px;
-    -moz-border-radius: 40px;
     border-radius: 40px;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
 
@@ -94,8 +73,6 @@
     opacity: 0.2;
     pointer-events: none;
     z-index: 1;
-    -webkit-border-radius: 40px;
-    -moz-border-radius: 40px;
     border-radius: 40px;
 }
 
@@ -103,12 +80,6 @@
   max-height: 400px;
   overflow: hidden;
 
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    rgba(0,0,0,1) 0%,
-    rgba(0,0,0,1) calc(100% - 100px),
-    rgba(0,0,0,0) 100%
-  );
   mask-image: linear-gradient(
     to bottom,
     rgba(0,0,0,1) 0%,
@@ -120,7 +91,6 @@
 .exp-content.expanded .exp-content-inner {
   max-height: none;
   overflow: visible;
-  -webkit-mask-image: none;
   mask-image: none;
 }
 
@@ -133,8 +103,6 @@
   width: 88px;
   height: 88px;
   border-radius: 44px;
-  -webkit-border-radius: 44px;
-  -moz-border-radius: 44px;
 }
 
 .c-name {
@@ -160,9 +128,6 @@
     margin-right: 0;
     margin-bottom: -3vw;
     padding: 32px;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    -ms-flex-direction: row;
     flex-direction: row;
     justify-content: start;
 
@@ -171,8 +136,6 @@
 .exp-content {
     grid-column: 1 / span 8;
     padding: 32px;
-    -webkit-border-radius: 40px;
-    -moz-border-radius: 40px;
     border-radius: 40px;
 }
 
@@ -222,8 +185,6 @@
 .exp-content {
     grid-column: 1 / span 4;
     padding: 24px;
-    -webkit-border-radius: 40px;
-    -moz-border-radius: 40px;
     border-radius: 40px;
 }
 

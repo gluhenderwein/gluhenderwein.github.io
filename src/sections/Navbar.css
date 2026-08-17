@@ -8,7 +8,6 @@
   /*left: 50%;
   transform: translateX(-50%);*/
   --blur-progress: 0;
-  position: sticky;
 }
 
 .navbar {
@@ -20,13 +19,11 @@
   margin-left: -24px;
   margin-right: -24px;
   border-radius: 28px;
-  -webkit-transition: backdrop-filter 0.5s ease, background-color 0.5s ease;
   transition: backdrop-filter 0.5s ease, background-color 0.5s ease;
 }
 
 .navbar.blurred {
   
-  -webkit-backdrop-filter: blur(64px);
   backdrop-filter: blur(48px) saturate(150%);
   background-color: var(--navbar);
   border: 0.5px solid var(--stroke);
@@ -49,9 +46,7 @@
   /* Важно: прячем маску за пределами */
   -webkit-mask-image: linear-gradient(to right, transparent 0px, black 20px, black calc(100% - 20px), transparent 100%);
   mask-image: linear-gradient(to right, transparent 0px, black 20px, black calc(100% - 20px), transparent 100%);
-  -webkit-mask-size: 100% 100%;
   mask-size: 100% 100%;
-  -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
 }
 

@@ -53,7 +53,7 @@ export default function Portfolio() {
 
   return (
     <section id='portfolio' ref={portfolioRef}>
-      <div className='tltle s-40 fade-in' ref={titleRef}>
+      <div className='title s-40 fade-in' ref={titleRef}>
         <h2>кейсы</h2>
       </div>
       <div className='grid fade-in' ref={gridRef}>
