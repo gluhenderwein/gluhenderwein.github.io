@@ -10,6 +10,8 @@
   cursor: pointer;
   overflow: hidden;
   transition: color 0.3s;
+  /* иначе у <button> остаётся браузерный outset-бордер */
+  border: none;
   border-radius: 16px;
 }
 
