@@ -19,19 +19,19 @@
 }
 
 :root[data-theme='light'] {
-  --bg-primary: #FAF7F3;
-  --bg-secondary: rgba(169, 161, 137, 0.08);
-  --bg-card: #ffffff;
-  --bg-accent: #EBE6E0;
-  --text-primary: #222831;
-  --text-secondary: #393E46;
-  --text-tertiary: #9E9485;
-  --navlink: #A1A1A6;
-  --icon-primary: #222831;
-  --icon-secondary: #B8AC9B;
-  --icon-tertiary: #000;
-  --stroke: rgba(154, 145, 117, 0.1);
-  --navbar: rgba(250, 247, 243, 0.7);
+  --bg-primary: #EDECE8;
+  --bg-secondary: rgba(199, 168, 142, 0.08);
+  --bg-card: rgba(255, 255, 255, 0.5);
+  --bg-accent: #E9E7D8;
+  --text-primary: #303236;
+  --text-secondary: #4B4B48;
+  --text-tertiary: #757370;
+  --navlink: #22252B;
+  --icon-primary: #303236;
+  --icon-secondary: #757370;
+  --icon-tertiary: #5B5348;
+  --stroke: rgba(79, 71, 55, 0.08);
+  --navbar: rgba(237, 236, 232, 0.38);
   --navbtn: #ffffff;
 }
 
