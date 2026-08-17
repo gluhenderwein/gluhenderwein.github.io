@@ -60,9 +60,9 @@ export default function Contacts() {
                     handle="gluhenwein"
                     status="online"
                     contactText="написать"
-                    avatarUrl="./assets/me.png"
-                    iconUrl={`${process.env.PUBLIC_URL}/assets/emo.png`} 
-                    miniAvatarUrl='./assets/telegram.png'
+                    avatarUrl="./assets/me.webp"
+                    iconUrl={`${process.env.PUBLIC_URL}/assets/emo.webp`} 
+                    miniAvatarUrl='./assets/telegram.webp'
                     grainUrl='https://i.pinimg.com/736x/12/af/2b/12af2b8954eb67257975dbddcd793fdd.jpg'
                     innerGradient=''
                     showUserInfo={true}

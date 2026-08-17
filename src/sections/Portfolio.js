@@ -10,38 +10,38 @@ const handleNavigateToCase = () => {
 const cardsData = [
   {
     linkTo: '/case-1',
-    imageSrc: "./assets/cover-1.jpg",
-    avatarSrc: "./assets/h-cover-1.png",
+    imageSrc: "./assets/cover-1.webp",
+    avatarSrc: "./assets/h-cover-1.webp",
     overlayContent: <p className="tilted-card-demo-text"> настройка <br></br>уведомлений </p>
   },
   {
     linkTo: '/case-2',
-    imageSrc: "./assets/cover-2.jpg",
-    avatarSrc: "./assets/h-cover-2.png",
+    imageSrc: "./assets/cover-2.webp",
+    avatarSrc: "./assets/h-cover-2.webp",
     overlayContent: <p className="tilted-card-demo-text"> массовое <br></br>продвижение </p>
   },
   {
     linkTo: '/shots',
-    imageSrc: "./assets/cover-6.jpg",
-    avatarSrc: "./assets/h-cover-6.png",
+    imageSrc: "./assets/cover-6.webp",
+    avatarSrc: "./assets/h-cover-6.webp",
     overlayContent: <p className="tilted-card-demo-text"> шоты из разных проектов </p>
   },
   {
     linkTo: '/case-4',
-    imageSrc: "./assets/cover-4.jpg",
-    avatarSrc: "./assets/h-cover-4.png",
+    imageSrc: "./assets/cover-4.webp",
+    avatarSrc: "./assets/h-cover-4.webp",
     overlayContent: <p className="tilted-card-demo-text"> лендинги <br></br>в лид-формах </p>
   },
   {
     linkTo: '/case-5',
-    imageSrc: "./assets/cover-5.jpg",
-    avatarSrc: "./assets/h-cover-5.png",
+    imageSrc: "./assets/cover-5.webp",
+    avatarSrc: "./assets/h-cover-5.webp",
     overlayContent: <p className="tilted-card-demo-text"> конструктор <br></br>опросов </p>
   },
   {
     linkTo: '/case-3',
-    imageSrc: "./assets/cover-3.jpg",
-    avatarSrc: "./assets/h-cover-3.png",
+    imageSrc: "./assets/cover-3.webp",
+    avatarSrc: "./assets/h-cover-3.webp",
     overlayContent: <p className="tilted-card-demo-text"> центр <br></br>коммерции </p>
   }
 

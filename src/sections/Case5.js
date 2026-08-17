@@ -33,16 +33,16 @@ const CaseListItem = ({ children, style }) => (
 );
 
 const slides = [
-    { src: './assets/case-5-1.png', title: '', description: 'Шаг 1: оформление' },
-    { src: './assets/case-5-2.png', title: '', description: '' },
-    { src: './assets/case-5-3.png', title: '', description: 'Шаг 2: вопросы' },
-    { src: './assets/case-5-4.png', title: '', description: 'Настройка вопроса' },
-    { src: './assets/case-5-5.png', title: '', description: 'Настройка вопроса со шкалой' },
-    { src: './assets/case-5-6.png', title: '', description: 'Настройка стоп-экрана' },
-    { src: './assets/case-5-7.png', title: '', description: 'Условия для показа вопроса' },
-    { src: './assets/case-5-8.png', title: '', description: 'Шаг 3: экран результата' },
-    { src: './assets/case-5-9.png', title: '', description: 'Приложение с опросом' },
-    { src: './assets/case-5-10.png', title: '', description: 'Список опросов в рекламном кабинете' }
+    { src: './assets/case-5-1.webp', title: '', description: 'Шаг 1: оформление' },
+    { src: './assets/case-5-2.webp', title: '', description: '' },
+    { src: './assets/case-5-3.webp', title: '', description: 'Шаг 2: вопросы' },
+    { src: './assets/case-5-4.webp', title: '', description: 'Настройка вопроса' },
+    { src: './assets/case-5-5.webp', title: '', description: 'Настройка вопроса со шкалой' },
+    { src: './assets/case-5-6.webp', title: '', description: 'Настройка стоп-экрана' },
+    { src: './assets/case-5-7.webp', title: '', description: 'Условия для показа вопроса' },
+    { src: './assets/case-5-8.webp', title: '', description: 'Шаг 3: экран результата' },
+    { src: './assets/case-5-9.webp', title: '', description: 'Приложение с опросом' },
+    { src: './assets/case-5-10.webp', title: '', description: 'Список опросов в рекламном кабинете' }
 ];
 
 export default function Case5() {

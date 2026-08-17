@@ -59,7 +59,7 @@ export default function Case() {
         <section className='grid case'>
 
           <div ref={headerRef} className='case-header fade-in'>
-            <img className='case-head-img' src='/assets/hh.jpg' alt='' />
+            <img className='case-head-img' src='/assets/hh.webp' alt='' />
             <h1>редизайн настроек уведомлений</h1>
           </div>
           <div ref={content1Ref} className='case-content fade-in'>

@@ -4,16 +4,16 @@ import './Case.css'
 import SpotlightCard from '../components/SpotlightCard';
 
 const logos = [
-    './assets/hh.jpg',
-    './assets/vk.jpg'
+    './assets/hh.webp',
+    './assets/vk.webp'
 ]
 
 const mains = [
-    './assets/bell.png',
-    './assets/plane.png',
-    './assets/envelope.png',
-    './assets/pencil.png',
-    './assets/cart.png'
+    './assets/bell.webp',
+    './assets/plane.webp',
+    './assets/envelope.webp',
+    './assets/pencil.webp',
+    './assets/cart.webp'
 ]
 
 const backgrounds = [

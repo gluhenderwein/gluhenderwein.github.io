@@ -33,17 +33,17 @@ const CaseListItem = ({ children, style }) => (
 );
 
 const slides = [
-    { src: './assets/case-4-1.png', title: '', description: '' },
-    { src: './assets/case-4-2.png', title: '', description: 'Визуальный редактор' },
-    { src: './assets/case-4-3.png', title: '', description: 'Редактор мобильной и десктопной формы' },
-    { src: './assets/case-4-4.png', title: '', description: 'Форматирование текста' },
-    { src: './assets/case-4-6.png', title: '', description: 'Блок видео' },
-    { src: './assets/case-4-5.png', title: '', description: 'Настройки изображения и слайдер' },
-    { src: './assets/case-4-9.png', title: '', description: 'Редизайн мобильной лид-формы' },
-    { src: './assets/case-4-10.png', title: '', description: 'Редизайн десктопной лид-формы без обложки' },
-    { src: './assets/case-4-11.png', title: '', description: 'Редизайн десктопной лид-формы с обложкой' },
-    { src: './assets/case-4-7.png', title: '', description: 'Мобильный лендинг и лид-форма' },
-    { src: './assets/case-4-8.png', title: '', description: 'Десктопный лендинг и лид-форма' },
+    { src: './assets/case-4-1.webp', title: '', description: '' },
+    { src: './assets/case-4-2.webp', title: '', description: 'Визуальный редактор' },
+    { src: './assets/case-4-3.webp', title: '', description: 'Редактор мобильной и десктопной формы' },
+    { src: './assets/case-4-4.webp', title: '', description: 'Форматирование текста' },
+    { src: './assets/case-4-6.webp', title: '', description: 'Блок видео' },
+    { src: './assets/case-4-5.webp', title: '', description: 'Настройки изображения и слайдер' },
+    { src: './assets/case-4-9.webp', title: '', description: 'Редизайн мобильной лид-формы' },
+    { src: './assets/case-4-10.webp', title: '', description: 'Редизайн десктопной лид-формы без обложки' },
+    { src: './assets/case-4-11.webp', title: '', description: 'Редизайн десктопной лид-формы с обложкой' },
+    { src: './assets/case-4-7.webp', title: '', description: 'Мобильный лендинг и лид-форма' },
+    { src: './assets/case-4-8.webp', title: '', description: 'Десктопный лендинг и лид-форма' },
 ];
 
 export default function Case4() {
