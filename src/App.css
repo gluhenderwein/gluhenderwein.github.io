@@ -4,10 +4,10 @@
 :root[data-theme='dark'] {
   --bg-primary: #0B0C0E;
   --bg-secondary: rgba(199, 202, 209, 0.08);
-  /* Было rgba (122, 122, 122, 0.08) — с пробелом, значение не подставлялось
-     и фона у карточек фактически не было. Пробел убран, прозрачность
-     приглушена до 0.06, чтобы карточки не выбивались. */
-  --bg-card: rgba(122, 122, 122, 0.04);
+  /* Было rgba (122, 122, 122, 0.08) — с пробелом, из-за чего значение
+     не подставлялось и заливки у карточек фактически не было.
+     Оставляем её выключенной, но уже явно. */
+  --bg-card: transparent;
   --bg-accent: #CCB7B2;
   --text-primary: #EBEDEE;
   --text-secondary: #AAAAA7;
@@ -24,7 +24,7 @@
 :root[data-theme='light'] {
   --bg-primary: #EDECE8;
   --bg-secondary: rgba(199, 168, 142, 0.08);
-  --bg-card: rgba(255, 255, 255, 0.5);
+  --bg-card: transparent;
   --bg-accent: #E9E7D8;
   --text-primary: #303236;
   --text-secondary: #4B4B48;
@@ -32,9 +32,9 @@
   --navlink: #22252B;
   --icon-primary: #303236;
   --icon-secondary: #757370;
-  --icon-tertiary: #5B5348;
+  --icon-tertiary: #A7A7A5;
   --stroke: rgba(79, 71, 55, 0.08);
-  --navbar: rgba(237, 236, 232, 0.38);
+  --navbar: rgba(246, 245, 240, 0.72);
   --navbtn: #ffffff;
 }
 
