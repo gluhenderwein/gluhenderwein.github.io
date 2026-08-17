@@ -24,7 +24,7 @@
 :root[data-theme='light'] {
   --bg-primary: #EDECE8;
   --bg-secondary: rgba(199, 168, 142, 0.08);
-  --bg-card: transparent;
+  --bg-card: rgba(255, 255, 255, 0.50);
   --bg-accent: #E9E7D8;
   --text-primary: #303236;
   --text-secondary: #4B4B48;
