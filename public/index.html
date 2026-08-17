@@ -6,6 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
 
+    <!-- Шрифты подключены здесь, а не через @import в App.css: при импорте
+         браузер узнаёт про них только после загрузки и разбора main.css,
+         то есть цепочка запросов выстраивается последовательно.
+         Курсив не запрашиваем — он в проекте не используется,
+         диапазоны весов сужены до реально применяемых. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300..600&family=Unbounded:wght@200..500&display=swap"
+    />
+
     <!-- Тема проставляется до первой отрисовки: JS-бандл грузится с defer,
          и без этого страница успевает мигнуть нестилизованными цветами. -->
     <script>

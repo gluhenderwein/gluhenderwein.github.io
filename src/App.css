@@ -1,4 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Unbounded:wght@200..900&display=swap');
+/* Шрифты подключаются <link>-ом в public/index.html, а не отсюда:
+   @import заставляет браузер ждать разбора этого файла, прежде чем
+   он вообще узнает про Google Fonts. */
 
 :root,
 :root[data-theme='dark'] {
