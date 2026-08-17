@@ -31,7 +31,7 @@
   "homepage": "https://gluhenderwein.github.io",
   "scripts": {
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
+    "deploy": "gh-pages -d build --remove \"{*,!(kotel)/**}\"",
     "start": "react-scripts start",
     "build": "react-scripts build && find build -name '*.map' -type f -delete",
     "test": "react-scripts test",
