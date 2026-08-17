@@ -10,16 +10,6 @@ import Feedback from './sections/Feedback';
 import Contacts from './sections/Contacts';
 import { useEffect, lazy, Suspense } from 'react';
 
-/* Всё тяжёлое грузится отдельными чанками, чтобы первая отрисовка
-   не ждала их скачивания и разбора.
-
-   Lanyard тянет three + rapier — это 2.7 МБ, 70% прежнего бандла,
-   ради одного декоративного бейджа. DotGrid тянет gsap.
-   Оба лежат вне потока (position: absolute/fixed), так что
-   их появление чуть позже не двигает макет.
-
-   Страницы кейсов и шотов уносят с собой лайтбокс и свою разметку —
-   на главной они не нужны вовсе. */
 const Lanyard = lazy(() => import('./components/Lanyard'));
 const DotGrid = lazy(() => import('./components/DotGrid'));
 const Case1 = lazy(() => import('./sections/Case1'));
@@ -75,11 +65,6 @@ function App() {
           
           <div>
 
-            {/* Границы раздельные не для красоты: в общей границе React
-                держит поддерево скрытым, пока не приедут ОБА чанка, а когда
-                уже показанное поддерево подвешивается снова — прячет его
-                через display: none. DotGrid в этот момент меряет себя в ноль
-                и записывает канвасу width: 0px. Своя граница у каждого. */}
             <Suspense fallback={null}>
               <DotGrid style={{ position: 'fixed', width: '100vw', height: '100dvh', zIndex:'0' }}
                         dotSize={2}

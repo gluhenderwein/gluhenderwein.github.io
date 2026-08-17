@@ -3,8 +3,6 @@ import './ThemeToggle.css';
 import { getTheme, setTheme, subscribe } from '../theme';
 
 const ThemeToggle = () => {
-  // Тумблер отрендерен в нескольких местах сразу (навбар + страницы кейсов),
-  // поэтому стейт общий, а не свой у каждой копии.
   const theme = useSyncExternalStore(subscribe, getTheme, getTheme);
 
   const toggleTheme = () => {

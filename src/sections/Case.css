@@ -8,8 +8,6 @@
     min-height: 600px;
     border-radius: 0px 0px 6vw 6vw;
     padding: 200px var(--content-gutter) var(--content-gutter);
-    /* блок, а не флекс, съедал margin-top: auto у .head-content,
-       и контент вставал под верхним паддингом вместо низа */
     display: flex;
     align-items: flex-end;
     margin-bottom: 24px;
@@ -136,7 +134,6 @@
     .case-illustration {
         position: absolute;
         top: 0;
-        /* правый край общей колонки, а не произвольный отступ от вьюпорта */
         right: calc(50% - var(--content-inner) / 2);
         height: 100%;
     }
